@@ -47,7 +47,7 @@ install(DIRECTORY include/ DESTINATION include)
 
 install(EXPORT GEngine_targets
         FILE GEngineTargets.cmake
-        DESTINATION share/gengine)
+        DESTINATION share/GEngine)
 
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/GEngineConfig.cmake"
 "include(CMakeFindDependencyMacro)\n"
@@ -56,4 +56,4 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/GEngineConfig.cmake"
 )
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/GEngineConfig.cmake"
-        DESTINATION share/gengine)
+        DESTINATION share/GEngine)
