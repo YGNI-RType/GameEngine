@@ -42,3 +42,12 @@ LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin # Windows
 )
 install(DIRECTORY include/ DESTINATION include)
+
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/gengine-config.cmake"
+"include(CMakeFindDependencyMacro)\n"
+"find_dependency(raylib CONFIG REQUIRED)\n"
+"include(\"\${CMAKE_CURRENT_LIST_DIR}/gengine-targets.cmake\")\n"
+)
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/gengine-config.cmake"
+        DESTINATION share/gengine)
