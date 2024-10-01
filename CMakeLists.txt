@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(gengine)
+project(GEngine)
 
 include(GNUInstallDirs)
 
@@ -16,18 +16,18 @@ list(FILTER HEADERS EXCLUDE REGEX ".*/deprecated/.*")
 
 include_directories(include)
 
-add_library(gengine SHARED ${SOURCES} ${HEADERS})
+add_library(GEngine SHARED ${SOURCES} ${HEADERS})
 
-add_library(gengine_static STATIC ${SOURCES} ${HEADERS})
+add_library(GEngine_static STATIC ${SOURCES} ${HEADERS})
 
-set_target_properties(gengine PROPERTIES
+set_target_properties(GEngine PROPERTIES
 CXX_STANDARD 20
 CXX_STANDARD_REQUIRED YES
 CXX_EXTENSIONS NO
 VERSION 0.0.1
 )
 
-set_target_properties(gengine_static PROPERTIES
+set_target_properties(GEngine_static PROPERTIES
 CXX_STANDARD 20
 CXX_STANDARD_REQUIRED YES
 CXX_EXTENSIONS NO
@@ -35,26 +35,25 @@ VERSION 0.0.1
 OUTPUT_NAME "GEngine"
 )
 
-target_link_libraries(gengine raylib)
-target_link_libraries(gengine_static raylib)
+target_link_libraries(GEngine raylib)
+target_link_libraries(GEngine_static raylib)
 
-install(TARGETS gengine gengine_static
-        EXPORT gengine_targets
+install(TARGETS GEngine GEngine_static
+        EXPORT GEngine_targets
         ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
         LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
         RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
 install(DIRECTORY include/ DESTINATION include)
 
-install(EXPORT gengine_targets
-        FILE gengine-targets.cmake
-        # NAMESPACE gengine::
+install(EXPORT GEngine_targets
+        FILE GEngine-targets.cmake
         DESTINATION share/gengine)
 
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/gengine-config.cmake"
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/GEngine-config.cmake"
 "include(CMakeFindDependencyMacro)\n"
 "find_dependency(raylib CONFIG REQUIRED)\n"
-"include(\"\${CMAKE_CURRENT_LIST_DIR}/gengine-targets.cmake\")\n"
+"include(\"\${CMAKE_CURRENT_LIST_DIR}/GEngine-targets.cmake\")\n"
 )
 
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/gengine-config.cmake"
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/GEngine-config.cmake"
         DESTINATION share/gengine)
