@@ -46,14 +46,14 @@ install(TARGETS GEngine GEngine_static
 install(DIRECTORY include/ DESTINATION include)
 
 install(EXPORT GEngine_targets
-        FILE GEngine-targets.cmake
+        FILE GEngineTargets.cmake
         DESTINATION share/gengine)
 
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/GEngine-config.cmake"
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/GEngineConfig.cmake"
 "include(CMakeFindDependencyMacro)\n"
 "find_dependency(raylib CONFIG REQUIRED)\n"
-"include(\"\${CMAKE_CURRENT_LIST_DIR}/GEngine-targets.cmake\")\n"
+"include(\"\${CMAKE_CURRENT_LIST_DIR}/GEngineTargets.cmake\")\n"
 )
 
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/GEngine-config.cmake"
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/GEngineConfig.cmake"
         DESTINATION share/gengine)
