@@ -3,11 +3,9 @@ project(GEngine)
 
 include(GNUInstallDirs)
 
-# include(cmake/automate-vcpkg.cmake)
-# vcpkg_bootstrap()
-# vcpkg_install_packages(raylib)
-
-find_package(raylib CONFIG REQUIRED)
+include(cmake/automate-vcpkg.cmake)
+vcpkg_bootstrap()
+vcpkg_install_packages(raylib)
 
 file(GLOB_RECURSE SOURCES source/*.cpp)
 list(FILTER SOURCES EXCLUDE REGEX ".*/deprecated/.*")
@@ -36,8 +34,9 @@ VERSION 0.0.1
 OUTPUT_NAME "GEngine"
 )
 
-target_link_libraries(GEngine PRIVATE raylib)
-target_link_libraries(GEngine_static PRIVATE raylib)
+find_package(raylib CONFIG REQUIRED)
+target_link_libraries(GEngine raylib)
+target_link_libraries(GEngine_static raylib)
 
 install(TARGETS GEngine GEngine_static
         EXPORT GEngine_targets
