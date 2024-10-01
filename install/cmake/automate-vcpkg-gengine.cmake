@@ -97,7 +97,7 @@ macro(vcpkg_install_gengine)
     endif()
 
     execute_process(
-        COMMAND ${VCPKG_EXEC} install GEngine --overlay-ports=${CMAKE_CURRENT_SOURCE_DIR}/overlay-ports --head
+        COMMAND ${VCPKG_EXEC} install gengine --overlay-ports=${CMAKE_CURRENT_SOURCE_DIR}/overlay-ports --head
         WORKING_DIRECTORY ${VCPKG_ROOT}
     )
 endmacro()
