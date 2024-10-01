@@ -1,17 +1,16 @@
 cmake_minimum_required(VERSION 3.10)
-
 project(GEngine)
 
 include(GNUInstallDirs)
 
-find_package(raylib REQUIRED)
+include(cmake/automate-vcpkg.cmake)
+vcpkg_bootstrap()
+vcpkg_install_packages(raylib)
 
 file(GLOB_RECURSE SOURCES source/*.cpp)
-
 list(FILTER SOURCES EXCLUDE REGEX ".*/deprecated/.*")
 
 file(GLOB_RECURSE HEADERS include/*.h)
-
 list(FILTER HEADERS EXCLUDE REGEX ".*/deprecated/.*")
 
 include_directories(include)
@@ -35,8 +34,9 @@ VERSION 0.0.1
 OUTPUT_NAME "GEngine"
 )
 
-target_link_libraries(GEngine raylib)
-target_link_libraries(GEngine_static raylib)
+find_package(raylib CONFIG REQUIRED)
+target_link_libraries(GEngine PRIVATE raylib)
+target_link_libraries(GEngine_static PRIVATE raylib)
 
 install(TARGETS GEngine GEngine_static
         EXPORT GEngine_targets
