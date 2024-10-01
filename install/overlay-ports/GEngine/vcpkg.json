@@ -1,0 +1,18 @@
+{
+  "name": "gengine",
+  "version": "0.0.1",
+  "homepage": "https://github.com/EpitechPromo2027/B-CPP-500-LYN-5-1-rtype-basile.fouquet",
+  "description": "An amazing Game Engine.",
+  "license": "MIT",
+  "dependencies": [
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    },
+    "raylib"
+  ]
+}
