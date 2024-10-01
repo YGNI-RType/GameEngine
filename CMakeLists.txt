@@ -36,8 +36,8 @@ VERSION 0.0.1
 OUTPUT_NAME "GEngine"
 )
 
-target_link_libraries(GEngine raylib)
-target_link_libraries(GEngine_static raylib)
+target_link_libraries(GEngine PRIVATE raylib)
+target_link_libraries(GEngine_static PRIVATE raylib)
 
 install(TARGETS GEngine GEngine_static
         EXPORT GEngine_targets
