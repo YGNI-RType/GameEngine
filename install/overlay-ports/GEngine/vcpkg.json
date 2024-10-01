@@ -1,7 +1,7 @@
 {
   "name": "gengine",
   "version": "0.0.1",
-  "homepage": "https://github.com/EpitechPromo2027/B-CPP-500-LYN-5-1-rtype-basile.fouquet",
+  "homepage": "https://github.com/YGNI-RType/GameEngine",
   "description": "An amazing Game Engine.",
   "license": "MIT",
   "dependencies": [
