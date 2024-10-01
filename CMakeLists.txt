@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 
 project(gengine)
 
+include(GNUInstallDirs)
+
 find_package(raylib REQUIRED)
 
 file(GLOB_RECURSE SOURCES source/*.cpp)
@@ -37,11 +39,16 @@ target_link_libraries(gengine raylib)
 target_link_libraries(gengine_static raylib)
 
 install(TARGETS gengine gengine_static
-LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-    RUNTIME DESTINATION bin # Windows
-)
+        EXPORT gengine_targets
+        ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
 install(DIRECTORY include/ DESTINATION include)
+
+install(EXPORT gengine_targets
+        FILE gengine-targets.cmake
+        # NAMESPACE gengine::
+        DESTINATION share/gengine)
 
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/gengine-config.cmake"
 "include(CMakeFindDependencyMacro)\n"
