@@ -46,6 +46,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install ubuntu packages necessary for glfw3
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config
+
       - name: Set reusable strings
         id: strings
         shell: bash
