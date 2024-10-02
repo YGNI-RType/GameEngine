@@ -2,7 +2,7 @@ name: Compilation
 
 on:
   push:
-    branches: ["dev", "devops"]
+    branches: ["dev", "feat/ci"]
   pull_request:
     branches: ["main", "dev"]
 
