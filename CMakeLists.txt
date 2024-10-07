@@ -41,7 +41,7 @@ set_target_properties(GEngine_static PROPERTIES
     CXX_EXTENSIONS NO
     DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX}
     VERSION 0.0.1
-    OUTPUT_NAME "GEngine"
+    OUTPUT_NAME "GEngine-s"
 )
 
 find_package(raylib CONFIG REQUIRED)
