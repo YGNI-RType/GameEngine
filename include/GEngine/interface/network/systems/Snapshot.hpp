@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <array>
+
 #include "GEngine/BaseEngine.hpp"
 
 #include "GEngine/libdev/System.hpp"
