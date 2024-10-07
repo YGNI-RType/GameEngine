@@ -15,6 +15,8 @@ list(FILTER HEADERS EXCLUDE REGEX ".*/deprecated/.*")
 
 include_directories(include)
 
+add_compile_options(-Wall -Wextra)
+
 add_library(GEngine SHARED ${SOURCES} ${HEADERS})
 
 add_library(GEngine_static STATIC ${SOURCES} ${HEADERS})
