@@ -116,6 +116,10 @@ public:
         return m_disconnect;
     }
 
+    uint64_t getLastACKPacketId(void) const {
+        return m_udpACKClientLastACK;
+    }
+
     const SocketTCP &getTcpSocket(void) const {
         return m_tcpSocket;
     }

@@ -8,15 +8,18 @@
 #include "GEngine/net/net_server.hpp"
 #include "GEngine/cvar/net.hpp"
 
+#include "GEngine/interface/network/systems/Snapshot.hpp"
+
 #include <iostream>
 
 namespace Network {
 
-uint16_t NetServer::start(size_t maxClients, const std::vector<IP> &g_localIPs, uint16_t currentUnusedPort) {
+uint16_t NetServer::start(size_t maxClients, const std::vector<IP> &g_localIPs, uint16_t currentUnusedPort, gengine::interface::network::system::Snapshot &snapshot) {
     // TODO : cloes everything if already initted
     if (m_isRunning)
         return currentUnusedPort;
 
+    m_snapshotSystem = &snapshot;
     for (const IP &ip : g_localIPs) { // todo : force an ip, find the best ip
                                       // (privileging pubilc interface)
         if (ip.type == AT_IPV4) {
@@ -79,24 +82,23 @@ void NetServer::handleNewClient(SocketTCPMaster &socket) {
         return;
     }
 
-    std::unique_ptr<NetClient> cl;
+    std::shared_ptr<NetClient> cl;
     auto clientAddrType = unkwAddr.getType();
     if (clientAddrType == AT_IPV4)
-        cl = std::make_unique<NetClient>(std::make_unique<AddressV4>(unkwAddr.getV4()), std::move(newSocket),
+        cl = std::make_shared<NetClient>(std::make_unique<AddressV4>(unkwAddr.getV4()), std::move(newSocket),
                                          m_socketUdpV4);
 
     else if (clientAddrType == AT_IPV6)
-        cl = std::make_unique<NetClient>(std::make_unique<AddressV6>(unkwAddr.getV6()), std::move(newSocket),
+        cl = std::make_shared<NetClient>(std::make_unique<AddressV6>(unkwAddr.getV6()), std::move(newSocket),
                                          m_socketUdpV6);
     else
         return; /* impossible */
 
     std::cout << "SV: New client connected" << std::endl;
-    NetClient *clPtr = cl.get();
-    m_clients.push_back(std::move(cl));
+    m_clients.push_back(cl);
 
     auto msg = TCPMessage(SV_INIT_CONNECTON);
-    auto &channel = clPtr->getChannel();
+    auto &channel = cl->getChannel();
 
     msg.writeData<TCPSV_ClientInit>(
         {.challenge = channel.getChallenge(),
@@ -104,6 +106,7 @@ void NetServer::handleNewClient(SocketTCPMaster &socket) {
 
     std::cout << "SV: Client challange: " << channel.getChallenge() << std::endl;
 
+    m_snapshotSystem->registerClient(cl);
     channel.sendStream(msg);
 }
 
@@ -158,7 +161,7 @@ bool NetServer::handleTCPEvent(fd_set &readSet) {
         if (client->handleTCPEvents(readSet)) {
             if (client->isDisconnected()) {
                 m_clients.erase(std::remove_if(m_clients.begin(), m_clients.end(),
-                                               [&client](const std::unique_ptr<NetClient> &cl) {
+                                               [&client](const std::shared_ptr<NetClient> &cl) {
                                                    return cl.get() == client.get();
                                                }),
                                 m_clients.end());
@@ -172,6 +175,13 @@ bool NetServer::handleTCPEvent(fd_set &readSet) {
 void NetServer::sendToAllClients(UDPMessage &msg) {
     for (const auto &client : m_clients)
         client->sendDatagram(msg);
+}
+
+void NetServer::sendToClient(NetClient &client, UDPMessage &msg) {
+    if (client.isDisconnected())
+        return;
+
+    client.sendDatagram(msg);
 }
 
 } // namespace Network

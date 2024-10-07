@@ -115,10 +115,11 @@ bool CLNetClient::handleServerUDP(UDPMessage &msg, const Address &addr) {
 
     switch (msg.getType()) {
         case SV_SNAPSHOT:
+            /* make a component receiving entity*/
             ComponentNetwork c{.entity = 0, .size = 0};
             // std::cout << "CL: got udp message from server: " << std::endl;
-            msg.readContinuousData(c, readOffset);
-            std::cout << c.entity << " -> name: [" << std::string(c.type) << "] size: " << c.size << std::endl;
+            // msg.readContinuousData(c, readOffset);
+            // std::cout << c.entity << " -> name: [" << std::string(c.type) << "] size: " << c.size << std::endl;
         break;
         // default:
         //     break;

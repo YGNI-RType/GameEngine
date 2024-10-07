@@ -14,6 +14,17 @@
 #include <memory>
 #include <vector>
 
+#include <vector>
+
+/**** ECS ****/
+
+namespace gengine::interface::network::system
+{
+    class Snapshot;
+} // namespace gengine::interface::network::system
+
+/*************/
+
 namespace Network {
 class NetServer {
 public:
@@ -23,7 +34,7 @@ public:
     /* todo : add to support loopback client for listen servers */
     ~NetServer() = default;
 
-    uint16_t start(size_t maxClients, const std::vector<IP> &g_localIPs, uint16_t currentUnusedPort);
+    uint16_t start(size_t maxClients, const std::vector<IP> &g_localIPs, uint16_t currentUnusedPort, gengine::interface::network::system::Snapshot &snapshot);
     void stop(void);
 
     void createSets(fd_set &readSet);
@@ -56,6 +67,7 @@ public:
 
     void handleClientCMD_UDP(SocketUDP &socket, NetClient &client, const UDPMessage &msg, size_t &readOffset);
     void sendToAllClients(UDPMessage &msg);
+    void sendToClient(NetClient &client, UDPMessage &msg);
 
 private:
     bool m_isRunning = false;
@@ -67,7 +79,10 @@ private:
     SocketUDP &m_socketUdpV6;
 
     size_t m_maxClients;
-    std::vector<std::unique_ptr<NetClient>> m_clients;
+    std::vector<std::shared_ptr<NetClient>> m_clients;
+
+    /* todo : wrap around with mutexes */
+    gengine::interface::network::system::Snapshot *m_snapshotSystem;
 };
 
 } // namespace Network

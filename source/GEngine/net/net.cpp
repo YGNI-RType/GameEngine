@@ -101,11 +101,11 @@ void NET::init(void) {
     enabled = true;
 }
 
-void NET::initServer(void) {
+void NET::initServer(gengine::interface::network::system::Snapshot &snapshot) {
     if (!NET::enabled)
         return;
 
-    currentUnusedPort = NET::mg_server.start(CVar::sv_maxplayers.getIntValue(), g_localIPs, currentUnusedPort);
+    currentUnusedPort = NET::mg_server.start(CVar::sv_maxplayers.getIntValue(), g_localIPs, currentUnusedPort, snapshot);
 }
 
 void NET::initClient(void) {
@@ -249,7 +249,8 @@ bool NET::sleep(uint32_t ms) {
     else if (res == 0)
         return false;
 
-    handleEvents(readSet);
+    /* todo:  very temp rate limiter */
+    for (size_t i = 0; i < 5 && handleEvents(readSet); i++);
     return true;
 }
 
