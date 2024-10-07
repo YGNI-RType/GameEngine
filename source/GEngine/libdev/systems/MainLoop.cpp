@@ -9,7 +9,9 @@
 
 namespace gengine::system {
 
-AutoMainLoop::AutoMainLoop(void) { m_lastTime = std::chrono::high_resolution_clock::now(); }
+AutoMainLoop::AutoMainLoop(void) {
+    m_lastTime = std::chrono::high_resolution_clock::now();
+}
 
 double AutoMainLoop::getElapsedTime() {
     auto currentTime = std::chrono::high_resolution_clock::now();
@@ -33,6 +35,8 @@ void AutoMainLoop::onMainLoop(gengine::system::event::MainLoop &e) {
         publishEvent(gengine::system::event::MainLoop(getElapsedTime()));
 }
 
-void AutoMainLoop::onStopMainLoop(gengine::system::event::StopMainLoop &e) { m_isRunning = false; }
+void AutoMainLoop::onStopMainLoop(gengine::system::event::StopMainLoop &e) {
+    m_isRunning = false;
+}
 
 } // namespace gengine::system

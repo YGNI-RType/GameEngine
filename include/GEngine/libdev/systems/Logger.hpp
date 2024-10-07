@@ -15,11 +15,11 @@
 namespace gengine::system {
 class Logger : public gengine::System<Logger> {
 public:
-    Logger(const std::string &filename) : m_logFile(filename, std::ios::app) {};
+    Logger(const std::string &filename);
 
-    void init(void) override { subscribeToEvent<event::Log>(&Logger::onLog); }
+    void init(void) override;
 
-    void onLog(event::Log &e) { m_logFile << e.message << std::endl; }
+    void onLog(event::Log &e);
 
 private:
     std::ofstream m_logFile;

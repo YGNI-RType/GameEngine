@@ -9,37 +9,102 @@
 #include <iostream>
 
 namespace gengine::system::driver::output {
-void Draw2D::init(void) { subscribeToEvent<gengine::system::event::Draw>(&Draw2D::onDraw); }
+struct zIndexComparator {
+    bool operator()(const std::pair<Entity, int> &lhs, const std::pair<Entity, int> &rhs) const {
+        return lhs.second < rhs.second;
+    }
+};
 
-void Draw2D::onDraw(gengine::system::event::Draw &e) {
-    auto &rectangles = getComponent<component::driver::output::Rectangle>();
-    auto &circles = getComponent<component::driver::output::Circle>();
-    auto &sprites = getComponent<component::driver::output::Sprite>();
-    auto &transforms = getComponent<gengine::component::Transform2D>();
+void Draw2D::init(void) {
+    subscribeToEvent<gengine::system::event::RenderLoop>(&Draw2D::onRenderLoop);
+    subscribeToEvent<gengine::system::event::BeginDraw>(&Draw2D::onBeginDraw);
+    subscribeToEvent<gengine::system::event::EndDraw>(&Draw2D::onEndDraw);
+}
 
+void Draw2D::onRenderLoop(gengine::system::event::RenderLoop &e) {
+    publishEvent(gengine::system::event::BeginDraw(WHITE));
+    auto &drawables = getComponents<component::driver::output::Drawable>();
+
+    std::multiset<std::pair<Entity, int>, zIndexComparator> toDraw;
+    for (auto &[entity, drawable] : drawables)
+        toDraw.emplace(entity, drawable.zIndex);
+
+    for (auto &[entity, zIndex] : toDraw)
+        publishEvent(gengine::system::event::Draw(entity));
+    publishEvent(gengine::system::event::EndDraw());
+}
+
+void Draw2D::onBeginDraw(gengine::system::event::BeginDraw &e) {
     BeginDrawing();
-    ClearBackground(RAYWHITE);
-    for (auto &[entity, rect] : rectangles) {
-        if (transforms.contains(entity)) {
-            auto &[pos, scale, rotation] = transforms.get(entity);
-            Rectangle r = {pos.x, pos.y, rect.width * scale.x, rect.height * scale.y};
-            DrawRectanglePro(r, {0, 0}, rotation, rect.color); // TODO origin
-            // DrawRectangle(pos.x, pos.y, rect.width * scale.x, rect.height * scale.y, rect.color);
-        }
-    }
-    for (auto &[entity, circ] : circles) {
-        if (transforms.contains(entity)) {
-            auto &[pos, scale, rotation] = transforms.get(entity);
-            DrawCircle(pos.x, pos.y, circ.r * scale.x, circ.color);
-        }
-    }
-    for (auto &[entity, sprite] : sprites) {
-        if (transforms.contains(entity)) {
-            auto &[pos, scale, rotation] = transforms.get(entity);
-            Rectangle r = {pos.x, pos.y, sprite.src.width * scale.x, sprite.src.height * scale.y};
-            DrawTexturePro(sprite.texture, sprite.src, r, {r.width / 2, r.height / 2}, rotation, sprite.tint);
-        }
-    }
+    ClearBackground(e.clear);
+}
+void Draw2D::onEndDraw(gengine::system::event::EndDraw &e) {
+    DrawFPS(1000, 0);
     EndDrawing();
+}
+
+void DrawSprite::init(void) {
+    subscribeToEvent<gengine::system::event::Draw>(&DrawSprite::onDraw);
+}
+
+void DrawSprite::onDraw(gengine::system::event::Draw &e) {
+    auto &sprites = getComponents<component::driver::output::Sprite>();
+    auto &transforms = getComponents<gengine::component::Transform2D>();
+
+    auto &txtMan = getSystem<TextureManager>();
+    if (sprites.contains(e.entity) && transforms.contains(e.entity)) {
+        auto &[path, src, tint] = sprites.get(e.entity);
+        auto &[pos, scale, rotation] = transforms.get(e.entity);
+        Rectangle r = {pos.x, pos.y, src.width * scale.x, src.height * scale.y};
+        DrawTexturePro(txtMan.get(path), src, r, {0, 0}, rotation, tint); // TODO origin
+    }
+}
+
+void DrawText::init(void) {
+    subscribeToEvent<gengine::system::event::Draw>(&DrawText::onDraw);
+}
+
+void DrawText::onDraw(gengine::system::event::Draw &e) {
+    auto &texts = getComponents<component::driver::output::Text>();
+    auto &transforms = getComponents<gengine::component::Transform2D>();
+
+    auto &fontMan = getSystem<FontManager>();
+    if (texts.contains(e.entity) && transforms.contains(e.entity)) {
+        auto &[path, str, fontSize, spacing, tint] = texts.get(e.entity);
+        auto &[pos, scale, rotation] = transforms.get(e.entity);
+        DrawTextPro(fontMan.get(path), str.c_str(), Vector2{pos.x, pos.y}, {0, 0}, rotation, fontSize * scale.y,
+                    spacing, tint); // TODO origin
+    }
+}
+
+void DrawRectangle::init(void) {
+    subscribeToEvent<gengine::system::event::Draw>(&DrawRectangle::onDraw);
+}
+
+void DrawRectangle::onDraw(gengine::system::event::Draw &e) {
+    auto &rectangles = getComponents<component::driver::output::Rectangle>();
+    auto &transforms = getComponents<gengine::component::Transform2D>();
+
+    if (rectangles.contains(e.entity) && transforms.contains(e.entity)) {
+        auto &[width, height, color] = rectangles.get(e.entity);
+        auto &[pos, scale, rotation] = transforms.get(e.entity);
+        Rectangle r = {pos.x, pos.y, width * scale.x, height * scale.y};
+        DrawRectanglePro(r, {0, 0}, rotation, color); // TODO origin
+    }
+}
+
+void DrawCircle::init(void) {
+    subscribeToEvent<gengine::system::event::Draw>(&DrawCircle::onDraw);
+}
+
+void DrawCircle::onDraw(gengine::system::event::Draw &e) {
+    auto &circles = getComponents<component::driver::output::Circle>();
+    auto &transforms = getComponents<gengine::component::Transform2D>();
+
+    if (circles.contains(e.entity) && transforms.contains(e.entity)) {
+        auto &[r, color] = circles.get(e.entity);
+        auto &[pos, scale, rotation] = transforms.get(e.entity);
+        ::DrawCircle(pos.x, pos.y, r * scale.x, color);
+    }
 }
 } // namespace gengine::system::driver::output

@@ -8,25 +8,33 @@
 #pragma once
 
 namespace gengine {
-typedef struct {
+struct Vect2 {
     float x;
     float y;
-} Vect2; // 2D Vector of GEngine
 
-typedef struct {
+    bool operator==(const Vect2 &) const = default;
+}; // 2D Vector of GEngine
+
+struct Vect3 {
     float x;
     float y;
     float z;
-} Vect3; // 3D Vector of GEngine
 
-typedef struct {
+    bool operator==(const Vect3 &) const = default;
+}; // 3D Vector of GEngine
+
+struct VectInt2 {
     int x;
     int y;
-} VectInt2; // 2D Vector of GEngine (int)
 
-typedef struct {
+    bool operator==(const VectInt2 &) const = default;
+}; // 2D Vector of GEngine (int)
+
+struct VectInt3 {
     int x;
     int y;
     int z;
-} VectInt3; // 3D Vector of GEngine (int)
+
+    bool operator==(const VectInt3 &) const = default;
+}; // 3D Vector of GEngine (int)
 } // namespace gengine

@@ -14,6 +14,9 @@ namespace gengine::system::event {
 struct Collsion : public Event {
     Entity entity1;
     Entity entity2;
-    Collsion(const Entity &entity1, const Entity entity2) : entity1(entity1), entity2(entity2) {}
+    Collsion(const Entity &entity1, const Entity entity2)
+        : entity1(entity1)
+        , entity2(entity2) {
+    }
 };
 } // namespace gengine::system::event

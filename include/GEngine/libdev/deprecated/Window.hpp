@@ -18,8 +18,14 @@ struct Window : public gengine::Component {
     std::string title;
 
     Window(int width = 1080, int height = 720, const std::string &title = "window")
-        : width(width), height(height), title(title) {};
+        : width(width)
+        , height(height)
+        , title(title) {
+    }
     Window(int width = 1080, int height = 720, const std::string &&title = "window")
-        : width(width), height(height), title(title) {};
+        : width(width)
+        , height(height)
+        , title(title) {
+    }
 };
 } // namespace gengine::component::driver::output

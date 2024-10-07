@@ -10,7 +10,8 @@
 #include "ecs/entity/Manager.hpp"
 
 namespace ecs {
-template <typename... Components> entity::Entity ECS::spawnEntity(Components &&...components) {
+template <typename... Components>
+entity::Entity ECS::spawnEntity(Components &&...components) {
     entity::Entity entity = createEntity();
     (setComponent(entity, std::forward<Components>(components)), ...);
     return entity;

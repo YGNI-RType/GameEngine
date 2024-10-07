@@ -15,23 +15,33 @@ list(FILTER HEADERS EXCLUDE REGEX ".*/deprecated/.*")
 
 include_directories(include)
 
-add_library(GEngine SHARED ${SOURCES} ${HEADERS})
+if(NOT WIN32)
+    add_compile_options(-Wall -Wextra)
+endif()
 
+add_library(GEngine SHARED ${SOURCES} ${HEADERS})
 add_library(GEngine_static STATIC ${SOURCES} ${HEADERS})
 
-set_target_properties(GEngine PROPERTIES
-CXX_STANDARD 20
-CXX_STANDARD_REQUIRED YES
-CXX_EXTENSIONS NO
-VERSION 0.0.1
-)
+if(WIN32)
+  target_link_libraries(GEngine wsock32 ws2_32)
+  target_link_libraries(GEngine_static wsock32 ws2_32)
+endif()
 
+set(CMAKE_DEBUG_POSTFIX d)
+set_target_properties(GEngine PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO
+    DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX}
+    VERSION 0.0.1
+)
 set_target_properties(GEngine_static PROPERTIES
-CXX_STANDARD 20
-CXX_STANDARD_REQUIRED YES
-CXX_EXTENSIONS NO
-VERSION 0.0.1
-OUTPUT_NAME "GEngine"
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO
+    DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX}
+    VERSION 0.0.1
+    OUTPUT_NAME "GEngine"
 )
 
 find_package(raylib CONFIG REQUIRED)
