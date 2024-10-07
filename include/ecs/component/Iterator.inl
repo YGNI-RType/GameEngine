@@ -23,7 +23,7 @@ Zipper<Element...>::Iterator::Iterator(std::tuple<SparseArray<Element> &...> &tu
 };
 
 template <class... Element>
-Zipper<Element...>::Iterator Zipper<Element...>::Iterator::operator++(void) {
+typename Zipper<Element...>::Iterator Zipper<Element...>::Iterator::operator++(void) {
     return std::visit(
         [this](auto &&it) -> Iterator {
             do { // TODO might segv but Undefined behavior like vector
@@ -101,11 +101,11 @@ Zipper<Element...>::Zipper(SparseArray<Element> &...elem)
 }
 
 template <class... Element>
-Zipper<Element...>::Iterator Zipper<Element...>::begin(void) {
+typename Zipper<Element...>::Iterator Zipper<Element...>::begin(void) {
     return Iterator(m_elements);
 };
 template <class... Element>
-Zipper<Element...>::Iterator Zipper<Element...>::end(void) {
+typename Zipper<Element...>::Iterator Zipper<Element...>::end(void) {
     return Iterator(m_elements, true);
 }
 } // namespace ecs::component
