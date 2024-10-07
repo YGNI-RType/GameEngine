@@ -10,16 +10,16 @@
 #include "net_client.hpp"
 #include "socket.hpp"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
-#include <algorithm>
 
 namespace Network {
 class NetServer {
 public:
     NetServer(SocketUDP &m_socketUdpV4, SocketUDP &m_socketUdpV6)
         : m_socketUdpV4(m_socketUdpV4)
-        , m_socketUdpV6(m_socketUdpV6){};
+        , m_socketUdpV6(m_socketUdpV6) {};
     /* todo : add to support loopback client for listen servers */
     ~NetServer() = default;
 
