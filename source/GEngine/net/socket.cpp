@@ -347,8 +347,8 @@ void SocketUDP::init(bool block, uint16_t port) {
     unsigned int opt = 1;
     if (setsockopt(m_sock, SOL_SOCKET, SO_BROADCAST, (char *)&opt, sizeof(opt)))
         throw std::runtime_error("(UDP) Failed to set socket options (SO_BROADCAST)");
-#ifdef IP_DONTFRAG
-#ifdef __FreeBSD__
+#ifdef NET_DONT_FRAG
+#ifdef __FreeBSD__ || defined(__APPLE__)
     if (setsockopt(m_sock, IPPROTO_IP, IP_DONTFRAG, &opt, sizeof(opt)))
 #else
     if (setsockopt(m_sock, IPPROTO_IP, IP_MTU_DISCOVER, &opt, sizeof(opt)))
