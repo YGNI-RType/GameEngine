@@ -345,4 +345,12 @@ void KeyboardCatcher::processKeyInput(int key, InputState state) {
         break;
     }
 }
+
+KeyboardKey &operator++(KeyboardKey &key) {
+    if (key <= 348)
+        key = static_cast<KeyboardKey>(static_cast<int>(key) + 1);
+    else
+        key = KEY_NULL;
+    return key;
+}
 } // namespace gengine::system::driver::input

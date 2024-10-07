@@ -134,7 +134,7 @@ public:
     }
 
     void createUdpAddress(uint16_t udpport);
-    bool readDatagram(UDPMessage &msg);
+    bool readDatagram(UDPMessage &msg, size_t &readOffset);
     /* steam if proper to socket, taht's why msg in not const */
     bool readStream(TCPMessage &msg);
 

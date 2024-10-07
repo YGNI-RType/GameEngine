@@ -38,6 +38,6 @@ public:
 private:
     const snapshot_t &m_currentWorld;
     std::vector<snapshots_t> m_clientSnapshots;
-    std::size_t m_currentSnapshotId = 0;
+    uint64_t m_currentSnapshotId = 0;
 };
 } // namespace gengine::interface::network::system

@@ -8,6 +8,7 @@
 #include "GEngine/net/cl_net_client.hpp"
 
 #include <iostream> // todo : remove
+#include <typeindex>// todo : remove
 
 namespace Network {
 
@@ -96,16 +97,33 @@ bool CLNetClient::handleUDPEvents(UDPMessage &msg, const Address &addr) {
     }
 }
 
+struct ComponentNetwork {// todo : remove
+    uint64_t entity;
+    char type[255];
+    uint16_t size;
+};
+
 bool CLNetClient::handleServerUDP(UDPMessage &msg, const Address &addr) {
+    size_t readOffset = 0;
+
     if (!m_netChannel.isEnabled() ||
         addr != m_netChannel.getAddress()) // why sending udp packets to the client ? who are you ?
         return false;
 
-    if (!m_netChannel.readDatagram(msg))
+    if (!m_netChannel.readDatagram(msg, readOffset))
         return true;
 
+    switch (msg.getType()) {
+        case SV_SNAPSHOT:
+            ComponentNetwork c{.entity = 0, .size = 0};
+            // std::cout << "CL: got udp message from server: " << std::endl;
+            msg.readContinuousData(c, readOffset);
+            std::cout << c.entity << " -> name: [" << std::string(c.type) << "] size: " << c.size << std::endl;
+        break;
+        // default:
+        //     break;
+    }
     /* todo : add things here */
-    std::cout << "CL: got udp message from server" << std::endl;
     return true;
 }
 

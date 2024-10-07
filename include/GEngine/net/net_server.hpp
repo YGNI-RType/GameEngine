@@ -54,7 +54,7 @@ public:
     void respondPingServers(const UDPMessage &msg, SocketUDP &udpsocket, const Address &addr);
     bool handleUdpMessageClients(SocketUDP &socket, UDPMessage &msg, const Address &addr);
 
-    void handleClientCMD_UDP(SocketUDP &socket, NetClient &client, const UDPMessage &msg);
+    void handleClientCMD_UDP(SocketUDP &socket, NetClient &client, const UDPMessage &msg, size_t &readOffset);
     void sendToAllClients(UDPMessage &msg);
 
 private:

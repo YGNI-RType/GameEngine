@@ -41,8 +41,9 @@ void UDPMessage::writeHeader(const UDPG_NetChannelHeader &header) {
     std::memcpy(m_data, &header, sizeof(UDPG_NetChannelHeader));
 }
 
-void UDPMessage::readHeader(UDPG_NetChannelHeader &header) const {
+void UDPMessage::readHeader(UDPG_NetChannelHeader &header, size_t &readOffset) const {
     std::memcpy(&header, m_data, sizeof(UDPG_NetChannelHeader));
+    readOffset += sizeof(UDPG_NetChannelHeader);
 }
 
 void UDPMessage::setCompressed(bool compressed) {

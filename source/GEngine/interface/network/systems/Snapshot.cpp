@@ -7,6 +7,15 @@
 
 #include "GEngine/interface/network/systems/Snapshot.hpp"
 
+#include "GEngine/net/msg.hpp"
+#include "GEngine/net/net.hpp"
+
+struct ComponentNetwork {
+    uint64_t entity;
+    char type[255];
+    uint16_t size;
+};
+
 namespace gengine::interface::network::system {
 void Snapshot::init(void) {
     subscribeToEvent<gengine::system::event::StartEngine>(&Snapshot::onStartEngine);
@@ -38,10 +47,37 @@ void Snapshot::deltaDiff(void) {
         auto &current = snapshots[m_currentSnapshotId % MAX_SNAPSHOT];
         auto &last = snapshots[(m_currentSnapshotId - 1) % MAX_SNAPSHOT]; // TODO check which world client is using
         auto v = ecs::component::deltaDiff(current, last);
-        for (auto &[e, t, c] : v)
-            std::cout << e << " -> " << t.name() << std::endl;
-        if (v.size())
-            std::cout << std::endl;
+        // for (auto &[e, t, c] : v)
+        //     std::cout << e << " -> " << t.name() << std::endl;
+        // if (v.size())
+        //     std::cout << std::endl;
+        //TODO msg = create UDPMessage(v)
+        if (!v.size())
+            break;
+        Network::UDPMessage msg(true, Network::SV_SNAPSHOT);
+        msg.setAck(true);
+        for (auto &[entity, type, any]: v) {
+            ComponentNetwork c = {.entity = 123456789, .size = 65432};
+            strcpy(c.type, type.name());
+            msg.appendData(c);
+            break;
+
+            // msg.appendData(any);
+        }
+        auto &server = Network::NET::getServer();
+
+        Network::NET::sleep(300);
+        if (!server.isRunning())
+            continue;
+
+        // Network::UDPMessage msg(true, 4);
+        // const char *data = "Coucou je suis le serveir !!";
+        // msg.writeData(static_cast<const void *>(data), std::strlen(data));
+
+        server.sendToAllClients(msg);
+
+        // msg.appendData()
+        // send msg
         // TODO order send to network
     }
 }

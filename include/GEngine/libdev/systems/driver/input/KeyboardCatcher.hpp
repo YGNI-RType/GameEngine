@@ -26,13 +26,7 @@ private:
     void processKeyInput(int key, InputState state);
 };
 
-KeyboardKey &operator++(KeyboardKey &key) {
-    if (key <= 348)
-        key = static_cast<KeyboardKey>(static_cast<int>(key) + 1);
-    else
-        key = KEY_NULL;
-    return key;
-}
+KeyboardKey &operator++(KeyboardKey &key);
 
 using KeyApostropheEvent = gengine::system::event::driver::input::Key_Apostrophe;
 using KeyCommaEvent = gengine::system::event::driver::input::Key_Comma;

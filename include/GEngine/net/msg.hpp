@@ -176,7 +176,7 @@ public:
     void setAck(bool ack);
 
     void writeHeader(const UDPG_NetChannelHeader &header);
-    void readHeader(UDPG_NetChannelHeader &header) const;
+    void readHeader(UDPG_NetChannelHeader &header, size_t &readOffset) const;
 
     void getSerialize(UDPSerializedMessage &msg) const;
     std::vector<UDPSerializedMessage> getSerializeFragmented(void) const;

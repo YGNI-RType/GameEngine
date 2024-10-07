@@ -126,14 +126,15 @@ bool NetServer::handleUdpMessageClients(SocketUDP &socket, UDPMessage &msg, cons
         if (channel.getAddress() != addr)
             continue;
 
-        if (channel.readDatagram(msg))
-            handleClientCMD_UDP(socket, *client, msg);
+        size_t readOffset = 0;
+        if (channel.readDatagram(msg, readOffset))
+            handleClientCMD_UDP(socket, *client, msg, readOffset);
         return true;
     }
     return false;
 }
 
-void NetServer::handleClientCMD_UDP(SocketUDP &socket, NetClient &client, const UDPMessage &msg) {
+void NetServer::handleClientCMD_UDP(SocketUDP &socket, NetClient &client, const UDPMessage &msg, size_t &readOffset) {
     std::cout << "SV: received command !!" << std::endl;
 }
 

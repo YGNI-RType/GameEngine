@@ -88,9 +88,9 @@ bool NetChannel::sendDatagram(SocketUDP &socket, UDPMessage &msg) {
     return true;
 }
 
-bool NetChannel::readDatagram(UDPMessage &msg) {
+bool NetChannel::readDatagram(UDPMessage &msg, size_t &readOffset) {
     UDPG_NetChannelHeader header;
-    msg.readHeader(header);
+    msg.readHeader(header, readOffset);
 
     // if (!NETCHAN_GENCHECKSUM(m_challenge, header.sequence))
     //     return false; /* what is going on sir ???? */
@@ -111,8 +111,6 @@ bool NetChannel::readDatagram(UDPMessage &msg) {
     /****** At this point, the packet is valid *******/
 
     if (msg.isFragmented()) {
-        size_t readOffset = sizeof(UDPG_NetChannelHeader);
-
         /* if true, that's a new sequence */
         if (m_udpPoolRecv.recvMessage(m_udpFromFragSequence, msg, readOffset))
             m_udpFromFragSequence = header.ackFragmentSequence;
@@ -122,7 +120,7 @@ bool NetChannel::readDatagram(UDPMessage &msg) {
 
             m_udpPoolRecv.reconstructMessage(m_udpFromFragSequence, msg);
             m_udpPoolRecv.deleteSequence(m_udpFromFragSequence);
-            return readDatagram(msg);
+            return readDatagram(msg, readOffset);
         }
         return false;
     }

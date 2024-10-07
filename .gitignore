@@ -11,6 +11,10 @@ r-type_server
 ## Config
 .editorconfig
 
+## tester
+tester
+r-type
+
 # Created by https://www.toptal.com/developers/gitignore/api/cmake,macos,c++,conan,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=cmake,macos,c++,conan,visualstudiocode
 

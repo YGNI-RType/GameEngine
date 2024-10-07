@@ -31,7 +31,9 @@ void NetClient::sendDatagram(UDPMessage &msg) {
 }
 
 void NetClient::recvDatagram(UDPMessage &msg) {
-    m_channel.readDatagram(msg);
+    size_t readOffset = 0;
+
+    m_channel.readDatagram(msg, readOffset);
 
     std::cout << "SV: client just sent UDP specific message" << std::endl;
 }
