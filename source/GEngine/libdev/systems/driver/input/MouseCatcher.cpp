@@ -9,7 +9,9 @@
 #include <iostream>
 
 namespace gengine::system::driver::input {
-void MouseCatcher::init(void) { subscribeToEvent<gengine::system::event::MainLoop>(&MouseCatcher::onMainLoop); }
+void MouseCatcher::init(void) {
+    subscribeToEvent<gengine::system::event::MainLoop>(&MouseCatcher::onMainLoop);
+}
 
 void MouseCatcher::onMainLoop(gengine::system::event::MainLoop &e) {
     MouseButton button = MOUSE_BUTTON_LEFT;

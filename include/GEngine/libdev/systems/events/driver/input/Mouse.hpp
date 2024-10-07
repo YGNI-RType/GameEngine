@@ -22,25 +22,43 @@
 namespace gengine::system::event::driver::input {
 class MouseButton : public Event {
 public:
-    MouseButton(state_t state, const Vector2 &cursorPos) : state(state), cursorPos(cursorPos) {}
-    MouseButton(state_t state, const Vector2 &&cursorPos) : state(state), cursorPos(cursorPos) {}
+    MouseButton(state_t state, const Vector2 &cursorPos)
+        : state(state)
+        , cursorPos(cursorPos) {
+    }
+    MouseButton(state_t state, const Vector2 &&cursorPos)
+        : state(state)
+        , cursorPos(cursorPos) {
+    }
     state_t state;
     Vector2 cursorPos;
 };
 
 class Mouse_Left : public MouseButton {
 public:
-    Mouse_Left(state_t state, const Vector2 &cursorPos) : MouseButton(state, cursorPos) {}
-    Mouse_Left(state_t state, const Vector2 &&cursorPos) : MouseButton(state, cursorPos) {}
+    Mouse_Left(state_t state, const Vector2 &cursorPos)
+        : MouseButton(state, cursorPos) {
+    }
+    Mouse_Left(state_t state, const Vector2 &&cursorPos)
+        : MouseButton(state, cursorPos) {
+    }
 };
 class Mouse_Right : public MouseButton {
 public:
-    Mouse_Right(state_t state, const Vector2 &cursorPos) : MouseButton(state, cursorPos) {}
-    Mouse_Right(state_t state, const Vector2 &&cursorPos) : MouseButton(state, cursorPos) {}
+    Mouse_Right(state_t state, const Vector2 &cursorPos)
+        : MouseButton(state, cursorPos) {
+    }
+    Mouse_Right(state_t state, const Vector2 &&cursorPos)
+        : MouseButton(state, cursorPos) {
+    }
 };
 class Mouse_Middle : public MouseButton {
 public:
-    Mouse_Middle(state_t state, const Vector2 &cursorPos) : MouseButton(state, cursorPos) {}
-    Mouse_Middle(state_t state, const Vector2 &&cursorPos) : MouseButton(state, cursorPos) {}
+    Mouse_Middle(state_t state, const Vector2 &cursorPos)
+        : MouseButton(state, cursorPos) {
+    }
+    Mouse_Middle(state_t state, const Vector2 &&cursorPos)
+        : MouseButton(state, cursorPos) {
+    }
 };
 } // namespace gengine::system::event::driver::input

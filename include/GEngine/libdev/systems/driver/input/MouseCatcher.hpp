@@ -9,8 +9,6 @@
 
 #include <raylib.h>
 
-#include "GEngine/libdev/components/driver/output/Window.hpp"
-
 #include "GEngine/libdev/System.hpp"
 #include "GEngine/libdev/systems/events/MainLoop.hpp"
 #include "GEngine/libdev/systems/events/Native.hpp"

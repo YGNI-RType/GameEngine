@@ -8,7 +8,11 @@
 #include "ecs/system/Manager.hpp"
 
 namespace ecs::system {
-void Manager::executeEvent(void) { m_eventBus.execute(); }
+void Manager::executeEvent(void) {
+    m_eventBus.execute();
+}
 
-bool Manager::hasEvent(void) { return !m_eventBus.isEmpty(); }
+bool Manager::hasEvent(void) {
+    return !m_eventBus.isEmpty();
+}
 } // namespace ecs::system

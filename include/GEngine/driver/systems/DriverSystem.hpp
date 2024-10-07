@@ -14,7 +14,8 @@
 
 class DriverSystem : public ecs::system::Base<DriverSystem> {
 public:
-    DriverSystem(ecs::system::event::Bus &eventBus, std::unique_ptr<Library> gLib) : Base<DriverSystem>(eventBus) {
+    DriverSystem(ecs::system::event::Bus &eventBus, std::unique_ptr<Library> gLib)
+        : Base<DriverSystem>(eventBus) {
         m_gLib = std::move(gLib);
     }
 

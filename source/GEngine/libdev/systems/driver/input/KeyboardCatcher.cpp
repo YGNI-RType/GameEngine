@@ -9,7 +9,9 @@
 #include <iostream>
 
 namespace gengine::system::driver::input {
-void KeyboardCatcher::init(void) { subscribeToEvent<gengine::system::event::MainLoop>(&KeyboardCatcher::onMainLoop); }
+void KeyboardCatcher::init(void) {
+    subscribeToEvent<gengine::system::event::MainLoop>(&KeyboardCatcher::onMainLoop);
+}
 
 void KeyboardCatcher::onMainLoop(gengine::system::event::MainLoop &e) {
     for (KeyboardKey key = KEY_APOSTROPHE; key != KEY_NULL; ++key) {

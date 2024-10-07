@@ -5,7 +5,6 @@
 ** BaseEngine.cpp
 */
 
-
 #include "GEngine/BaseEngine.hpp"
 #include "GEngine/libdev/systems/events/Native.hpp"
 #include "exceptions/Base.hpp"
@@ -24,5 +23,7 @@ void BaseEngine::compute(void) {
     };
 }
 
-void BaseEngine::start(void) { m_ecs.publishEvent(system::event::StartEngine()); }
+void BaseEngine::start(void) {
+    m_ecs.publishEvent(system::event::StartEngine());
+}
 } // namespace gengine

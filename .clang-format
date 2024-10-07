@@ -1,0 +1,9 @@
+BasedOnStyle: LLVM
+RemoveBracesLLVM: true
+IndentWidth: 4
+AccessModifierOffset: -4
+ColumnLimit: 120
+AlwaysBreakTemplateDeclarations: true
+BreakConstructorInitializers: BeforeComma
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+AllowShortFunctionsOnASingleLine: false

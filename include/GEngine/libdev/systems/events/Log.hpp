@@ -13,7 +13,11 @@
 namespace gengine::system::event {
 struct Log : public Event {
     std::string message;
-    Log(const std::string &message) : message(message) {}
-    Log(const std::string &&message) : message(message) {}
+    Log(const std::string &message)
+        : message(message) {
+    }
+    Log(const std::string &&message)
+        : message(message) {
+    }
 };
 } // namespace gengine::system::event

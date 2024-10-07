@@ -10,7 +10,10 @@
 
 namespace gengine::system::driver::output {
 RenderWindow::RenderWindow(int width, int height, const std::string &title)
-    : m_width(width), m_height(height), m_title(title) {}
+    : m_width(width)
+    , m_height(height)
+    , m_title(title) {
+}
 
 void RenderWindow::init(void) {
     subscribeToEvent<gengine::system::event::StartEngine>(&RenderWindow::onStartEngine);
@@ -29,7 +32,7 @@ void RenderWindow::onMainLoop(gengine::system::event::MainLoop &e) {
     if (WindowShouldClose())
         publishEvent(gengine::system::event::StopMainLoop());
     else
-        publishEvent(gengine::system::event::Draw());
+        publishEvent(gengine::system::event::RenderLoop(e.deltaTime));
 
     if (IsWindowResized()) {
         m_width = GetRenderWidth();
@@ -37,15 +40,27 @@ void RenderWindow::onMainLoop(gengine::system::event::MainLoop &e) {
     }
 }
 
-int RenderWindow::getWidth(void) const { return m_width; }
+int RenderWindow::getWidth(void) const {
+    return m_width;
+}
 
-void RenderWindow::setWidth(int width) { m_width = width; }
+void RenderWindow::setWidth(int width) {
+    m_width = width;
+}
 
-int RenderWindow::getHeight(void) const { return m_height; }
+int RenderWindow::getHeight(void) const {
+    return m_height;
+}
 
-void RenderWindow::setHeight(int height) { m_height = height; }
+void RenderWindow::setHeight(int height) {
+    m_height = height;
+}
 
-const std::string &RenderWindow::getTitle(void) const { return m_title; }
+const std::string &RenderWindow::getTitle(void) const {
+    return m_title;
+}
 
-void RenderWindow::setTitle(const std::string &title) { m_title = title; }
+void RenderWindow::setTitle(const std::string &title) {
+    m_title = title;
+}
 } // namespace gengine::system::driver::output

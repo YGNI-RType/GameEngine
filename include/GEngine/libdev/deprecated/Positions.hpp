@@ -12,21 +12,34 @@
 namespace gengine::component {
 struct Position2D : public Component {
     float x, y;
-    Position2D(float x, float y) : x(x), y(y) {};
+    Position2D(float x, float y)
+        : x(x)
+        , y(y) {
+    }
 };
 
 struct Position3D : public Component {
     float x, y, z;
-    Position3D(float x, float y, float z) : x(x), y(y), z(z) {};
+    Position3D(float x, float y, float z)
+        : x(x)
+        , y(y)
+        , z(z) {
+    }
 };
 
 struct Origin2D : public Component {
     float x, y;
-    Origin2D(float x, float y) : x(x), y(y) {};
+    Origin2D(float x, float y)
+        : x(x)
+        , y(y) {
+    }
 };
 
 struct Origin3D : public Component {
     float x, y, f;
-    Origin3D(float x, float y) : x(x), y(y) {};
+    Origin3D(float x, float y)
+        : x(x)
+        , y(y) {
+    }
 };
 } // namespace gengine::component
