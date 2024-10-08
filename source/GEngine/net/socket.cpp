@@ -161,7 +161,7 @@ SocketTCPMaster::SocketTCPMaster(const IP &ip, uint16_t port) {
 
     address.sin_port = htons(port);
 
-    if (bind(m_sock, (sockaddr *)&address, sizeof(address)) < 0)
+    if (bind(m_sock, (sockaddr *)&address, ip.type == AT_IPV6 ? sizeof(sockaddr_in6) : sizeof(sockaddr_in)) < 0)
         throw SocketException("(TCP) Failed to bind socket");
 
     if (listen(m_sock, MAX_LISTEN) < 0)
@@ -365,7 +365,7 @@ SocketUDP::SocketUDP(const IP &ip, uint16_t port, bool block) {
 
     address.sin_port = htons(port);
 
-    if (bind(m_sock, (sockaddr *)&address, sizeof(address)) < 0)
+    if (bind(m_sock, (sockaddr *)&address, ip.type == AT_IPV6 ? sizeof(sockaddr_in6) : sizeof(sockaddr_in)) < 0)
         throw SocketException("(UDP) Failed to bind socket");
 
     addSocketPool(m_sock);
