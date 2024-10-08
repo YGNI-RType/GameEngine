@@ -34,13 +34,13 @@ component::SparseArray<T> &Base<Derived, DependTypes...>::getComponents(void) {
 template <class Derived, class... DependTypes>
 template <class T>
 void Base<Derived, DependTypes...>::setComponent(entity::Entity entity, const T &component) {
-    m_ecs->get().setComponent(entity, component);
+    m_ecs->get().template setComponent<T>(entity, component);
 }
 
 template <class Derived, class... DependTypes>
 template <class T, class... Params>
 void Base<Derived, DependTypes...>::setComponent(entity::Entity entity, Params &&...p) {
-    m_ecs->get().setComponent(entity, std::forward<Params>(p)...);
+    m_ecs->get().template setComponent<T>(entity, std::forward<Params>(p)...);
 }
 
 template <class Derived, class... DependTypes>
@@ -52,7 +52,7 @@ void Base<Derived, DependTypes...>::setComponent(entity::Entity entity, const st
 template <class Derived, class... DependTypes>
 template <class T>
 void Base<Derived, DependTypes...>::unsetComponent(entity::Entity entity) {
-    m_ecs->get().destroyComponent<T>(entity);
+    m_ecs->get().template destroyComponent<T>(entity);
 }
 
 template <class Derived, class... DependTypes>
