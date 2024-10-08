@@ -130,8 +130,9 @@ bool NetServer::handleUdpMessageClients(SocketUDP &socket, UDPMessage &msg, cons
             continue;
 
         size_t readOffset = 0;
-        if (channel.readDatagram(msg, readOffset))
-            handleClientCMD_UDP(socket, *client, msg, readOffset);
+        if (!channel.readDatagram(msg, readOffset))
+            return true;
+        handleClientCMD_UDP(socket, *client, msg, readOffset);
         return true;
     }
     return false;

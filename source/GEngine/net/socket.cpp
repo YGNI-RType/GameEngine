@@ -423,6 +423,7 @@ size_t SocketUDP::send(const UDPMessage &msg, const Address &addr) const {
 
 bool SocketUDP::receive(struct sockaddr *addr, UDPSerializedMessage &data, socklen_t *len) const {
     size_t recv = recvfrom(m_sock, reinterpret_cast<char *>(&data), sizeof(UDPSerializedMessage), 0, addr, len);
+    int64_t recvStatus = recv;
 
     int simval = CVar::net_recv_dropsim.getIntValue();
     if (simval > 0) {
@@ -431,35 +432,42 @@ bool SocketUDP::receive(struct sockaddr *addr, UDPSerializedMessage &data, sockl
     }
 
     // checking wouldblock etc... select told us to read so it's not possible
-    if (recv < 0)
+    if (recvStatus < 0) {
+        if (errno == EWOULDBLOCK || errno == EAGAIN)
+            return false;
         throw SocketException("Failed to receive message");
+    }
 
     if (recv < sizeof(UDPSerializedMessage) - MAX_UDP_MSGLEN)
-        throw SocketException("Received message is too small");
+        return false;
     return true;
 }
 
-AddressV4 SocketUDP::receiveV4(UDPMessage &msg) const {
+bool SocketUDP::receiveV4(UDPMessage &msg, AddressV4 &ip) const {
     UDPSerializedMessage sMsg;
     struct sockaddr_in addr = {0};
     socklen_t len = sizeof(addr);
 
-    receive(reinterpret_cast<struct sockaddr *>(&addr), sMsg, &len);
+    if (!receive(reinterpret_cast<struct sockaddr *>(&addr), sMsg, &len))
+        return false;
     msg.setSerialize(sMsg);
 
-    return AddressV4(AT_IPV4, ntohs(addr.sin_port), ntohl(addr.sin_addr.s_addr));
+    ip = AddressV4(AT_IPV4, ntohs(addr.sin_port), ntohl(addr.sin_addr.s_addr));
+    return true;
 }
 
 /* TODO : one day i might directly pack the udpmessage at this point */
-AddressV6 SocketUDP::receiveV6(UDPMessage &msg) const {
+bool SocketUDP::receiveV6(UDPMessage &msg, AddressV6 &ip) const {
     UDPSerializedMessage sMsg;
     struct sockaddr_in6 addr;
     socklen_t len = sizeof(addr);
 
-    receive(reinterpret_cast<struct sockaddr *>(&addr), sMsg, &len);
+    if (!receive(reinterpret_cast<struct sockaddr *>(&addr), sMsg, &len))
+        return false;
     msg.setSerialize(sMsg);
 
-    return AddressV6(AT_IPV6, ntohs(addr.sin6_port), addr.sin6_addr, addr.sin6_scope_id);
+    ip = AddressV6(AT_IPV6, ntohs(addr.sin6_port), addr.sin6_addr, addr.sin6_scope_id);
+    return true;
 }
 
 /*****************************************************/

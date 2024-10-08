@@ -7,6 +7,12 @@
             "command": "cmake",
             "args": [
                 "--build",
+                "${workspaceFolder}/build",
+                "--target",
+                "GEngine_static",
+                "&&",
+                "cmake",
+                "--build",
                 "${workspaceFolder}/r-type/build"
             ],
             "group": {
@@ -14,7 +20,8 @@
                 "isDefault": true
             },
             "problemMatcher": ["$gcc"],
-            "detail": "Build the r-type project using CMake"
+            "detail": "Build the r-type project using CMake",
+            "presentation": { "reveal": "silent"}
         },
         {
             "label": "Configure CMake RType",

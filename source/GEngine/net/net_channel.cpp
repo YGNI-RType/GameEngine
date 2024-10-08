@@ -10,6 +10,8 @@
 #include "GEngine/net/socketError.hpp"
 #include "GEngine/time/time.hpp"
 
+#include <iostream>
+
 namespace Network {
 
 NetChannel::NetChannel(bool isServer, std::unique_ptr<Address> clientAddress, SocketTCP &&socket)
@@ -100,9 +102,11 @@ bool NetChannel::readDatagram(UDPMessage &msg, size_t &readOffset) {
 
     if (header.sequence <= udpInSequence) {
         /*out of order packet, delete it */
+        std::cout << "OOB packet: " << header.sequence << std::endl;
         return false;
     }
 
+    std::cout << "Seq packet: " << header.sequence << std::endl;
     if (msg.shouldAck()) { /* only care about reliable packets */
         m_udpACKClientLastACK = header.ack;
         m_droppedPackets = header.sequence - udpInSequence + 1;

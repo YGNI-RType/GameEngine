@@ -25,8 +25,8 @@ UDPMessage &UDPMessage::operator=(const UDPMessage &other) {
 void UDPMessage::setSerialize(UDPSerializedMessage &msg) {
     m_type = msg.type;
     m_flags = msg.flag;
-    std::memcpy(m_data + m_curSize, &msg.data, msg.curSize);
-    m_curSize += msg.curSize;
+    std::memcpy(m_data, &msg.data, msg.curSize);
+    m_curSize = msg.curSize;
 }
 
 void UDPMessage::getSerialize(UDPSerializedMessage &msg) const {

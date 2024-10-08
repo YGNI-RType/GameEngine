@@ -105,7 +105,8 @@ void NET::initServer(gengine::interface::network::system::Snapshot &snapshot) {
     if (!NET::enabled)
         return;
 
-    currentUnusedPort = NET::mg_server.start(CVar::sv_maxplayers.getIntValue(), g_localIPs, currentUnusedPort, snapshot);
+    currentUnusedPort =
+        NET::mg_server.start(CVar::sv_maxplayers.getIntValue(), g_localIPs, currentUnusedPort, snapshot);
 }
 
 void NET::initClient(void) {
@@ -249,8 +250,7 @@ bool NET::sleep(uint32_t ms) {
     else if (res == 0)
         return false;
 
-    /* todo:  very temp rate limiter */
-    for (size_t i = 0; i < 5 && handleEvents(readSet); i++);
+    handleEvents(readSet);
     return true;
 }
 
@@ -275,13 +275,23 @@ bool NET::handleUdpEvent(SocketUDP &socket, UDPMessage &msg, const Address &addr
 bool NET::handleEvents(fd_set &readSet) {
     if (mg_socketUdp.isFdSet(readSet)) {
         UDPMessage msg(0, 0);
-        auto addr = mg_socketUdp.receiveV4(msg);
-        return handleUdpEvent(mg_socketUdp, msg, addr);
+        while (1) {
+            AddressV4 addr(AT_IPV6, 0);
+            bool shouldContinue = mg_socketUdp.receiveV4(msg, addr);
+            if (!shouldContinue)
+                break;
+            handleUdpEvent(mg_socketUdp, msg, addr);
+        }
     }
     if (CVar::net_ipv6.getIntValue() && mg_socketUdpV6.isFdSet(readSet)) {
         UDPMessage msg(0, 0);
-        auto addr = mg_socketUdpV6.receiveV6(msg);
-        return handleUdpEvent(mg_socketUdpV6, msg, addr);
+        while (1) {
+            AddressV6 addr(AT_IPV6, 0);
+            bool shouldContinue = mg_socketUdp.receiveV6(msg, addr);
+            if (!shouldContinue)
+                break;
+            handleUdpEvent(mg_socketUdp, msg, addr);
+        }
     }
 
     if (mg_server.handleTCPEvent(readSet))

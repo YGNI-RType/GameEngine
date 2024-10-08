@@ -111,8 +111,8 @@ public:
     size_t send(const UDPMessage &msg, const Address &addr) const;
 
     /* this seems redundant, but to avoid any heap calls, this is necessary */
-    AddressV4 receiveV4(UDPMessage &msg) const;
-    AddressV6 receiveV6(UDPMessage &msg) const;
+    bool receiveV4(UDPMessage &msg, AddressV4 &ip) const;
+    bool receiveV6(UDPMessage &msg, AddressV6 &ip) const;
 
 private:
     bool receive(struct sockaddr *addr, UDPSerializedMessage &sMsg, socklen_t *len) const;
