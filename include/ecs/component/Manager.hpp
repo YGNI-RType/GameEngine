@@ -50,16 +50,20 @@ public:
      */
     typedef std::function<std::vector<component_info_t>(const std::any &, const std::any &)> comparer_t;
 
+    typedef uint16_t typeindex_id;
+    typedef uint16_t type_size;
+    typedef std::pair<typeindex_id, type_size> infos_t;
+
     /**
      * @brief A tuple grouping the component management tools (destroyer, setter, comparer).
      */
-    using component_tools_t = std::tuple<destroyer_t, setter_t, comparer_t>;
+    using component_tools_t = std::tuple<destroyer_t, setter_t, comparer_t, infos_t>;
+    using component_tools_map_t = std::unordered_map<std::type_index, component_tools_t>;
 
     /**
      * @brief A map that associates component types with their management tools and sparse arrays of component data.
      */
-    using component_map_t = std::unordered_map<std::type_index, std::pair<std::any, component_tools_t>>;
-
+    using component_map_t = std::unordered_map<std::type_index, std::any>;
     /**
      * @brief Default constructor for the Manager class.
      */
@@ -142,6 +146,8 @@ public:
      */
     const component_map_t &getComponentMap(void) const;
 
+    const component_tools_map_t &getComponentToolsMap(void) const; // TODO DOCS
+
     /**
      * @brief Compares two sparse arrays of components and returns the differences.
      * @tparam Component The type of components to compare.
@@ -158,15 +164,23 @@ private:
      * @brief Stores the map of component types to their associated sparse arrays and management tools.
      */
     component_map_t m_componentMap;
+    component_tools_map_t m_componentToolsMap;
+    // std::vector<std::type_index> m_typeindexTable;
+    // uint16_t m_nbComponent;
+    template <class T>
+    component_tools_t registerTools(void); // TODO docu
 };
 
 /**
  * @brief Compares two component maps and returns the differences.
  * @param map1 The first component map.
+ * @param tools The component tools to compare.
  * @param map2 The second component map.
  * @return A vector of component_info_t of the components that changed between map1 and map2.
  */
-std::vector<component_info_t> deltaDiff(const Manager::component_map_t &map1, const Manager::component_map_t &map2);
+std::vector<component_info_t> deltaDiff(const Manager::component_map_t &map1,
+                                        const component::Manager::component_tools_map_t &tools,
+                                        const Manager::component_map_t &map2);
 } // namespace ecs::component
 
 #include "Manager.inl"
