@@ -13,7 +13,7 @@
 
 struct ComponentNetwork {
     uint64_t entity;
-    char type[255];
+    uint16_t type;
     uint16_t size;
 };
 
@@ -26,6 +26,7 @@ void Snapshot::init(void) {
 void Snapshot::onStartEngine(gengine::system::event::StartEngine &e) {
     /* todo : faudrait renommer le nom du système, ça colle plus à serveur ducoup */
     Network::NET::initServer(*this);
+    m_dummySnapshot = m_currentWorld;
 }
 
 void Snapshot::onMainLoop(gengine::system::event::MainLoop &e) {
@@ -40,6 +41,8 @@ void Snapshot::onMainLoop(gengine::system::event::MainLoop &e) {
 /* todo warning : mutex please */
 void Snapshot::registerClient(std::shared_ptr<Network::NetClient> client) {
     m_clientSnapshots.push_back(std::make_pair<>(SnapshotClient(client, m_currentSnapshotId), snapshots_t()));
+    m_clientSnapshots.at(m_clientSnapshots.size() - 1).second[m_currentSnapshotId % MAX_SNAPSHOT] = m_dummySnapshot;
+    std::cout << "c:" << m_currentSnapshotId << std::endl;
 }
 
 void Snapshot::createSnapshots(void) {
@@ -61,26 +64,33 @@ void Snapshot::deltaDiff(void) {
         auto lastReceived = client.getNet()->getChannel().getLastACKPacketId();
         auto lastId = client.getSnapshotId() + lastReceived;
 
+        auto &current = snapshots[m_currentSnapshotId % MAX_SNAPSHOT];
+
         auto diff = m_currentSnapshotId - lastId;
         std::cout << "diff: " << diff << " | m_currentSnapshotId: " << m_currentSnapshotId << " last id: " << lastId << " UDP Last ACK: " << lastReceived << std::endl;
-        if (diff > MAX_SNAPSHOT)
-            diff = MAX_SNAPSHOT; /* todo : find dummy snapshot (all 0) to send all */
-
-        auto &current = snapshots[m_currentSnapshotId % MAX_SNAPSHOT];
-        auto &last = snapshots[diff % MAX_SNAPSHOT]; // TODO check which world client is using
         std::vector<ecs::component::component_info_t> v;
-
-        try {
-            v = ecs::component::deltaDiff(current, last);
-        } catch (const std::exception &e) {
+        if (diff > MAX_SNAPSHOT || !diff) {
+            // diff = MAX_SNAPSHOT; /* todo : find dummy snapshot (all 0) to send all */
+            v = ecs::component::deltaDiff(current, m_tools, m_dummySnapshot);
+        } else {
+            auto &last = snapshots[lastId % MAX_SNAPSHOT]; // TODO check which world client is using
+            v = ecs::component::deltaDiff(current, m_tools, last);
         }
-
+        // try {
+        // } catch (const std::exception &e) {
+        // }
+        uint64_t nb_component = v.size();
+        if (!nb_component)
+            break;
         Network::UDPMessage msg(true, Network::SV_SNAPSHOT);
         msg.setAck(true);
+        msg.appendData(nb_component);
         for (auto &[entity, type, any]: v) {
-            ComponentNetwork c = {.entity = entity, .size = 65432}; /* todo : found the size of the entity as well as type !!!! */
-            strcpy(c.type, type.name());
-            msg.appendData(c);
+            auto &[d, s, c, info] = m_tools.find(type)->second;
+            ComponentNetwork cn = {.entity = entity, .type = info.first, .size = info.second}; /* todo : found the size of the entity as well as type !!!! */
+            // strcpy(c.type, type.name());
+            std::cout << nb_component << " " << info.second << std::endl;
+            msg.appendData(cn);
         }
 
         if (!server.isRunning())

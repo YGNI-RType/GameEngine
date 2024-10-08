@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
+** GameEngine
 ** File description:
-** NetworkMainLoop.hpp
+** Snapshot.hpp
 */
 
 #pragma once
@@ -50,10 +50,11 @@ private:
 class Snapshot : public System<Snapshot> {
 public:
     using snapshot_t = BaseEngine::world_t;
+    using tools_t = BaseEngine::world_tools_t;
     using snapshots_t = std::array<snapshot_t, MAX_SNAPSHOT>;
 
-    Snapshot(const snapshot_t &currentWorld)
-        : m_currentWorld(currentWorld) {
+    Snapshot(const snapshot_t &currentWorld, const tools_t &tools)
+        : m_currentWorld(currentWorld), m_tools(tools) {
     }
 
     void init(void) override;
@@ -66,7 +67,9 @@ public:
 
 private:
     const snapshot_t &m_currentWorld;
+    snapshot_t m_dummySnapshot;
+    const tools_t &m_tools;
     std::vector<std::pair<SnapshotClient,snapshots_t>> m_clientSnapshots;
-    uint64_t m_currentSnapshotId = 0;
+    uint64_t m_currentSnapshotId = -1;
 };
 } // namespace gengine::interface::network::system
