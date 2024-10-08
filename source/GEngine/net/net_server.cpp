@@ -106,7 +106,7 @@ void NetServer::handleNewClient(SocketTCPMaster &socket) {
 
     std::cout << "SV: Client challange: " << channel.getChallenge() << std::endl;
 
-    m_snapshotSystem->registerClient(cl);
+    // m_snapshotSystem->registerClient(cl);
     channel.sendStream(msg);
 }
 
