@@ -10,10 +10,10 @@
 #include "net_client.hpp"
 #include "socket.hpp"
 
+#include "utils/queue.hpp"
+
 #include <algorithm>
 #include <memory>
-#include <vector>
-
 #include <vector>
 
 /**** ECS ****/
@@ -77,6 +77,8 @@ private:
 
     SocketUDP &m_socketUdpV4;
     SocketUDP &m_socketUdpV6;
+
+    NetQueue<32, 100> m_clientsQueue;
 
     size_t m_maxClients;
     std::vector<std::shared_ptr<NetClient>> m_clients;

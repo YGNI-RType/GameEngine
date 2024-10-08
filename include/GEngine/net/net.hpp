@@ -16,6 +16,7 @@
 #include "socket.hpp"
 
 #include <vector>
+#include <thread>
 
 /**** ECS ****/
 
@@ -40,7 +41,9 @@ private:
 
     static std::vector<IP> g_localIPs;
 
-    static bool enabled;
+    static std::atomic_bool enabled;
+    static std::mutex mg_mutex;
+    static std::thread mg_networkThread;
 
     static bool inittedClient;
 

@@ -50,6 +50,7 @@ public:
     uint64_t getSize() const {
         return m_curSize;
     }
+
     uint8_t getType() const {
         return m_type;
     }
@@ -167,6 +168,15 @@ public:
     }
     bool shouldAck() const {
         return m_flags & ACK;
+    }
+
+
+    uint8_t getFlags() const {
+        return m_flags;
+    }
+
+    void setFlag(uint8_t flag) {
+        m_flags |= flag;
     }
 
     void setCompressed(bool compressed);
