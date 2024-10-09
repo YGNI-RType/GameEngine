@@ -59,8 +59,9 @@ public:
             return false;
 
         auto &[_, queueSegment] = *it;
-        auto segment = queueSegment.pop();
-        constructMessage(segment.id)
+        auto segment = queueSegment.front();
+        queueSegment.pop();
+        constructMessage(segment.id);
         queueSegment.push(segment);
 
         return true;
@@ -76,7 +77,8 @@ public:
 
         auto &[_, queueSegment] = *it;
 
-        auto segment = queueSegment.pop();
+        auto segment = queueSegment.front();
+        queueSegment.pop();
         constructMessage(msg, segment);
         m_isUsed[segment.id] = false;
         m_nbUsed--;
@@ -91,7 +93,8 @@ public:
             if (queueSegment.empty())
                 continue;
 
-            auto segment = queueSegment.pop();
+            auto segment = queueSegment.front();
+            queueSegment.pop();
             constructMessage(msg, segment);
             msg.setType(type);
             m_isUsed[segment.id] = false;
@@ -122,12 +125,12 @@ public:
     }
 
 private:
-    void constructMessage(UDPMessage &msg, Segment &segment) const {
+    void constructMessage(UDPMessage &msg, const Segment &segment) const {
         msg.setFlag(segment.flag);
         msg.writeData(m_data.data() + segment.id * MAX_PACKET_SIZE, MAX_PACKET_SIZE);
     }
 
-    void deconstructMessage(UDPMessage &msg, Segment &segment) const {
+    void deconstructMessage(const UDPMessage &msg, Segment &segment) {
         segment.flag = msg.getFlags();
         msg.readData(m_data.data() + segment.id * MAX_PACKET_SIZE, MAX_PACKET_SIZE);
     }
@@ -142,6 +145,7 @@ private:
             m_isUsed[i] = true;
             return i;
         }
+        return -1;
     }
 
 private:

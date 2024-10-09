@@ -20,7 +20,7 @@
 #include "GEngine/net/net.hpp"
 #include "GEngine/cvar/net.hpp"
 #include "GEngine/net/msg.hpp"
-#include "GEngine/net/socketError.hpp"
+#include "GEngine/net/net_socket_error.hpp"
 
 #include "GEngine/cvar/net.hpp"
 

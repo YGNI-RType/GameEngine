@@ -8,7 +8,7 @@
 #pragma once
 
 #include "net_msg.hpp"
-#include "socket.hpp"
+#include "net_socket.hpp"
 
 #include <memory>
 #include <unordered_map>

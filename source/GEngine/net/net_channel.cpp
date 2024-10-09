@@ -7,7 +7,7 @@
 
 #include "GEngine/net/net_channel.hpp"
 #include "GEngine/cvar/net.hpp"
-#include "GEngine/net/socketError.hpp"
+#include "GEngine/net/net_socket_error.hpp"
 #include "GEngine/time/time.hpp"
 
 #include <iostream>

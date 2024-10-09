@@ -54,6 +54,9 @@ public:
     uint8_t getType() const {
         return m_type;
     }
+    void setType(uint8_t type) {
+        m_type = type;
+    }
 
     virtual const byte_t *getData() const = 0;
 

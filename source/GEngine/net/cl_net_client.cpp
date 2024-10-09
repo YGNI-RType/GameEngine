@@ -7,8 +7,8 @@
 
 #include "GEngine/net/cl_net_client.hpp"
 
-#include <iostream> // todo : remove
-#include <typeindex>// todo : remove
+#include <iostream>  // todo : remove
+#include <typeindex> // todo : remove
 
 namespace Network {
 
@@ -97,7 +97,7 @@ bool CLNetClient::handleUDPEvents(UDPMessage &msg, const Address &addr) {
     }
 }
 
-struct ComponentNetwork {// todo : remove
+struct ComponentNetwork { // todo : remove
     uint64_t entity;
     char type[255];
     uint16_t size;
@@ -114,12 +114,12 @@ bool CLNetClient::handleServerUDP(UDPMessage &msg, const Address &addr) {
         return true;
 
     switch (msg.getType()) {
-        case SV_SNAPSHOT:
-            /* make a component receiving entity*/
-            ComponentNetwork c{.entity = 0, .size = 0};
-            // std::cout << "CL: got udp message from server: " << std::endl;
-            // msg.readContinuousData(c, readOffset);
-            // std::cout << c.entity << " -> name: [" << std::string(c.type) << "] size: " << c.size << std::endl;
+    case SV_SNAPSHOT:
+        /* make a component receiving entity*/
+        ComponentNetwork c{.entity = 0, .size = 0};
+        // std::cout << "CL: got udp message from server: " << std::endl;
+        // msg.readContinuousData(c, readOffset);
+        // std::cout << c.entity << " -> name: [" << std::string(c.type) << "] size: " << c.size << std::endl;
         break;
         // default:
         //     break;
@@ -205,6 +205,33 @@ bool CLNetClient::sendDatagram(UDPMessage &msg) {
         return false;
 
     return m_netChannel.sendDatagram(m_socketUdp, msg);
+}
+
+/** Net Queue **/
+
+bool CLNetClient::pushData(const UDPMessage &msg) {
+    return m_packOutData.push(msg);
+}
+
+bool CLNetClient::popIncommingData(UDPMessage &msg, bool shouldAck) {
+    if (shouldAck)
+        return m_packInDataAck.pop(msg, msg.getType());
+    return m_packInData.pop(msg, msg.getType());
+}
+
+bool CLNetClient::retrieveWantedOutgoingData(UDPMessage &msg)
+{
+    return m_packOutData.pop(msg);
+}
+
+bool CLNetClient::pushIncommingDataAck(const UDPMessage &msg)
+{
+    return m_packInDataAck.push(msg);
+}
+
+bool CLNetClient::pushIncommingData(const UDPMessage &msg)
+{
+    return m_packInData.push(msg);
 }
 
 } // namespace Network

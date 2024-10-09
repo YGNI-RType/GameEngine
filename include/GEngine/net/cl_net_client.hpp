@@ -9,6 +9,7 @@
 
 #include "net_channel.hpp"
 #include "net_common.hpp"
+#include "net_queue.hpp"
 
 #include <memory>
 #include <vector>
@@ -62,16 +63,31 @@ public:
 
     bool sendDatagram(UDPMessage &finishedMsg);
 
+    /** Net Queue **/
+
+    bool pushData(const UDPMessage &msg);
+    bool popIncommingData(UDPMessage &msg, bool shouldAck);
+
 public:
     void pingLanServers(void);
     void getPingResponse(const UDPMessage &msg, const Address &addr);
 
 private:
+
+    bool retrieveWantedOutgoingData(UDPMessage &msg);
+    bool pushIncommingData(const UDPMessage &msg);
+    bool pushIncommingDataAck(const UDPMessage &msg);
+
     int m_challenge = -1;
 
     bool m_enabled = false;
     clientState m_state = CS_FREE;
     connectionState m_connectionState = CON_UNINITIALIZED;
+
+    /* todo : change based on average size */
+    NetQueue<24, 160> m_packOutData;  /* todo : get the size of Usercmd + own voip / */
+    NetQueue<32, 1400> m_packInData;  /* voiceip etc.. */
+    NetQueue<4, 1400> m_packInDataAck; /* snapshot */
 
     SocketUDP &m_socketUdp;
     AddressType m_addrType;

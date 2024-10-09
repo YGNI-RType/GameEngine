@@ -5,9 +5,9 @@
 ** socket
 */
 
-#include "GEngine/net/socket.hpp"
+#include "GEngine/net/net_socket.hpp"
 #include "GEngine/cvar/net.hpp"
-#include "GEngine/net/socketError.hpp"
+#include "GEngine/net/net_socket_error.hpp"
 
 #include <algorithm>
 #include <cerrno>

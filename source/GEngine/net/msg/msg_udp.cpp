@@ -6,7 +6,7 @@
 */
 
 #include "GEngine/net/msg.hpp"
-#include "GEngine/net/socket.hpp"
+#include "GEngine/net/net_socket.hpp"
 
 namespace Network {
 UDPMessage::UDPMessage(bool hasHeader, uint8_t type)

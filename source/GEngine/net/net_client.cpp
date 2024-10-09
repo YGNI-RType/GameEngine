@@ -68,4 +68,31 @@ bool NetClient::handleTCPEvents(fd_set &readSet) {
     return handleClientMsg();
 }
 
+/** Net Queue **/
+
+bool NetClient::pushData(const UDPMessage &msg, bool shouldAck) {
+    if (shouldAck)
+        return m_packOutDataAck.push(msg);
+    return m_packOutData.push(msg);
+}
+
+bool NetClient::popIncommingData(UDPMessage &msg) {
+    return m_packInData.pop(msg, msg.getType());
+}
+
+bool NetClient::retrieveWantedOutgoingData(UDPMessage &msg)
+{
+    return m_packOutData.pop(msg);
+}
+
+bool NetClient::retrieveWantedOutgoingDataAck(UDPMessage &msg)
+{
+    return m_packOutDataAck.pop(msg);
+}
+
+bool NetClient::pushIncommingData(const UDPMessage &msg)
+{
+    return m_packInData.push(msg);
+}
+
 } // namespace Network

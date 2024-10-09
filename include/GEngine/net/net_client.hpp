@@ -8,6 +8,7 @@
 #pragma once
 
 #include "net_channel.hpp"
+#include "net_queue.hpp"
 
 #include <memory>
 #include <string>
@@ -74,6 +75,16 @@ public:
     bool handleClientMsg(void);
     void sendStream(const TCPMessage &msg);
 
+    /** Net Queue **/
+
+    bool pushData(const UDPMessage &msg, bool shouldAck);
+    bool popIncommingData(UDPMessage &msg);
+
+private:
+    bool retrieveWantedOutgoingData(UDPMessage &msg);
+    bool retrieveWantedOutgoingDataAck(UDPMessage &msg);
+    bool pushIncommingData(const UDPMessage &msg);
+
 private:
     NetChannel m_channel;
     NetClientInfo m_info;
@@ -81,6 +92,11 @@ private:
     int m_challenge = -1; /* challenge for authoring / avoid ddos */
     clientState m_state = CS_FREE;
     connectionState m_connectionState = CON_UNINITIALIZED;
+
+    /* todo : change based on average size */
+    NetQueue<16, 160> m_packInData; /* todo : get the size of Usercmd + own voip / */
+    NetQueue<32, 1400> m_packOutData; /* voiceip etc.. */
+    NetQueue<24, 1400> m_packOutDataAck; /* snapshot */
 
     // NetClientSnapshot m_snapshots[PACKET_BACKUP];
 
