@@ -11,6 +11,7 @@
 #include "GEngine/game/Engine.hpp"
 #include "GEngine/interface/Base.hpp"
 #include "GEngine/interface/network/systems/Snapshot.hpp"
+#include "GEngine/interface/network/systems/Updater.hpp"
 
 namespace gengine::interface::network {
 class Networked : public Base {
@@ -19,6 +20,7 @@ public:
         : m_gameEngine(gameEngine)
         , m_driverEngine(driverEngine) {
         m_gameEngine.registerSystem<system::Snapshot>(gameEngine.getWorld());
+        m_gameEngine.registerSystem<system::Updater>();
     }
 
     void run(void) override {
