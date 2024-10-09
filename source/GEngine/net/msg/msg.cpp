@@ -18,12 +18,12 @@ void AMessage::writeData(const void *data, std::size_t size) {
     m_curSize += size;
 }
 
-void AMessage::readData(void *data, std::size_t size) const {
-    if (size > m_curSize)
+void AMessage::readData(void *data, std::size_t &readOffset, std::size_t size) const {
+    if (readOffset + size > m_curSize)
         throw std::runtime_error("Not enough data to read");
 
     const byte_t *myData = getData();
-    std::memcpy(data, myData + m_curSize, size);
+    std::memcpy(data, myData + readOffset, size);
 }
 
 } // namespace Network
