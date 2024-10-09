@@ -30,7 +30,6 @@ public:
 
     bool push(const UDPMessage &msg) {
         std::unique_lock<std::mutex> lock(m_mutex);
-        // m_cvNotFull.wait(lock, [this] { return m_nbUsed; });
 
         if (msg.getSize() > MAX_PACKET_SIZE)
             return false;
@@ -49,14 +48,27 @@ public:
         q.push(segment);
         m_nbUsed++;
 
-        // m_cvNotEmpty.notify_one();
+        return true;
+    }
+
+
+    /* This is called when we know it's full, removes the front, same segment */
+    bool fullpush(UDPMessage &msg, uint8_t type) {
+        auto it = m_msgs.find(type);
+        if (it == m_msgs.end())
+            return false;
+
+        auto &[_, queueSegment] = *it;
+        auto segment = queueSegment.pop();
+        constructMessage(segment.id)
+        queueSegment.push(segment);
+
         return true;
     }
 
     /* UDPMessage(false, <type you chose here> )*/
     bool pop(UDPMessage &msg, uint8_t type) {
         std::unique_lock<std::mutex> lock(m_mutex);
-        // m_cvNotEmpty.wait(lock, [this] { return !m_data.empty(); });
 
         auto it = m_msgs.find(type);
         if (it == m_msgs.end())
@@ -64,25 +76,49 @@ public:
 
         auto &[_, queueSegment] = *it;
 
-        auto segment = queueSegment.front();
+        auto segment = queueSegment.pop();
         constructMessage(msg, segment);
         m_isUsed[segment.id] = false;
         m_nbUsed--;
 
-        // m_cvNotFull.notify_one();
         return true;
     }
 
-    bool empty() const {
-        std::lock_guard<std::mutex> lock(m_mutex);
+    bool pop(UDPMessage &msg) {
+        std::unique_lock<std::mutex> lock(m_mutex);
 
-        return m_data.empty();
+        for (auto &[type, queueSegment] : m_msgs) {
+            if (queueSegment.empty())
+                continue;
+
+            auto segment = queueSegment.pop();
+            constructMessage(msg, segment);
+            msg.setType(type);
+            m_isUsed[segment.id] = false;
+            m_nbUsed--;
+
+            return true;
+        }
+
+        return false;
     }
 
-    size_t size() const {
+    bool empty(void) const {
         std::lock_guard<std::mutex> lock(m_mutex);
 
-        return m_data.size();
+        return m_nbUsed == 0;
+    }
+
+    bool full(void) const {
+        std::lock_guard<std::mutex> lock(m_mutex);
+
+        return m_nbUsed == NB_PACKETS;
+    }
+
+    size_t size(void) const {
+        std::lock_guard<std::mutex> lock(m_mutex);
+
+        return m_nbUsed;
     }
 
 private:
@@ -97,7 +133,7 @@ private:
     }
 
     uint32_t getFreeSegment(void) {
-        if (m_nbUsed == NB_PACKETS)
+        if (full())
             return -1;
 
         for (uint32_t i = 0; i < NB_PACKETS; i++) {
