@@ -56,6 +56,7 @@ void Manager::handleNewEngineReq(InfoHeader &header) {
         client.disconnectFromServer();
     } break;
     case SEND_QUEUED_PACKET: /* send a tcp message */
+        sendPackets();
         break;
     case PING:
         NET::pingServers();
@@ -63,14 +64,16 @@ void Manager::handleNewEngineReq(InfoHeader &header) {
     default:
         break;
     }
-
 }
 
 void Manager::sendPackets(void) {
     NetServer &server = NET::getServer();
-    if (!server.isRunning()) {
+    if (!server.sendPackets())
         return;
-    }
+
+    CLNetClient &client = NET::getClient();
+    if (!client.sendPackets())
+        return;
 
     /* todo : create send methods for net_server (net_client) / cl_net_client */
 }

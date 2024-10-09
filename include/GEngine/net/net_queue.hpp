@@ -53,8 +53,8 @@ public:
 
 
     /* This is called when we know it's full, removes the front, same segment */
-    bool fullpush(UDPMessage &msg, uint8_t type) {
-        auto it = m_msgs.find(type);
+    bool fullpush(UDPMessage &msg) {
+        auto it = m_msgs.find(msg.getType());
         if (it == m_msgs.end())
             return false;
 

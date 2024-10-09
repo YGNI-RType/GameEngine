@@ -7,6 +7,8 @@
 
 #include "GEngine/net/net_client.hpp"
 
+#include <algorithm>
+
 // temp
 #include <iostream>
 
@@ -23,11 +25,11 @@ void NetClient::sendStream(const TCPMessage &msg) {
     m_channel.sendStream(msg);
 }
 
-void NetClient::sendDatagram(UDPMessage &msg) {
+bool NetClient::sendDatagram(UDPMessage &msg) {
     if (!m_channel.isEnabled())
-        return;
+        return false;
 
-    m_channel.sendDatagram(m_socketUdp, msg);
+    return m_channel.sendDatagram(m_socketUdp, msg);
 }
 
 void NetClient::recvDatagram(UDPMessage &msg) {
@@ -80,19 +82,43 @@ bool NetClient::popIncommingData(UDPMessage &msg) {
     return m_packInData.pop(msg, msg.getType());
 }
 
-bool NetClient::retrieveWantedOutgoingData(UDPMessage &msg)
-{
+bool NetClient::retrieveWantedOutgoingData(UDPMessage &msg) {
     return m_packOutData.pop(msg);
 }
 
-bool NetClient::retrieveWantedOutgoingDataAck(UDPMessage &msg)
-{
+bool NetClient::retrieveWantedOutgoingDataAck(UDPMessage &msg) {
     return m_packOutDataAck.pop(msg);
 }
 
-bool NetClient::pushIncommingData(const UDPMessage &msg)
-{
+bool NetClient::pushIncommingData(const UDPMessage &msg) {
     return m_packInData.push(msg);
+}
+
+/***************/
+
+bool NetClient::sendPackets(void) {
+    if (isDisconnected() || !m_channel.isEnabled())
+        return false;
+
+    size_t byteSent = 0;
+    std::vector<bool (Network::NetClient::*)(Network::UDPMessage &)> vecFuncs = {
+        &NetClient::retrieveWantedOutgoingData, &NetClient::retrieveWantedOutgoingDataAck};
+
+    while (!vecFuncs.empty() || byteSent < m_maxRate) {
+        UDPMessage msg(0, 0);
+        auto retrieveFunc = vecFuncs.front();
+        if ((this->*retrieveFunc)(msg)) {
+            vecFuncs.erase(vecFuncs.begin());
+            continue;
+        }
+
+        size_t size = msg.getSize();
+        if (!sendDatagram(msg))
+            return false; /* how */
+        std::rotate(vecFuncs.begin(), vecFuncs.begin() + 1, vecFuncs.end());
+        byteSent += size;
+    }
+    return true;
 }
 
 } // namespace Network

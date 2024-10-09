@@ -14,7 +14,6 @@ namespace Network {
 bool CLNetClient::connectToServer(size_t index) {
 
     /* Connects to something */
-    // try {
     if (index >= m_pingedServers.size())
         return false;
 
@@ -30,7 +29,7 @@ bool CLNetClient::connectToServer(size_t index) {
 
     sock.setBlocking(false);
     m_netChannel = std::move(NetChannel(false, std::move(addr), std::move(sock)));
-    //     /* todo : some error handling just in case ? */
+    /* todo : some error handling just in case ? */
 
     m_state = CS_CONNECTED;
     m_connectionState = CON_CONNECTING;
@@ -96,12 +95,6 @@ bool CLNetClient::handleUDPEvents(UDPMessage &msg, const Address &addr) {
     }
 }
 
-struct ComponentNetwork { // todo : remove
-    uint64_t entity;
-    char type[255];
-    uint16_t size;
-};
-
 bool CLNetClient::handleServerUDP(UDPMessage &msg, const Address &addr) {
     size_t readOffset = 0;
 
@@ -114,14 +107,11 @@ bool CLNetClient::handleServerUDP(UDPMessage &msg, const Address &addr) {
 
     switch (msg.getType()) {
     case SV_SNAPSHOT:
-        /* make a component receiving entity*/
-        ComponentNetwork c{.entity = 0, .size = 0};
-        // std::cout << "CL: got udp message from server: " << std::endl;
-        // msg.readContinuousData(c, readOffset);
-        // std::cout << c.entity << " -> name: [" << std::string(c.type) << "] size: " << c.size << std::endl;
+        pushIncommingDataAck(msg);
+        /* todo : add warning if queue il full ? */
         break;
-        // default:
-        //     break;
+    default:
+        break;
     }
     /* todo : add things here */
     return true;
@@ -230,4 +220,23 @@ bool CLNetClient::pushIncommingData(const UDPMessage &msg) {
     return m_packInData.push(msg);
 }
 
+/***************/
+
+bool CLNetClient::sendPackets(void) {
+    if (!m_enabled || !m_netChannel.isEnabled())
+        return false;
+
+    size_t byteSent = 0;
+    while (!m_packOutData.empty() || byteSent < m_maxRate) {
+        UDPMessage msg(0, 0);
+        if (!retrieveWantedOutgoingData(msg))
+            return false;
+
+        size_t size = msg.getSize();
+        if (!sendDatagram(msg))
+            return false; /* how */
+        byteSent += size;
+    }
+    return true;
+}
 } // namespace Network

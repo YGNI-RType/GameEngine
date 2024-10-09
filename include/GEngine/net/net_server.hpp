@@ -65,6 +65,8 @@ public:
     bool handleUdpMessageClients(SocketUDP &socket, UDPMessage &msg, const Address &addr);
 
     void handleClientCMD_UDP(SocketUDP &socket, NetClient &client, const UDPMessage &msg, size_t &readOffset);
+
+    bool sendPackets(void);
     void sendToAllClients(UDPMessage &msg);
     void sendToClient(NetClient &client, UDPMessage &msg);
 

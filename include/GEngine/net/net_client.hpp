@@ -68,13 +68,17 @@ public:
         return m_channel.isDisconnected();
     }
 
-    void sendDatagram(UDPMessage &msg);
     void recvDatagram(UDPMessage &msg);
 
     bool handleTCPEvents(fd_set &readSet);
     bool handleClientMsg(void);
+
+public:
+    bool sendPackets(void);
+    bool sendDatagram(UDPMessage &msg);
     void sendStream(const TCPMessage &msg);
 
+public:
     /** Net Queue **/
 
     bool pushData(const UDPMessage &msg, bool shouldAck);
@@ -104,6 +108,8 @@ private:
 
     SocketUDP &m_socketUdp;
 
-    uint16_t ping;
+    uint16_t ping = 0;
+
+    size_t m_maxRate = 0;
 };
 } // namespace Network

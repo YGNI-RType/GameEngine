@@ -61,8 +61,13 @@ public:
         return m_connectionState >= CON_AUTHORIZING;
     }
 
+
+public:
+    bool sendPackets(void);
+private:
     bool sendDatagram(UDPMessage &finishedMsg);
 
+public:
     /** Net Queue **/
 
     bool pushData(const UDPMessage &msg);
@@ -94,5 +99,9 @@ private:
 
     NetChannel m_netChannel;
     std::vector<PingResponse> m_pingedServers;
+
+    /* in bytes from data (header do not count), can be updated via cvar */
+    size_t m_maxRate = 10000;
+
 };
 } // namespace Network

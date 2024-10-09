@@ -168,6 +168,15 @@ bool NetServer::handleTCPEvent(fd_set &readSet) {
     return false;
 }
 
+bool NetServer::sendPackets(void) {
+    if (!isRunning())
+        return false;
+
+    for (const auto &client : m_clients)
+        client->sendPackets();
+    return true;
+}
+
 void NetServer::sendToAllClients(UDPMessage &msg) {
     for (const auto &client : m_clients)
         client->sendDatagram(msg);
