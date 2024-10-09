@@ -34,10 +34,10 @@ void Updater::onMainLoop(gengine::system::event::MainLoop &e) {
         NetworkComponent c;
         msg.readContinuousData(c, readOffset);
         // std::cout << c.entity << " -> name: [" << c.type << "] size: " << c.size << std::endl;
-        Network::byte_t component[c.size];
-        msg.readData(component, readOffset, c.size);
+        std::vector<Network::byte_t> component(c.size);
+        msg.readData(component.data(), readOffset, c.size);
         auto &type = getTypeindex(c.typeId); // TODO array for opti
-        setComponent(c.entity, type, toAny(type, component));
+        setComponent(c.entity, type, toAny(type, component.data()));
     }
 }
 } // namespace gengine::interface::network::system
