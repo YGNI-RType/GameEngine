@@ -46,14 +46,12 @@ ASocket::~ASocket() {
 
 ASocket::ASocket(ASocket &&other) {
     m_sock = other.m_sock;
-    m_port = other.m_port;
     other.m_sock = -1;
 }
 
 ASocket &ASocket::operator=(ASocket &&other) {
     if (this != &other) {
         m_sock = other.m_sock;
-        m_port = other.m_port;
         other.m_sock = -1;
     }
     return *this;
@@ -103,7 +101,22 @@ void ASocket::addSocketPool(SOCKET socket) {
         m_highFd = socket;
 }
 
-void ASocket::setBlocking(bool blocking) {
+//////////////////////////////////////
+
+ANetSocket::ANetSocket(ANetSocket &&other) {
+    m_sock = other.m_sock;
+    m_port = other.m_port;
+    other.m_sock = -1;
+}
+
+ANetSocket &ANetSocket::operator=(ANetSocket &&other) {
+    if (this != &other)
+        m_port = other.m_port;
+    ASocket::operator=(std::move(other));
+    return *this;
+}
+
+void ANetSocket::setBlocking(bool blocking) {
 #ifdef _WIN32
     u_long mode = blocking ? 0 : 1;
     ioctlsocket(m_sock, FIONBIO, &mode);
@@ -117,7 +130,7 @@ void ASocket::setBlocking(bool blocking) {
 #endif
 }
 
-bool ASocket::isBlocking(void) const {
+bool ANetSocket::isBlocking(void) const {
 #ifdef _WIN32
     u_long mode;
     ioctlsocket(m_sock, FIONBIO, &mode);
@@ -128,7 +141,7 @@ bool ASocket::isBlocking(void) const {
 #endif
 }
 
-void ASocket::translateAutomaticAddressing(struct sockaddr_storage &addr_storage, uint16_t port, bool ipv6) {
+void ANetSocket::translateAutomaticAddressing(struct sockaddr_storage &addr_storage, uint16_t port, bool ipv6) {
     if (!ipv6) {
         struct sockaddr_in *addr = reinterpret_cast<struct sockaddr_in *>(&addr_storage);
 
@@ -193,11 +206,11 @@ SocketTCPMaster::SocketTCPMaster(uint16_t port, bool ipv6) {
 }
 
 SocketTCPMaster::SocketTCPMaster(SocketTCPMaster &&other)
-    : ASocket(std::move(other)) {
+    : ANetSocket(std::move(other)) {
 }
 SocketTCPMaster &SocketTCPMaster::operator=(SocketTCPMaster &&other) {
     if (this != &other)
-        ASocket::operator=(std::move(other));
+        ANetSocket::operator=(std::move(other));
     return *this;
 }
 
@@ -270,11 +283,11 @@ SocketTCP::SocketTCP(const AddressV6 &addr, uint16_t tcpPort, bool block) {
 }
 
 SocketTCP::SocketTCP(SocketTCP &&other)
-    : ASocket(std::move(other)) {
+    : ANetSocket(std::move(other)) {
 }
 SocketTCP &SocketTCP::operator=(SocketTCP &&other) {
     if (this != &other)
-        ASocket::operator=(std::move(other));
+        ANetSocket::operator=(std::move(other));
     return *this;
 }
 
@@ -384,11 +397,11 @@ SocketUDP::SocketUDP(uint16_t port, bool ipv6, bool block) {
 }
 
 SocketUDP::SocketUDP(SocketUDP &&other)
-    : ASocket(std::move(other)) {
+    : ANetSocket(std::move(other)) {
 }
 SocketUDP &SocketUDP::operator=(SocketUDP &&other) {
     if (this != &other)
-        ASocket::operator=(std::move(other));
+        ANetSocket::operator=(std::move(other));
     return *this;
 }
 

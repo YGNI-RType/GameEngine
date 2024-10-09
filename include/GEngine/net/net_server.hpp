@@ -33,6 +33,7 @@ public:
     ~NetServer() = default;
 
     uint16_t start(size_t maxClients, const std::vector<IP> &g_localIPs, uint16_t currentUnusedPort, gengine::interface::network::system::Snapshot &snapshot);
+    uint16_t start(size_t maxClients, uint16_t currentUnusedPort, gengine::interface::network::system::Snapshot &snapshot);
     void stop(void);
 
     void createSets(fd_set &readSet);

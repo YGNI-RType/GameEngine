@@ -7,8 +7,7 @@
 
 #include "GEngine/net/cl_net_client.hpp"
 
-#include <iostream>  // todo : remove
-#include <typeindex> // todo : remove
+#include <iostream> // todo : remove
 
 namespace Network {
 
@@ -219,18 +218,15 @@ bool CLNetClient::popIncommingData(UDPMessage &msg, bool shouldAck) {
     return m_packInData.pop(msg, msg.getType());
 }
 
-bool CLNetClient::retrieveWantedOutgoingData(UDPMessage &msg)
-{
+bool CLNetClient::retrieveWantedOutgoingData(UDPMessage &msg) {
     return m_packOutData.pop(msg);
 }
 
-bool CLNetClient::pushIncommingDataAck(const UDPMessage &msg)
-{
+bool CLNetClient::pushIncommingDataAck(const UDPMessage &msg) {
     return m_packInDataAck.push(msg);
 }
 
-bool CLNetClient::pushIncommingData(const UDPMessage &msg)
-{
+bool CLNetClient::pushIncommingData(const UDPMessage &msg) {
     return m_packInData.push(msg);
 }
 

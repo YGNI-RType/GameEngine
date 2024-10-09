@@ -41,8 +41,9 @@ private:
 
     static std::vector<IP> g_localIPs;
 
-    static std::atomic_bool enabled;
+    static std::atomic_bool mg_aEnable;
     static std::mutex mg_mutex;
+
     static std::thread mg_networkThread;
 
     static bool inittedClient;

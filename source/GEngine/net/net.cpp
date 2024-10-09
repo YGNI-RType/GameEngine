@@ -24,6 +24,7 @@
 
 #include "GEngine/cvar/net.hpp"
 
+
 #include <algorithm>
 #include <cstring>
 #include <thread>
@@ -75,15 +76,19 @@ CLNetClient NET::mg_client(CVar::net_ipv6.getIntValue() ? mg_socketUdpV6 : mg_so
 std::vector<IP> NET::g_localIPs;
 
 std::thread NET::mg_networkThread;
-std::mutex NET::mg_mutex;
 
 uint16_t NET::currentUnusedPort = DEFAULT_PORT;
 
-std::atomic_bool NET::enabled = false;
+std::atomic_bool NET::mg_aEnable = false;
+std::mutex NET::mg_mutex;
 
 /***************/
 
 void NET::init(void) {
+    if (mg_aEnable)
+        return;
+
+    mg_aEnable = true;
     mg_networkThread = std::thread([]() {
         ASocket::initLibs();
 
@@ -94,34 +99,33 @@ void NET::init(void) {
             currentUnusedPort++;
         }
 
-        enabled = true;
+        while (mg_aEnable)
+            sleep(1000);
     });
 }
 
 void NET::initServer(gengine::interface::network::system::Snapshot &snapshot) {
-    if (!NET::enabled)
+    if (!NET::mg_aEnable)
         return;
 
-    std::lock_guard<std::mutex> lock(mg_mutex);
-    currentUnusedPort =
-        NET::mg_server.start(CVar::sv_maxplayers.getIntValue(), g_localIPs, currentUnusedPort, snapshot);
+    currentUnusedPort = NET::mg_server.start(CVar::sv_maxplayers.getIntValue(), currentUnusedPort, snapshot);
 }
 
 void NET::initClient(void) {
-    if (!NET::enabled)
+    if (!NET::mg_aEnable)
         return;
 
-    std::lock_guard<std::mutex> lock(mg_mutex);
     mg_client.init();
 }
 
 void NET::stop(void) {
-    std::lock_guard<std::mutex> lock(mg_mutex);
-
     NET::mg_server.stop();
 
     g_localIPs.clear();
-    enabled = false;
+    mg_aEnable = false;
+
+    /* end of thread */
+    mg_networkThread.join();
 }
 
 void NET::getLocalAddress(void) {
@@ -305,8 +309,6 @@ bool NET::handleEvents(fd_set &readSet) {
 
 /* should it be bool ? should it returns a message instead of sending it directly ? */
 void NET::pingServers(void) {
-    std::lock_guard<std::mutex> lock(mg_mutex);
-
     if (CVar::net_ipv6.getIntValue())
         return mg_client.pingLanServers();
     return mg_client.pingLanServers();

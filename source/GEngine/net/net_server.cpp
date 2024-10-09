@@ -14,23 +14,18 @@
 
 namespace Network {
 
-uint16_t NetServer::start(size_t maxClients, const std::vector<IP> &g_localIPs, uint16_t currentUnusedPort, gengine::interface::network::system::Snapshot &snapshot) {
+uint16_t NetServer::start(size_t maxClients, uint16_t currentUnusedPort,
+                          gengine::interface::network::system::Snapshot &snapshot) {
     // TODO : cloes everything if already initted
     if (m_isRunning)
         return currentUnusedPort;
 
     m_snapshotSystem = &snapshot;
-    for (const IP &ip : g_localIPs) { // todo : force an ip, find the best ip
-                                      // (privileging pubilc interface)
-        if (ip.type == AT_IPV4) {
-            m_socketv4 = openSocketTcp(currentUnusedPort, false);
-            currentUnusedPort++;
-        }
-        if (ip.type == AT_IPV6 && CVar::net_ipv6.getIntValue()) { // check if ipv6 is supported
-            m_socketv6 = openSocketTcp(ip, currentUnusedPort);
-            currentUnusedPort++;
-        }
-        break;
+    m_socketv4 = openSocketTcp(currentUnusedPort, false);
+    currentUnusedPort++;
+    if (CVar::net_ipv6.getIntValue()) { // check if ipv6 is supported
+        m_socketv6 = openSocketTcp(currentUnusedPort, true);
+        currentUnusedPort++;
     }
 
     m_maxClients = maxClients;
