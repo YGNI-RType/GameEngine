@@ -13,6 +13,9 @@
 #ifdef _WIN32
 #include <WS2tcpip.h>
 #include <winsock2.h>
+
+#undef interface
+
 #else
 #include <sys/socket.h>
 #endif

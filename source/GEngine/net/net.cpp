@@ -40,6 +40,7 @@ typedef int socklen_t;
 typedef u_long ioctlarg_t;
 
 #define socketError WSAGetLastError()
+#undef interface
 
 #else
 #include <arpa/inet.h>

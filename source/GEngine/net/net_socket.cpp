@@ -23,6 +23,9 @@
 #include <winsock2.h>
 #include <ws2spi.h>
 #include <ws2tcpip.h>
+
+#undef interface
+
 #else
 #include <arpa/inet.h>
 #include <fcntl.h>
