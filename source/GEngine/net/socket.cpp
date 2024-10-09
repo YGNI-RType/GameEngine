@@ -23,6 +23,7 @@
 #include <winsock2.h>
 #include <ws2spi.h>
 #include <ws2tcpip.h>
+#undef interface
 #else
 #include <arpa/inet.h>
 #include <fcntl.h>
@@ -35,6 +36,7 @@ namespace Network {
 
 #ifdef _WIN32
 WSADATA ASocket::winsockdata;
+#undef interface
 #endif
 
 SOCKET ASocket::m_highFd = -1;
@@ -70,6 +72,7 @@ void ASocket::initLibs(void) {
     }
 
     // Com_Printf( "Winsock Initialized\n" );
+#undef interface
 #endif
     FD_ZERO(&m_fdSet);
 }
@@ -84,6 +87,7 @@ int ASocket::socketClose(void) {
     status = shutdown(m_sock, SD_BOTH);
     if (status == 0)
         status = closesocket(m_sock);
+#undef interface
 #else
     status = shutdown(m_sock, SHUT_RDWR);
     if (status == 0)
@@ -107,6 +111,7 @@ void ASocket::setBlocking(bool blocking) {
 #ifdef _WIN32
     u_long mode = blocking ? 0 : 1;
     ioctlsocket(m_sock, FIONBIO, &mode);
+#undef interface
 #else
     int flags = fcntl(m_sock, F_GETFL, 0);
     if (blocking)
@@ -122,6 +127,7 @@ bool ASocket::isBlocking(void) const {
     u_long mode;
     ioctlsocket(m_sock, FIONBIO, &mode);
     return mode == 0;
+#undef interface
 #else
     int flags = fcntl(m_sock, F_GETFL, 0);
     return (flags & O_NONBLOCK) == 0;

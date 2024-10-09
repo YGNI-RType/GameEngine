@@ -36,6 +36,7 @@ class ASocket {
 public:
 #ifdef _WIN32
     static WSADATA winsockdata;
+#undef interface
 #endif
 
     static SOCKET getHighestSocket(void) {

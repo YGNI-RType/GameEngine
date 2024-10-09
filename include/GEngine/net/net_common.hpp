@@ -13,6 +13,7 @@
 #ifdef _WIN32
 #include <WS2tcpip.h>
 #include <winsock2.h>
+#undef interface
 #else
 #include <sys/socket.h>
 #endif
@@ -28,6 +29,7 @@ namespace Network {
 #define sa_family_t ADDRESS_FAMILY
 #else
 typedef unsigned short sa_family_t;
+#undef interface
 #endif
 #endif
 
