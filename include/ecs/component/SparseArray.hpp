@@ -8,7 +8,6 @@
 #pragma once
 
 #include <any>
-#include <limits>
 #include <typeindex>
 #include <vector>
 
@@ -170,7 +169,7 @@ private:
      *
      * Used to indicate that an entity does not have an associated component.
      */
-    static constexpr std::size_t invalid_index = std::numeric_limits<std::size_t>::max();
+    static constexpr std::size_t invalid_index = std::size_t(-1);
 
     /**
      * @brief Sparse array for fast lookups by entity.
