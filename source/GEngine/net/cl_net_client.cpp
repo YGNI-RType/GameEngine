@@ -97,12 +97,6 @@ bool CLNetClient::handleUDPEvents(UDPMessage &msg, const Address &addr) {
     }
 }
 
-struct ComponentNetwork {// todo : remove
-    uint64_t entity;
-    char type[255];
-    uint16_t size;
-};
-
 bool CLNetClient::handleServerUDP(UDPMessage &msg, const Address &addr) {
     size_t readOffset = 0;
 
@@ -116,10 +110,16 @@ bool CLNetClient::handleServerUDP(UDPMessage &msg, const Address &addr) {
     switch (msg.getType()) {
         case SV_SNAPSHOT:
             /* make a component receiving entity*/
-            ComponentNetwork c{.entity = 0, .size = 0};
-            // std::cout << "CL: got udp message from server: " << std::endl;
-            // msg.readContinuousData(c, readOffset);
-            // std::cout << c.entity << " -> name: [" << std::string(c.type) << "] size: " << c.size << std::endl;
+            uint64_t nb;
+            std::cout << "CL: got udp message from server: " << std::endl;
+            msg.readContinuousData(nb, readOffset);
+            // ComponentNetwork c{.entity = 0, .type = 0, .size = 0};
+            // std::cout << "component:" << nb << std::endl;
+            // for (int i = 0; i < nb; i++) {
+            //     readOffset += c.size;
+            //     msg.readContinuousData(c, readOffset);
+            //     std::cout << c.entity << " -> name: [" << c.type << "] size: " << c.size << std::endl;
+            // }
         break;
         // default:
         //     break;

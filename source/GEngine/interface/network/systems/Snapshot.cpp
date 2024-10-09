@@ -12,6 +12,23 @@
 #include "GEngine/net/net_client.hpp"
 
 namespace gengine::interface::network::system {
+SnapshotClient::SnapshotClient(std::shared_ptr<Network::NetClient> client, uint64_t firsSnapshotId)
+    : m_client(client)
+    , m_firsSnapshotId(firsSnapshotId) {
+}
+
+std::shared_ptr<Network::NetClient> SnapshotClient::getNet(void) const {
+    return m_client;
+}
+
+uint64_t SnapshotClient::getSnapshotId(void) const {
+    return m_firsSnapshotId;
+}
+
+void SnapshotClient::setSnapshotId(uint64_t id) {
+    m_firsSnapshotId = id;
+}
+
 Snapshot::Snapshot(const snapshot_t &currentWorld)
     : m_currentWorld(currentWorld)
     , m_dummySnapshot(currentWorld) { // TODO dummy must created after components registered

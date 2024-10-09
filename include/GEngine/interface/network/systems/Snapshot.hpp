@@ -27,22 +27,13 @@ namespace gengine::interface::network::system {
 
 class SnapshotClient {
 public:
-    SnapshotClient(std::shared_ptr<Network::NetClient> client, uint64_t firsSnapshotId)
-        : m_client(client)
-        , m_firsSnapshotId(firsSnapshotId) {
-    }
+    SnapshotClient(std::shared_ptr<Network::NetClient> client, uint64_t firsSnapshotId);
 
-    std::shared_ptr<Network::NetClient> getNet(void) const {
-        return m_client;
-    }
+    std::shared_ptr<Network::NetClient> getNet(void) const;
 
-    uint64_t getSnapshotId(void) const {
-        return m_firsSnapshotId;
-    }
+    uint64_t getSnapshotId(void) const;
 
-    void setSnapshotId(uint64_t id) {
-        m_firsSnapshotId = id;
-    }
+    void setSnapshotId(uint64_t id);
 
 private:
     std::shared_ptr<Network::NetClient> m_client;
