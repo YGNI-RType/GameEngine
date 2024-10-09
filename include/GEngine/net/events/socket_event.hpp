@@ -13,6 +13,7 @@ namespace Network::Event {
 #ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <atomic>
 
 #undef interface
 
@@ -37,6 +38,7 @@ public:
 #ifdef _WIN32
 private:
     SOCKET m_sockConnect = -1;
+    std::atomic_bool m_hasRead = false;
 #endif
 };
 } // namespace Network::Event

@@ -7,33 +7,50 @@
 
 #pragma once
 
+#include "events/socket_event.hpp"
+
 #include <memory>
+#include <queue>
+#include <thread>
 
-namespace Network
-{
-    enum EventType
-    {
-        CONNECT,
-        DISCONNECT,
-        MESSAGE,
-        PINGs
-    };
+namespace Network::Event {
+enum Type { CONNECT, DISCONNECT, SEND_QUEUED_PACKET, PING };
 
-    struct EventInfoHeader {
-        EventType type;
-    };
+struct InfoHeader {
+    Type type;
+};
+
+template <typename T>
+struct Info : public InfoHeader {
+    std::unique_ptr<T> data;
+};
+
+class Manager {
+public:
+    Manager() = default;
+    ~Manager() = default;
 
     template <typename T>
-    struct EventInfo : public EventInfoHeader {
-        std::unique_ptr<T> data;
-    };
+    void addEvent(Type type, const T &data) {
+        Info<T> info;
 
-    class EventManager {
-        public:
-            EventManager() = default;
-            ~EventManager() = default;
+        info.type = type;
+        info.data = std::make_unique<T>(data);
+        storeEvent(std::make_unique<InfoHeader>(info));
+    }
 
-            void addEvent(EventType type, std::unique_ptr<EventInfoHeader> data);
-            void handleEvents(void);
-    };
-} // namespace Network
+    void createSets(fd_set &readSet);
+    bool handleEvent(fd_set &readSet);
+
+    void storeEvent(std::unique_ptr<InfoHeader> info);
+    void sendPackets(void);
+
+private:
+    void handleNewEngineReq(InfoHeader &header);
+
+    SocketEvent m_socketEvent;
+
+    mutable std::mutex m_mutex;
+    std::queue<std::unique_ptr<InfoHeader>> m_events;
+};
+} // namespace Network::Event

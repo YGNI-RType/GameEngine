@@ -84,8 +84,8 @@ SocketEvent::~SocketEvent() {
 #endif
 }
 
-SocketEvent::SocketEvent(SocketEvent &&other) : ASocket(std::move(other))
-{
+SocketEvent::SocketEvent(SocketEvent &&other)
+    : ASocket(std::move(other)) {
     m_sock = other.m_sock;
 #ifdef _WIN32
     m_sockConnect = other.m_sockConnect;
@@ -94,8 +94,7 @@ SocketEvent::SocketEvent(SocketEvent &&other) : ASocket(std::move(other))
     other.m_sock = -1;
 }
 
-SocketEvent &SocketEvent::operator=(SocketEvent &&other)
-{
+SocketEvent &SocketEvent::operator=(SocketEvent &&other) {
     if (this != &other) {
         m_sock = other.m_sock;
         other.m_sock = -1;
@@ -105,8 +104,12 @@ SocketEvent &SocketEvent::operator=(SocketEvent &&other)
 
 void SocketEvent::signal() {
 #ifdef _WIN32
+    if (!m_hasRead)
+        return;
+
     char buf[1] = {0};
     send(m_sockConnect, buf, sizeof(buf), 0);
+    m_hasRead = false;
 #else
     eventfd_write(m_sock, 1);
 #endif
@@ -114,8 +117,13 @@ void SocketEvent::signal() {
 
 void SocketEvent::wait() {
 #ifdef _WIN32
+    if (m_hasRead)
+        return;
+
     char buf[1];
     recv(m_sock, buf, sizeof(buf), 0);
+    m_hasRead = true;
+
 #else
     eventfd_t c;
     eventfd_read(m_sock, &c);

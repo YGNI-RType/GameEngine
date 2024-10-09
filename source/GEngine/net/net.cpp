@@ -101,7 +101,7 @@ void NET::init(void) {
         }
 
         while (mg_aEnable)
-            sleep(1000);
+            sleep(10000);
     });
 }
 
@@ -265,6 +265,7 @@ void NET::createSets(fd_set &readSet) {
 
     mg_server.createSets(readSet);
     mg_client.createSets(readSet);
+    mg_eventManager.createSets(readSet);
 
     mg_socketUdp.setFdSet(readSet);
     if (CVar::net_ipv6.getIntValue())
@@ -279,6 +280,9 @@ bool NET::handleUdpEvent(SocketUDP &socket, UDPMessage &msg, const Address &addr
 }
 
 bool NET::handleEvents(fd_set &readSet) {
+    if (mg_eventManager.handleEvent(readSet))
+        return true;
+
     if (mg_socketUdp.isFdSet(readSet)) {
         UDPMessage msg(0, 0);
         while (true) {

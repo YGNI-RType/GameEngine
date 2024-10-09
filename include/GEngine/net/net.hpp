@@ -12,17 +12,17 @@
 #include "net_address.hpp"
 #include "net_client.hpp"
 #include "net_common.hpp"
+#include "net_event.hpp"
 #include "net_server.hpp"
 #include "net_socket.hpp"
 
-#include <vector>
 #include <thread>
+#include <vector>
 
 /**** ECS ****/
 
-namespace gengine::interface::network::system
-{
-    class Snapshot;
+namespace gengine::interface::network::system {
+class Snapshot;
 } // namespace gengine::interface::network::system
 
 /*************/
@@ -43,12 +43,11 @@ private:
 
     static std::atomic_bool mg_aEnable;
     static std::mutex mg_mutex;
-
     static std::thread mg_networkThread;
 
-    static bool inittedClient;
-
     static uint16_t currentUnusedPort;
+
+    static Event::Manager mg_eventManager;
 
     /* Init everything */
 public:
