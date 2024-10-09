@@ -173,7 +173,6 @@ public:
         return m_flags & ACK;
     }
 
-
     uint8_t getFlags() const {
         return m_flags;
     }
@@ -194,6 +193,8 @@ public:
     void getSerialize(UDPSerializedMessage &msg) const;
     std::vector<UDPSerializedMessage> getSerializeFragmented(void) const;
     void setSerialize(UDPSerializedMessage &msg);
+
+    uint64_t getAckNumber(void) const;
 
 private:
     byte_t *getDataMember() override final {

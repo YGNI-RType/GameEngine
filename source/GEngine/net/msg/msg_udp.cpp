@@ -81,4 +81,12 @@ void UDPMessage::setAck(bool ack) {
         m_flags &= ~ACK;
 }
 
+uint64_t UDPMessage::getAckNumber(void) const {
+    if (!shouldAck())
+        return 0;
+    UDPG_NetChannelHeader header;
+
+    readData<UDPG_NetChannelHeader>(header);
+    return header.ack;
+}
 } // namespace Network

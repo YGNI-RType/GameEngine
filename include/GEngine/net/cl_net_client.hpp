@@ -64,7 +64,6 @@ public:
 
 public:
     bool sendPackets(void);
-private:
     bool sendDatagram(UDPMessage &finishedMsg);
 
 public:

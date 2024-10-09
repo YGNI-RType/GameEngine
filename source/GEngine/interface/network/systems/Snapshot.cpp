@@ -24,10 +24,30 @@ void Snapshot::init(void) {
 }
 
 void Snapshot::onStartEngine(gengine::system::event::StartEngine &e) {
-    /* add to Network::Event::Manager, a callback to registerClient onclientconnect (add an API) */
+    /* TODO : make something other than this to register clients */
+    auto &eventManager = Network::NET::getEventManager();
+
+    eventManager.registerCallback<std::shared_ptr<Network::NetClient>>(
+        Network::Event::CT_OnClientConnect, [this](std::shared_ptr<Network::NetClient> client) {
+            std::lock_guard<std::mutex> lock(m_netMutex);
+
+            registerClient(client);
+        });
+    eventManager.registerCallback<std::shared_ptr<Network::NetClient>>(
+        Network::Event::CT_OnClientDisconnect, [this](std::shared_ptr<Network::NetClient> client) {
+            std::lock_guard<std::mutex> lock(m_netMutex);
+
+            auto it = std::find_if(m_clientSnapshots.begin(), m_clientSnapshots.end(),
+                                   [client](const auto &pair) { return pair.first.getNet().get() == client.get(); });
+            if (it == m_clientSnapshots.end())
+                return;
+            it->first.setShouldDelete(true);
+        });
 }
 
 void Snapshot::onMainLoop(gengine::system::event::MainLoop &e) {
+    std::lock_guard<std::mutex> lock(m_netMutex);
+
     m_currentSnapshotId++;
     createSnapshots();
     deltaDiff();
@@ -40,27 +60,42 @@ void Snapshot::registerClient(std::shared_ptr<Network::NetClient> client) {
 
 void Snapshot::createSnapshots(void) {
     for (auto &[client, snap] : m_clientSnapshots) {
-        if (client.getNet()->isDisconnected()) { /* thread safe way of deleting a client from genengine */
+        if (client.shouldDelete()) { /* thread safe way of deleting a client from genengine */
             m_clientSnapshots.erase(std::remove_if(m_clientSnapshots.begin(), m_clientSnapshots.end(),
                 [&client](const auto &pair) { return pair.first.getNet() == client.getNet(); }), m_clientSnapshots.end());
             continue;
         }
+
+        auto &cl = *client.getNet();
+        size_t size = cl.getSizeIncommingData();
+        for (size_t i = 0; i < size - 1; i++) {
+            Network::UDPMessage msg(false, 0);
+            size_t readCount;
+            if (!cl.popIncommingData(msg, readCount))
+                continue; /* impossible */
+            /* todo : read the data and apply it to the world (another component) */
+        }
+
+        // temp
+        Network::UDPMessage msg(false, 0);
+        size_t readCount;
+        cl.popIncommingData(msg, readCount);
+        client.setLastAck(msg.getAckNumber());
+
         snap[m_currentSnapshotId % MAX_SNAPSHOT] = m_currentWorld;
     }
 }
 
 /* ADRIEN /!\ : we need to ensure that we send something, even when 0 bytes */
 void Snapshot::deltaDiff(void) {
-    /* avoir les derniers paquets */
-    auto &server = Network::NET::getServer();
-
     for (auto &[client, snapshots] : m_clientSnapshots) {
         /* get that info via callback OnAckUpdate */
-        auto lastReceived = client.getNet()->getChannel().getLastACKPacketId();
+        auto lastReceived = client.getLastAck();
         auto lastId = client.getSnapshotId() + lastReceived;
 
         auto diff = m_currentSnapshotId - lastId;
-        std::cout << "diff: " << diff << " | m_currentSnapshotId: " << m_currentSnapshotId << " last id: " << lastId << " UDP Last ACK: " << lastReceived << std::endl;
+        std::cout << "diff: " << diff << " | m_currentSnapshotId: " << m_currentSnapshotId << " last id: " << lastId
+                  << " UDP Last ACK: " << lastReceived << std::endl;
         if (diff > MAX_SNAPSHOT)
             diff = MAX_SNAPSHOT; /* todo : find dummy snapshot (all 0) to send all */
 
@@ -75,16 +110,14 @@ void Snapshot::deltaDiff(void) {
 
         Network::UDPMessage msg(true, Network::SV_SNAPSHOT);
         msg.setAck(true);
-        for (auto &[entity, type, any]: v) {
-            ComponentNetwork c = {.entity = entity, .size = 65432}; /* todo : found the size of the entity as well as type !!!! */
+        for (auto &[entity, type, any] : v) {
+            ComponentNetwork c = {.entity = entity,
+                                  .size = 65432}; /* todo : found the size of the entity as well as type !!!! */
             strcpy(c.type, type.name());
             msg.appendData(c);
         }
 
-        if (!server.isRunning())
-            continue;
-
-        server.sendToClient(*client.getNet(), msg);
+        client.getNet()->pushData(msg, true);
     }
 }
 } // namespace gengine::interface::network::system

@@ -9,6 +9,7 @@
 #include "GEngine/cvar/net.hpp"
 
 #include "GEngine/interface/network/systems/Snapshot.hpp"
+#include "GEngine/net/net.hpp"
 
 #include <iostream>
 
@@ -99,6 +100,7 @@ void NetServer::handleNewClient(SocketTCPMaster &socket) {
 
     std::cout << "SV: Client challange: " << channel.getChallenge() << std::endl;
 
+    NET::getEventManager().invokeCallbacks(Event::CT_OnClientConnect, cl);
     channel.sendStream(msg);
 }
 

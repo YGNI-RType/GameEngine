@@ -74,7 +74,5 @@ void Manager::sendPackets(void) {
     CLNetClient &client = NET::getClient();
     if (!client.sendPackets())
         return;
-
-    /* todo : create send methods for net_server (net_client) / cl_net_client */
 }
 } // namespace Network::Event

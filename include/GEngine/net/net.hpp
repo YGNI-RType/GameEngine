@@ -77,6 +77,10 @@ public:
         return mg_server;
     }
 
+    static Event::Manager &getEventManager(void) {
+        return mg_eventManager;
+    }
+
 public:
     /* todo : temp*/
     static SocketUDP &getSocketUdp(void) {
