@@ -82,12 +82,15 @@ public:
     /** Net Queue **/
 
     bool pushData(const UDPMessage &msg, bool shouldAck);
-    bool popIncommingData(UDPMessage &msg);
+    bool popIncommingData(UDPMessage &msg, size_t &readCount);
+    size_t getSizeIncommingData(void) const {
+        return m_packInData.size();
+    }
 
 private:
-    bool retrieveWantedOutgoingData(UDPMessage &msg);
-    bool retrieveWantedOutgoingDataAck(UDPMessage &msg);
-    bool pushIncommingData(const UDPMessage &msg);
+    bool retrieveWantedOutgoingData(UDPMessage &msg, size_t &readCount);
+    bool retrieveWantedOutgoingDataAck(UDPMessage &msg, size_t &readCount);
+    bool pushIncommingData(const UDPMessage &msg, size_t readCount);
 
 private:
     NetChannel m_channel;
@@ -98,8 +101,8 @@ private:
     connectionState m_connectionState = CON_UNINITIALIZED;
 
     /* todo : change based on average size */
-    NetQueue<16, 160> m_packInData; /* todo : get the size of Usercmd + own voip / */
-    NetQueue<32, 1400> m_packOutData; /* voiceip etc.. */
+    NetQueue<16, 160> m_packInData;      /* todo : get the size of Usercmd + own voip / */
+    NetQueue<32, 1400> m_packOutData;    /* voiceip etc.. */
     NetQueue<24, 1400> m_packOutDataAck; /* snapshot */
 
     // NetClientSnapshot m_snapshots[PACKET_BACKUP];

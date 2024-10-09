@@ -14,13 +14,11 @@
 
 namespace Network {
 
-uint16_t NetServer::start(size_t maxClients, uint16_t currentUnusedPort,
-                          gengine::interface::network::system::Snapshot &snapshot) {
+uint16_t NetServer::start(size_t maxClients, uint16_t currentUnusedPort) {
     // TODO : cloes everything if already initted
     if (m_isRunning)
         return currentUnusedPort;
 
-    m_snapshotSystem = &snapshot;
     m_socketv4 = openSocketTcp(currentUnusedPort, false);
     currentUnusedPort++;
     if (CVar::net_ipv6.getIntValue()) { // check if ipv6 is supported
@@ -101,7 +99,6 @@ void NetServer::handleNewClient(SocketTCPMaster &socket) {
 
     std::cout << "SV: Client challange: " << channel.getChallenge() << std::endl;
 
-    m_snapshotSystem->registerClient(cl);
     channel.sendStream(msg);
 }
 

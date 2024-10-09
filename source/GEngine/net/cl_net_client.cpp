@@ -107,7 +107,7 @@ bool CLNetClient::handleServerUDP(UDPMessage &msg, const Address &addr) {
 
     switch (msg.getType()) {
     case SV_SNAPSHOT:
-        pushIncommingDataAck(msg);
+        pushIncommingDataAck(msg, readOffset);
         /* todo : add warning if queue il full ? */
         break;
     default:
@@ -199,25 +199,25 @@ bool CLNetClient::sendDatagram(UDPMessage &msg) {
 /** Net Queue **/
 
 bool CLNetClient::pushData(const UDPMessage &msg) {
-    return m_packOutData.push(msg);
+    return m_packOutData.push(msg, 0);
 }
 
-bool CLNetClient::popIncommingData(UDPMessage &msg, bool shouldAck) {
+bool CLNetClient::popIncommingData(UDPMessage &msg, size_t &readCount, bool shouldAck) {
     if (shouldAck)
-        return m_packInDataAck.pop(msg, msg.getType());
-    return m_packInData.pop(msg, msg.getType());
+        return m_packInDataAck.pop(msg, readCount, msg.getType());
+    return m_packInData.pop(msg, readCount, msg.getType());
 }
 
-bool CLNetClient::retrieveWantedOutgoingData(UDPMessage &msg) {
-    return m_packOutData.pop(msg);
+bool CLNetClient::retrieveWantedOutgoingData(UDPMessage &msg, size_t &readCount) {
+    return m_packOutData.pop(msg, readCount);
 }
 
-bool CLNetClient::pushIncommingDataAck(const UDPMessage &msg) {
-    return m_packInDataAck.push(msg);
+bool CLNetClient::pushIncommingDataAck(const UDPMessage &msg, size_t readCount) {
+    return m_packInDataAck.push(msg, readCount);
 }
 
-bool CLNetClient::pushIncommingData(const UDPMessage &msg) {
-    return m_packInData.push(msg);
+bool CLNetClient::pushIncommingData(const UDPMessage &msg, size_t readCount) {
+    return m_packInData.push(msg, readCount);
 }
 
 /***************/
@@ -229,7 +229,8 @@ bool CLNetClient::sendPackets(void) {
     size_t byteSent = 0;
     while (!m_packOutData.empty() || byteSent < m_maxRate) {
         UDPMessage msg(0, 0);
-        if (!retrieveWantedOutgoingData(msg))
+        size_t readOffset;
+        if (!retrieveWantedOutgoingData(msg, readOffset))
             return false;
 
         size_t size = msg.getSize();

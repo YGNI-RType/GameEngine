@@ -24,17 +24,13 @@ void Snapshot::init(void) {
 }
 
 void Snapshot::onStartEngine(gengine::system::event::StartEngine &e) {
-    /* todo : faudrait renommer le nom du système, ça colle plus à serveur ducoup */
-    Network::NET::initServer(*this);
+    /* add to Network::Event::Manager, a callback to registerClient onclientconnect (add an API) */
 }
 
 void Snapshot::onMainLoop(gengine::system::event::MainLoop &e) {
     m_currentSnapshotId++;
     createSnapshots();
     deltaDiff();
-
-    /* todo:  ça serait pas vraiment snapshot, plus un systeme network donc */
-    Network::NET::sleep(300);
 }
 
 /* todo warning : mutex please */
@@ -55,9 +51,11 @@ void Snapshot::createSnapshots(void) {
 
 /* ADRIEN /!\ : we need to ensure that we send something, even when 0 bytes */
 void Snapshot::deltaDiff(void) {
+    /* avoir les derniers paquets */
     auto &server = Network::NET::getServer();
 
     for (auto &[client, snapshots] : m_clientSnapshots) {
+        /* get that info via callback OnAckUpdate */
         auto lastReceived = client.getNet()->getChannel().getLastACKPacketId();
         auto lastId = client.getSnapshotId() + lastReceived;
 

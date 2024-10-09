@@ -68,20 +68,20 @@ private:
     bool sendDatagram(UDPMessage &finishedMsg);
 
 public:
-    /** Net Queue **/
-
-    bool pushData(const UDPMessage &msg);
-    bool popIncommingData(UDPMessage &msg, bool shouldAck);
-
-public:
     void pingLanServers(void);
     void getPingResponse(const UDPMessage &msg, const Address &addr);
 
+public:
+    /** Net Queue **/
+
+    bool pushData(const UDPMessage &msg);
+    bool popIncommingData(UDPMessage &msg, size_t &readCount, bool shouldAck);
+
 private:
 
-    bool retrieveWantedOutgoingData(UDPMessage &msg);
-    bool pushIncommingData(const UDPMessage &msg);
-    bool pushIncommingDataAck(const UDPMessage &msg);
+    bool retrieveWantedOutgoingData(UDPMessage &msg, size_t &readCount);
+    bool pushIncommingData(const UDPMessage &msg, size_t readCount);
+    bool pushIncommingDataAck(const UDPMessage &msg, size_t readCount);
 
     int m_challenge = -1;
 

@@ -105,11 +105,11 @@ void NET::init(void) {
     });
 }
 
-void NET::initServer(gengine::interface::network::system::Snapshot &snapshot) {
+void NET::initServer(void) {
     if (!NET::mg_aEnable)
         return;
 
-    currentUnusedPort = NET::mg_server.start(CVar::sv_maxplayers.getIntValue(), currentUnusedPort, snapshot);
+    currentUnusedPort = NET::mg_server.start(CVar::sv_maxplayers.getIntValue(), currentUnusedPort);
 }
 
 void NET::initClient(void) {

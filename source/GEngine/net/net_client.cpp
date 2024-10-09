@@ -74,24 +74,24 @@ bool NetClient::handleTCPEvents(fd_set &readSet) {
 
 bool NetClient::pushData(const UDPMessage &msg, bool shouldAck) {
     if (shouldAck)
-        return m_packOutDataAck.push(msg);
-    return m_packOutData.push(msg);
+        return m_packOutDataAck.push(msg, 0);
+    return m_packOutData.push(msg, 0);
 }
 
-bool NetClient::popIncommingData(UDPMessage &msg) {
-    return m_packInData.pop(msg, msg.getType());
+bool NetClient::popIncommingData(UDPMessage &msg, size_t &readCount) {
+    return m_packInData.pop(msg, readCount, msg.getType());
 }
 
-bool NetClient::retrieveWantedOutgoingData(UDPMessage &msg) {
-    return m_packOutData.pop(msg);
+bool NetClient::retrieveWantedOutgoingData(UDPMessage &msg, size_t &readCount) {
+    return m_packOutData.pop(msg, readCount);
 }
 
-bool NetClient::retrieveWantedOutgoingDataAck(UDPMessage &msg) {
-    return m_packOutDataAck.pop(msg);
+bool NetClient::retrieveWantedOutgoingDataAck(UDPMessage &msg, size_t &readCount) {
+    return m_packOutDataAck.pop(msg, readCount);
 }
 
-bool NetClient::pushIncommingData(const UDPMessage &msg) {
-    return m_packInData.push(msg);
+bool NetClient::pushIncommingData(const UDPMessage &msg, size_t readCount) {
+    return m_packInData.push(msg, readCount);
 }
 
 /***************/
@@ -101,13 +101,14 @@ bool NetClient::sendPackets(void) {
         return false;
 
     size_t byteSent = 0;
-    std::vector<bool (Network::NetClient::*)(Network::UDPMessage &)> vecFuncs = {
+    std::vector<bool (Network::NetClient::*)(Network::UDPMessage &, size_t &)> vecFuncs = {
         &NetClient::retrieveWantedOutgoingData, &NetClient::retrieveWantedOutgoingDataAck};
 
     while (!vecFuncs.empty() || byteSent < m_maxRate) {
         UDPMessage msg(0, 0);
         auto retrieveFunc = vecFuncs.front();
-        if ((this->*retrieveFunc)(msg)) {
+        size_t readCount;
+        if ((this->*retrieveFunc)(msg, readCount)) {
             vecFuncs.erase(vecFuncs.begin());
             continue;
         }

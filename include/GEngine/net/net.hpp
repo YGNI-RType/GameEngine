@@ -19,14 +19,6 @@
 #include <thread>
 #include <vector>
 
-/**** ECS ****/
-
-namespace gengine::interface::network::system {
-class Snapshot;
-} // namespace gengine::interface::network::system
-
-/*************/
-
 namespace Network {
 
 class NET {
@@ -54,7 +46,7 @@ public:
     static void init(void);
     static void stop(void);
 
-    static void initServer(gengine::interface::network::system::Snapshot &snapshot);
+    static void initServer(void);
     static void initClient(void);
 
 private:
