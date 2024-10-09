@@ -60,10 +60,11 @@ void Snapshot::registerClient(std::shared_ptr<Network::NetClient> client) {
 
 void Snapshot::createSnapshots(void) {
     for (auto &[client, snap] : m_clientSnapshots) {
+        SnapshotClient &cli = client;
         if (client.getNet()->isDisconnected()) { /* thread safe way of deleting a client from genengine */
             m_clientSnapshots.erase(
                 std::remove_if(m_clientSnapshots.begin(), m_clientSnapshots.end(),
-                               [&client](const auto &pair) { return pair.first.getNet() == client.getNet(); }),
+                               [&cli](const auto &pair) { return pair.first.getNet() == cli.getNet(); }),
                 m_clientSnapshots.end());
             continue;
         }
