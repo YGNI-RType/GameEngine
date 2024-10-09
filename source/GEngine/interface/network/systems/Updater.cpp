@@ -25,7 +25,7 @@ void Updater::init(void) {
 void Updater::onMainLoop(gengine::system::event::MainLoop &e) {
     // TODO call Network::Get(SV_SNAPSHOT)
     Network::UDPMessage msg(0, 0);
-    return; //TODO remove
+    return; // TODO remove
     std::size_t readOffset = 0;
 
     uint64_t nb;
@@ -36,7 +36,7 @@ void Updater::onMainLoop(gengine::system::event::MainLoop &e) {
         // std::cout << c.entity << " -> name: [" << c.type << "] size: " << c.size << std::endl;
         Network::byte_t component[c.size];
         msg.readData(component, readOffset, c.size);
-        auto &type = getTypeindex(c.typeId); //TODO array for opti
+        auto &type = getTypeindex(c.typeId); // TODO array for opti
         setComponent(c.entity, type, toAny(type, component));
     }
 }

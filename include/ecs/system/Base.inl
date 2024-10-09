@@ -110,7 +110,8 @@ Base<Derived, DependTypes...>::getComponentId(const std::type_index &type) const
 }
 
 template <class Derived, class... DependTypes>
-const std::type_index &Base<Derived, DependTypes...>::getTypeindex(ecs::component::ComponentTools::component_id_t id) const {
+const std::type_index &
+Base<Derived, DependTypes...>::getTypeindex(ecs::component::ComponentTools::component_id_t id) const {
     return m_ecs->get().getTypeindex(id);
 }
 

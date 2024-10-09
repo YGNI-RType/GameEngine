@@ -7,8 +7,8 @@
 
 #include "GEngine/net/cl_net_client.hpp"
 
-#include <iostream> // todo : remove
-#include <typeindex>// todo : remove
+#include <iostream>  // todo : remove
+#include <typeindex> // todo : remove
 
 namespace Network {
 
@@ -108,18 +108,18 @@ bool CLNetClient::handleServerUDP(UDPMessage &msg, const Address &addr) {
         return true;
 
     switch (msg.getType()) {
-        case SV_SNAPSHOT:
-            /* make a component receiving entity*/
-            uint64_t nb;
-            std::cout << "CL: got udp message from server: " << std::endl;
-            msg.readContinuousData(nb, readOffset);
-            // ComponentNetwork c{.entity = 0, .type = 0, .size = 0};
-            // std::cout << "component:" << nb << std::endl;
-            // for (int i = 0; i < nb; i++) {
-            //     readOffset += c.size;
-            //     msg.readContinuousData(c, readOffset);
-            //     std::cout << c.entity << " -> name: [" << c.type << "] size: " << c.size << std::endl;
-            // }
+    case SV_SNAPSHOT:
+        /* make a component receiving entity*/
+        uint64_t nb;
+        std::cout << "CL: got udp message from server: " << std::endl;
+        msg.readContinuousData(nb, readOffset);
+        // ComponentNetwork c{.entity = 0, .type = 0, .size = 0};
+        // std::cout << "component:" << nb << std::endl;
+        // for (int i = 0; i < nb; i++) {
+        //     readOffset += c.size;
+        //     msg.readContinuousData(c, readOffset);
+        //     std::cout << c.entity << " -> name: [" << c.type << "] size: " << c.size << std::endl;
+        // }
         break;
         // default:
         //     break;

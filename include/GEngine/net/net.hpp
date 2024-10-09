@@ -19,9 +19,8 @@
 
 /**** ECS ****/
 
-namespace gengine::interface::network::system
-{
-    class Snapshot;
+namespace gengine::interface::network::system {
+class Snapshot;
 } // namespace gengine::interface::network::system
 
 /*************/

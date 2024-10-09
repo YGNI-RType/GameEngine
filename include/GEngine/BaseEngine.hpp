@@ -31,7 +31,6 @@ public:
         return m_ecs.getComponentMap();
     } // TODO keep ?
 
-
 private:
     ecs::ECS m_ecs;
 };

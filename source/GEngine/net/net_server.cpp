@@ -14,7 +14,8 @@
 
 namespace Network {
 
-uint16_t NetServer::start(size_t maxClients, const std::vector<IP> &g_localIPs, uint16_t currentUnusedPort, gengine::interface::network::system::Snapshot &snapshot) {
+uint16_t NetServer::start(size_t maxClients, const std::vector<IP> &g_localIPs, uint16_t currentUnusedPort,
+                          gengine::interface::network::system::Snapshot &snapshot) {
     // TODO : cloes everything if already initted
     if (m_isRunning)
         return currentUnusedPort;

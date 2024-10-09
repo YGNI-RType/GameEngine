@@ -18,9 +18,8 @@
 
 /**** ECS ****/
 
-namespace gengine::interface::network::system
-{
-    class Snapshot;
+namespace gengine::interface::network::system {
+class Snapshot;
 } // namespace gengine::interface::network::system
 
 /*************/
@@ -34,7 +33,8 @@ public:
     /* todo : add to support loopback client for listen servers */
     ~NetServer() = default;
 
-    uint16_t start(size_t maxClients, const std::vector<IP> &g_localIPs, uint16_t currentUnusedPort, gengine::interface::network::system::Snapshot &snapshot);
+    uint16_t start(size_t maxClients, const std::vector<IP> &g_localIPs, uint16_t currentUnusedPort,
+                   gengine::interface::network::system::Snapshot &snapshot);
     void stop(void);
 
     void createSets(fd_set &readSet);

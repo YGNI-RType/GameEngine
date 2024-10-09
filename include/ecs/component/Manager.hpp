@@ -50,21 +50,22 @@ public:
      */
     typedef std::function<std::vector<component_info_t>(const std::any &, const std::any &)> comparer_t;
 
-    typedef std::function<const void*(const std::any &)> voider_t; //TODO const ?
+    typedef std::function<const void *(const std::any &)> voider_t; // TODO const ?
     typedef std::function<std::any(const void *)> anyer_t;
 
-    ComponentTools(component_id_t id, component_size_t size, destroyer_t destroyer, setter_t setter, comparer_t comparer, voider_t voider, anyer_t anyer)
-        : m_componentId(id), m_size(size), m_destroyer(destroyer), m_setter(setter), m_comparer(comparer), m_voider(voider), m_anyer(anyer) {}
+    ComponentTools(component_id_t id, component_size_t size, destroyer_t destroyer, setter_t setter,
+                   comparer_t comparer, voider_t voider, anyer_t anyer);
 
-    const component_id_t &id(void) const { return m_componentId;}
-    const component_size_t &size(void) const { return m_size;}
-    const destroyer_t &destroyer(void) { return m_destroyer;}
-    const setter_t &setter(void) { return m_setter;}
-    const comparer_t &comparer(void) const { return m_comparer;}
-    const voider_t &voider(void) const { return m_voider;}
-    const anyer_t &anyer(void) const { return m_anyer;}
+    const component_id_t &id(void) const;
+    const component_size_t &size(void) const;
+    const destroyer_t &destroyer(void);
+    const setter_t &setter(void);
+    const comparer_t &comparer(void) const;
+    const voider_t &voider(void) const;
+    const anyer_t &anyer(void) const;
+
 private:
-    component_id_t m_componentId; //TODO set a number
+    component_id_t m_componentId; // TODO set a number
     component_size_t m_size;
 
     destroyer_t m_destroyer;
@@ -166,12 +167,13 @@ public:
      * @brief Retrieves the full component map.
      * @return A const reference to the component map.
      */
-    const component_map_t &getComponentMap(void) const;// TODO DOCS
+    const component_map_t &getComponentMap(void) const; // TODO DOCS
 
     ComponentTools::component_id_t getComponentId(const std::type_index &type) const;
     const std::type_index &getTypeindex(ComponentTools::component_id_t id) const;
     ComponentTools::component_size_t getComponentSize(const std::type_index &type) const;
-    std::vector<component_info_t> compareComponents(const std::type_index &type, const std::any &any1, const std::any &any2) const;
+    std::vector<component_info_t> compareComponents(const std::type_index &type, const std::any &any1,
+                                                    const std::any &any2) const;
     const void *toVoid(const std::type_index &type, const std::any &any) const;
     const std::any toAny(const std::type_index &type, const void *component) const;
     /**
