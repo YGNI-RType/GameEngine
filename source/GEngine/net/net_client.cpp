@@ -13,9 +13,12 @@
 #include <iostream>
 
 namespace Network {
-NetClient::NetClient(std::unique_ptr<Address> addr, SocketTCP &&socket, SocketUDP &socketudp)
+NetClient::NetClient(std::unique_ptr<Address> addr, SocketTCP &&socket, SocketUDP &socketudp, Event::SocketEvent &socketEvent)
     : m_channel(true, std::move(addr), std::move(socket))
-    , m_socketUdp(socketudp) {
+    , m_socketUdp(socketudp)
+    , m_packOutData(socketEvent)
+    , m_packOutDataAck(socketEvent)
+    , m_packInData(socketEvent) {
 }
 
 void NetClient::sendStream(const TCPMessage &msg) {

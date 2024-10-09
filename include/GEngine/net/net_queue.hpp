@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "GEngine/net/events/socket_event.hpp"
 #include "GEngine/net/msg.hpp"
 
 #include <condition_variable>
@@ -27,7 +28,8 @@ private:
     };
 
 public:
-    NetQueue() = default;
+    NetQueue(Event::SocketEvent &socketEvent)
+        : m_socketEvent(socketEvent) {};
 
     bool push(const UDPMessage &msg, size_t readcount) {
         std::unique_lock<std::mutex> lock(m_mutex);
@@ -49,9 +51,9 @@ public:
         q.push(segment);
         m_nbUsed++;
 
+        m_socketEvent.signal();
         return true;
     }
-
 
     /* This is called when we know it's full, removes the front, same segment */
     bool fullpush(UDPMessage &msg, size_t readcount) {
@@ -69,6 +71,7 @@ public:
         constructMessage(segment.id);
         queueSegment.push(segment);
 
+        m_socketEvent.signal();
         return true;
     }
 
@@ -156,6 +159,7 @@ private:
     std::unordered_map<uint8_t, std::queue<Segment>> m_msgs;
 
     mutable std::mutex m_mutex;
+    Event::SocketEvent &m_socketEvent;
     // std::condition_variable m_cvNotEmpty;
     // std::condition_variable m_cvNotFull;
 };

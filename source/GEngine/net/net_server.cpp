@@ -80,11 +80,11 @@ void NetServer::handleNewClient(SocketTCPMaster &socket) {
     auto clientAddrType = unkwAddr.getType();
     if (clientAddrType == AT_IPV4)
         cl = std::make_shared<NetClient>(std::make_unique<AddressV4>(unkwAddr.getV4()), std::move(newSocket),
-                                         m_socketUdpV4);
+                                         m_socketUdpV4, NET::getEventManager().getSocketEvent());
 
     else if (clientAddrType == AT_IPV6)
         cl = std::make_shared<NetClient>(std::make_unique<AddressV6>(unkwAddr.getV6()), std::move(newSocket),
-                                         m_socketUdpV6);
+                                         m_socketUdpV6, NET::getEventManager().getSocketEvent());
     else
         return; /* impossible */
 

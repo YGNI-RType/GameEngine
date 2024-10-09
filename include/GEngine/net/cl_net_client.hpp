@@ -24,10 +24,13 @@ struct PingResponse {
 class CLNetClient {
 
 public:
-    CLNetClient(SocketUDP &socketUdp, AddressType type)
+    CLNetClient(SocketUDP &socketUdp, AddressType type, Event::SocketEvent &socketEvent)
         : m_socketUdp(socketUdp)
         , m_addrType(type)
-        , m_netChannel(NetChannel(false, nullptr, SocketTCP())) {};
+        , m_netChannel(NetChannel(false, nullptr, SocketTCP()))
+        , m_packOutData(socketEvent)
+        , m_packInData(socketEvent)
+        , m_packInDataAck(socketEvent) {};
     ~CLNetClient() = default;
 
     void init(void);

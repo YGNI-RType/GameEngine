@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "events/socket_event.hpp"
 #include "net_client.hpp"
 #include "net_socket.hpp"
 
@@ -17,9 +18,9 @@
 namespace Network {
 class NetServer {
 public:
-    NetServer(SocketUDP &m_socketUdpV4, SocketUDP &m_socketUdpV6)
-        : m_socketUdpV4(m_socketUdpV4)
-        , m_socketUdpV6(m_socketUdpV6) {};
+    NetServer(SocketUDP &socketUdpV4, SocketUDP &socketUdpV6)
+        : m_socketUdpV4(socketUdpV4)
+        , m_socketUdpV6(socketUdpV6) {};
     /* todo : add to support loopback client for listen servers */
     ~NetServer() = default;
 

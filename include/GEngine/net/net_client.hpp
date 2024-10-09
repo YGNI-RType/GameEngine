@@ -9,6 +9,7 @@
 
 #include "net_channel.hpp"
 #include "net_queue.hpp"
+#include "events/socket_event.hpp"
 
 #include <memory>
 #include <string>
@@ -53,7 +54,7 @@ private:
 class NetClient {
 
 public:
-    NetClient(std::unique_ptr<Address> addr, SocketTCP &&socket, SocketUDP &socketudp);
+    NetClient(std::unique_ptr<Address> addr, SocketTCP &&socket, SocketUDP &socketudp, Event::SocketEvent &socketEvent);
     ~NetClient() = default;
 
     NetChannel &getChannel(void) {
