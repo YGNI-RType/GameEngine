@@ -22,13 +22,13 @@
 #include "exceptions/Base.hpp"
 
 namespace ecs::component {
-/**
- * @brief Manages the registration, setting, and destruction of components for entities in an ECS system.
- *
- * We can have many types of Component, this is why we handle std::any.
- */
-class Manager {
+
+// template <class Component>
+class ComponentTools {
 public:
+    typedef uint16_t component_id_t;
+    typedef uint16_t component_size_t;
+
     /**
      * @brief Type alias for a function responsible for destroying components of an entity.
      * @param entity The entity whose component should be destroyed.
@@ -50,20 +50,42 @@ public:
      */
     typedef std::function<std::vector<component_info_t>(const std::any &, const std::any &)> comparer_t;
 
-    typedef uint16_t typeindex_id;
-    typedef uint16_t type_size;
-    typedef std::pair<typeindex_id, type_size> infos_t;
+    typedef std::function<const void*(const std::any &)> voider_t; //TODO const ?
+    typedef std::function<std::any(const void *)> anyer_t;
 
-    /**
-     * @brief A tuple grouping the component management tools (destroyer, setter, comparer).
-     */
-    using component_tools_t = std::tuple<destroyer_t, setter_t, comparer_t, infos_t>;
-    using component_tools_map_t = std::unordered_map<std::type_index, component_tools_t>;
+    ComponentTools(component_id_t id, component_size_t size, destroyer_t destroyer, setter_t setter, comparer_t comparer, voider_t voider, anyer_t anyer)
+        : m_componentId(id), m_size(size), m_destroyer(destroyer), m_setter(setter), m_comparer(comparer), m_voider(voider), m_anyer(anyer) {}
 
+    const component_id_t &id(void) const { return m_componentId;}
+    const component_size_t &size(void) const { return m_size;}
+    const destroyer_t &destroyer(void) { return m_destroyer;}
+    const setter_t &setter(void) { return m_setter;}
+    const comparer_t &comparer(void) const { return m_comparer;}
+    const voider_t &voider(void) const { return m_voider;}
+    const anyer_t &anyer(void) const { return m_anyer;}
+private:
+    component_id_t m_componentId; //TODO set a number
+    component_size_t m_size;
+
+    destroyer_t m_destroyer;
+    setter_t m_setter;
+    comparer_t m_comparer;
+
+    voider_t m_voider;
+    anyer_t m_anyer;
+};
+/**
+ * @brief Manages the registration, setting, and destruction of components for entities in an ECS system.
+ *
+ * We can have many types of Component, this is why we handle std::any.
+ */
+class Manager {
+public:
     /**
      * @brief A map that associates component types with their management tools and sparse arrays of component data.
      */
     using component_map_t = std::unordered_map<std::type_index, std::any>;
+    using component_tools_map_t = std::unordered_map<std::type_index, ComponentTools>;
     /**
      * @brief Default constructor for the Manager class.
      */
@@ -144,10 +166,14 @@ public:
      * @brief Retrieves the full component map.
      * @return A const reference to the component map.
      */
-    const component_map_t &getComponentMap(void) const;
+    const component_map_t &getComponentMap(void) const;// TODO DOCS
 
-    const component_tools_map_t &getComponentToolsMap(void) const; // TODO DOCS
-
+    ComponentTools::component_id_t getComponentId(const std::type_index &type) const;
+    const std::type_index &getTypeindex(ComponentTools::component_id_t id) const;
+    ComponentTools::component_size_t getComponentSize(const std::type_index &type) const;
+    std::vector<component_info_t> compareComponents(const std::type_index &type, const std::any &any1, const std::any &any2) const;
+    const void *toVoid(const std::type_index &type, const std::any &any) const;
+    const std::any toAny(const std::type_index &type, const void *component) const;
     /**
      * @brief Compares two sparse arrays of components and returns the differences.
      * @tparam Component The type of components to compare.
@@ -165,22 +191,21 @@ private:
      */
     component_map_t m_componentMap;
     component_tools_map_t m_componentToolsMap;
-    // std::vector<std::type_index> m_typeindexTable;
-    // uint16_t m_nbComponent;
+
     template <class T>
-    component_tools_t registerTools(void); // TODO docu
+    ComponentTools registerTools(void); // TODO docu
 };
 
-/**
- * @brief Compares two component maps and returns the differences.
- * @param map1 The first component map.
- * @param tools The component tools to compare.
- * @param map2 The second component map.
- * @return A vector of component_info_t of the components that changed between map1 and map2.
- */
-std::vector<component_info_t> deltaDiff(const Manager::component_map_t &map1,
-                                        const component::Manager::component_tools_map_t &tools,
-                                        const Manager::component_map_t &map2);
+// /**
+//  * @brief Compares two component maps and returns the differences.
+//  * @param map1 The first component map.
+//  * @param tools The component tools to compare.
+//  * @param map2 The second component map.
+//  * @return A vector of component_info_t of the components that changed between map1 and map2.
+//  */
+// std::vector<component_info_t> deltaDiff(const Manager::component_map_t &map1,
+//                                         const component::Manager::component_tools_map_t &tools,
+//                                         const Manager::component_map_t &map2);
 } // namespace ecs::component
 
 #include "Manager.inl"

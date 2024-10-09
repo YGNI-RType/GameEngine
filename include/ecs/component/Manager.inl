@@ -9,15 +9,16 @@
 
 namespace ecs::component {
 template <class T>
-Manager::component_tools_t Manager::registerTools(void) {
-    return std::make_tuple(
-        [this](entity::Entity entity) { destroyComponent<T>(entity); },
+ComponentTools Manager::registerTools(void) {
+    return ComponentTools(
+        m_componentMap.size() - 1, sizeof(T), [this](entity::Entity entity) { destroyComponent<T>(entity); },
         [this](entity::Entity entity, const std::any &any) { setComponent<T>(entity, std::any_cast<const T &>(any)); },
         [this](const std::any any1, const std::any &any2) {
             return deltaDiffSparse<T>(std::any_cast<const SparseArray<T>>(any1),
                                       std::any_cast<const SparseArray<T> &>(any2));
         },
-        std::make_pair(m_componentMap.size() - 1, sizeof(T)));
+        [this](const std::any &any) { return &std::any_cast<const T &>(any); },
+        [this](const void *ptr) { return *static_cast<const T *>(ptr); });
 }
 
 template <class T>
@@ -68,7 +69,7 @@ std::vector<component_info_t> Manager::deltaDiffSparse(const SparseArray<Compone
     for (auto it = sparse1.cbegin(), end = sparse1.cend(); it != end; it++) {
         auto &[entity, component] = *it;
         if (!sparse2.contains(entity) || component != sparse2.get(entity))
-            diff.emplace_back(entity, type, std::any(component));
+            diff.emplace_back(entity, type, component);
     }
     return diff;
 }
