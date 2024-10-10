@@ -11,7 +11,6 @@
 #include "GEngine/net/msg.hpp"
 
 #include <condition_variable>
-#include <iostream>
 #include <mutex>
 #include <optional>
 #include <queue>
@@ -41,7 +40,7 @@ public:
         if (it == m_msgs.end())
             m_msgs[msg.getType()] = std::queue<Segment>();
 
-        auto q = m_msgs[msg.getType()];
+        auto &q = m_msgs[msg.getType()];
         auto idSegment = getFreeSegment();
         if (idSegment == -1)
             return false;
@@ -126,6 +125,11 @@ public:
         return m_nbUsed;
     }
 
+    size_t size(uint8_t type) const {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        return m_msgs.find(type) == m_msgs.end() ? 0 : m_msgs.at(type).size();
+    }
+
 private:
     void constructMessage(UDPMessage &msg, const Segment &segment, size_t &readCount) const {
         msg.setFlag(segment.flag);
@@ -135,7 +139,7 @@ private:
 
     void deconstructMessage(const UDPMessage &msg, Segment &segment) {
         segment.flag = msg.getFlags();
-        msg.readData(m_data.data() + segment.id * MAX_PACKET_SIZE, MAX_PACKET_SIZE);
+        msg.readData(m_data.data() + segment.id * MAX_PACKET_SIZE, CF_MIN(MAX_PACKET_SIZE, msg.getSize()));
     }
 
     uint32_t getFreeSegment(void) {

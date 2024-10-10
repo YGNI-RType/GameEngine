@@ -108,10 +108,10 @@ bool NetClient::sendPackets(void) {
         &NetClient::retrieveWantedOutgoingData, &NetClient::retrieveWantedOutgoingDataAck};
 
     while (!vecFuncs.empty() || byteSent < m_maxRate) {
+        size_t readCount;
         UDPMessage msg(0, 0);
         auto retrieveFunc = vecFuncs.front();
-        size_t readCount;
-        if ((this->*retrieveFunc)(msg, readCount)) {
+        if (!(this->*retrieveFunc)(msg, readCount)) {
             vecFuncs.erase(vecFuncs.begin());
             continue;
         }

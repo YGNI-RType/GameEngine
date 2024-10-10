@@ -18,8 +18,17 @@ bool Manager::handleEvent(fd_set &readSet) {
     if (!m_socketEvent.isFdSet(readSet))
         return false;
 
+    size_t size;
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        size = m_events.size();
+    }
     m_socketEvent.wait();
-    while (true) {
+    if (size == 0) {
+        sendPackets();
+        return true;
+    }
+    for (size_t i = 0; i < size; i++) {
         std::unique_ptr<InfoHeader> info;
         {
             std::lock_guard<std::mutex> lock(m_mutex);
@@ -31,8 +40,10 @@ bool Manager::handleEvent(fd_set &readSet) {
 
         handleNewEngineReq(*info);
     }
+    return true;
 }
 
+/* game engine thread */
 void Manager::storeEvent(std::unique_ptr<InfoHeader> info) {
     std::lock_guard<std::mutex> lock(m_mutex);
 
@@ -59,7 +70,6 @@ void Manager::handleNewEngineReq(InfoHeader &header) {
         NET::pingServers();
         break;
     default:
-        sendPackets();
         break;
     }
 }

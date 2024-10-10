@@ -78,6 +78,16 @@ public:
 
     bool pushData(const UDPMessage &msg);
     bool popIncommingData(UDPMessage &msg, size_t &readCount, bool shouldAck);
+    size_t getSizeIncommingData(bool ack) const {
+        if (ack)
+            return m_packInDataAck.size();
+        return m_packInData.size();
+    }
+    size_t getSizeIncommingData(uint8_t type, bool ack) const {
+        if (ack)
+            return m_packInDataAck.size(type);
+        return m_packInData.size(type);
+    }
 
 private:
 

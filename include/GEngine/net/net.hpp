@@ -37,17 +37,18 @@ private:
     static std::mutex mg_mutex;
     static std::thread mg_networkThread;
 
-    static uint16_t currentUnusedPort;
+    static uint16_t mg_currentUnusedPort;
 
     static Event::Manager mg_eventManager;
 
     /* Init everything */
 public:
-    static void init(void);
+    static bool init(void);
     static void stop(void);
+    static bool start(void);
 
-    static void initServer(void);
-    static void initClient(void);
+    static bool initServer(void);
+    static bool initClient(void);
 
 private:
     static void getLocalAddress(void);

@@ -19,7 +19,7 @@
 namespace Network::Event {
 enum Type { CONNECT, DISCONNECT, SEND_QUEUED_PACKET, PING };
 
-enum CallbackType { CT_OnClientConnect, CT_OnClientDisconnect };
+enum CallbackType { CT_OnClientConnect, CT_OnClientDisconnect, CT_OnServerConnect, CT_OnServerDisconnect };
 
 struct InfoHeader {
     Type type;
@@ -77,8 +77,8 @@ public:
             if (callbackPair.first != std::type_index(typeid(T)))
                 continue;
 
-            auto callbackAny = std::any_cast<std::pair<std::function<void(T)>, T>>(callbackPair.second);
-            std::thread([callbackAny]() { callbackAny.first(callbackAny.second); }).detach();
+            auto callbackAny = std::any_cast<std::function<void(T)>>(callbackPair.second);
+            std::thread([callbackAny, arg]() { callbackAny(arg); }).detach();
         }
     }
 

@@ -51,6 +51,9 @@ void Snapshot::onMainLoop(gengine::system::event::MainLoop &e) {
     m_currentSnapshotId++;
     createSnapshots();
     deltaDiff();
+
+    /* make something like this based on ticks */
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
 }
 
 /* todo warning : mutex please */
@@ -67,20 +70,23 @@ void Snapshot::createSnapshots(void) {
         }
 
         auto &cl = *client.getNet();
-        size_t size = cl.getSizeIncommingData();
-        for (size_t i = 0; i < size - 1; i++) {
+        int64_t i = 0;
+        int64_t size = cl.getSizeIncommingData();
+        for (i; i < size - 1; i++) {
             Network::UDPMessage msg(false, 0);
             size_t readCount;
             if (!cl.popIncommingData(msg, readCount))
                 continue; /* impossible */
             /* todo : read the data and apply it to the world (another component) */
         }
+        if (size > 0) {
+            // temp
+            Network::UDPMessage msg(false, 0);
+            size_t readCount;
+            cl.popIncommingData(msg, readCount);
+            client.setLastAck(msg.getAckNumber());
+        }
 
-        // temp
-        Network::UDPMessage msg(false, 0);
-        size_t readCount;
-        cl.popIncommingData(msg, readCount);
-        client.setLastAck(msg.getAckNumber());
 
         snap[m_currentSnapshotId % MAX_SNAPSHOT] = m_currentWorld;
     }
