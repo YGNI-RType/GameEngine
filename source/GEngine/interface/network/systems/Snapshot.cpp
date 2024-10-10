@@ -86,25 +86,22 @@ void Snapshot::getAndSendDeltaDiff(void) {
         auto &last = diff > MAX_SNAPSHOT ? m_dummySnapshot : snapshots[lastId % MAX_SNAPSHOT];
 
         std::vector<ecs::component::component_info_t> deltaDiff = getDeltaDiff(current, last);
-        if (diff > MAX_SNAPSHOT || !diff)
-            deltaDiff = getDeltaDiff(current, m_dummySnapshot);
-        else
-            deltaDiff = getDeltaDiff(current, snapshots[lastId % MAX_SNAPSHOT]);
 
-        uint64_t nb_component = deltaDiff.size();
         Network::UDPMessage msg(true, Network::SV_SNAPSHOT);
-        msg.setAck(true);
+        uint64_t nb_component = deltaDiff.size();
         msg.appendData(nb_component);
-        for (auto &[entity, type, any] : deltaDiff) {
-            NetworkComponent c(entity, getComponentId(type),
-                               getComponentSize(type)); /* todo : found the size of the entity as well as type !!!! */
+        for (auto &[entity, type, set, any] : deltaDiff) {
+            ecs::component::ComponentTools::component_size_t size = set ? getComponentSize(type) : 0;
+            NetworkComponent c(entity, getComponentId(type), size);
             msg.appendData(c);
-            msg.writeData(toVoid(type, any), c.size);
+            if (set)
+                msg.writeData(toVoid(type, any), c.size);
         }
 
         if (!server.isRunning())
             continue;
-
+        // for (auto &cl : getClients)
+        //     cl.pushData(msg, true);
         server.sendToClient(*client.getNet(), msg);
     }
 }
@@ -118,8 +115,8 @@ std::vector<ecs::component::component_info_t> Snapshot::getDeltaDiff(const snaps
             THROW_ERROR(
                 "the 2 world do not contain the same component - verify your component registry order"); // big error
 
-        for (auto [e, t, c] : compareComponents(type, any, snap2.find(type)->second))
-            diff.emplace_back(e, t, c);
+        for (auto [e, t, s, c] : compareComponents(type, any, snap2.find(type)->second))
+            diff.emplace_back(e, t, s, c);
     }
     return diff;
 }

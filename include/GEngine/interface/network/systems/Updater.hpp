@@ -17,6 +17,7 @@
 #include "GEngine/libdev/systems/events/Native.hpp"
 
 #include "GEngine/interface/network/systems/NetworkComponent.hpp"
+#include "GEngine/net/msg.hpp"
 
 namespace gengine::interface::network::system {
 
@@ -29,5 +30,6 @@ public:
 
 private:
     // std::vector<std::type_index> m_typeTable; // TODO opti
+    void handleSnapshotMsg(Network::UDPMessage &msg, size_t readCount);
 };
 } // namespace gengine::interface::network::system

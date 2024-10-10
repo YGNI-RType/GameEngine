@@ -7,7 +7,6 @@
 
 #include "GEngine/interface/network/systems/Updater.hpp"
 
-#include "GEngine/net/msg.hpp"
 #include "GEngine/net/net.hpp"
 #include "GEngine/net/net_client.hpp"
 #include "GEngine/net/net_common.hpp"
@@ -23,21 +22,31 @@ void Updater::init(void) {
 // }
 
 void Updater::onMainLoop(gengine::system::event::MainLoop &e) {
-    // TODO call Network::Get(SV_SNAPSHOT)
-    Network::UDPMessage msg(0, 0);
-    return; // TODO remove
-    std::size_t readOffset = 0;
+    Network::UDPMessage msg(true, Network::SV_SNAPSHOT);
+    size_t size = 0;//cl.getSizeIncommingData();
+    for (size_t i = 0; i < size; i++) {
+        Network::UDPMessage msg(false, 0);
+        size_t readCount;
+        if (1) //!cl.popIncommingData(msg, readCount))
+            continue;
+        handleSnapshotMsg(msg, readCount);
+    }
+}
 
+void Updater::handleSnapshotMsg(Network::UDPMessage &msg, size_t readCount) {
     uint64_t nb;
-    msg.readContinuousData(nb, readOffset);
+    msg.readContinuousData(nb, readCount);
     for (int i = 0; i < nb; i++) {
         NetworkComponent c;
-        msg.readContinuousData(c, readOffset);
+        msg.readContinuousData(c, readCount);
         // std::cout << c.entity << " -> name: [" << c.type << "] size: " << c.size << std::endl;
         std::vector<Network::byte_t> component(c.size);
-        msg.readData(component.data(), readOffset, c.size);
+        msg.readData(component.data(), readCount, c.size);
         auto &type = getTypeindex(c.typeId); // TODO array for opti
-        setComponent(c.entity, type, toAny(type, component.data()));
+        if (c.size)
+            setComponent(c.entity, type, toAny(type, component.data()));
+        else
+            unsetComponent(c.entity, type);
     }
 }
 } // namespace gengine::interface::network::system
