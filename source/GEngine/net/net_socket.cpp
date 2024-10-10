@@ -250,8 +250,10 @@ SocketTCP::SocketTCP(const AddressV4 &addr, uint16_t tcpPort, bool block) {
     address.sin_port = htons(m_port);
 
     if (connect(m_sock, (sockaddr *)&address, sizeof(address)) < 0) {
-        if (errno == EINPROGRESS)
+        if (errno == EINPROGRESS) {
+            addSocketPool(m_sock);
             return;
+        }
         socketClose();
         throw SocketException(strerror(errno));
     }
@@ -275,8 +277,10 @@ SocketTCP::SocketTCP(const AddressV6 &addr, uint16_t tcpPort, bool block) {
     address.sin6_port = htons(m_port);
 
     if (connect(m_sock, (sockaddr *)&address, sizeof(address)) < 0) {
-        if (errno == EINPROGRESS)
+        if (errno == EINPROGRESS) {
+            addSocketPool(m_sock);
             return;
+        }
         socketClose();
         throw SocketException(strerror(errno));
     }

@@ -75,6 +75,7 @@ SocketEvent::SocketEvent() {
     if (m_sock == -1)
         throw std::runtime_error("Failed to create eventfd");
 #endif
+    addSocketPool(m_sock);
 }
 
 SocketEvent::~SocketEvent() {
