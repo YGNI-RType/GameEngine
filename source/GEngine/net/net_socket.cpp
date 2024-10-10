@@ -5,9 +5,9 @@
 ** socket
 */
 
-#include "GEngine/net/socket.hpp"
+#include "GEngine/net/net_socket.hpp"
 #include "GEngine/cvar/net.hpp"
-#include "GEngine/net/socketError.hpp"
+#include "GEngine/net/net_socket_error.hpp"
 
 #include <algorithm>
 #include <cerrno>
@@ -23,6 +23,9 @@
 #include <winsock2.h>
 #include <ws2spi.h>
 #include <ws2tcpip.h>
+
+#undef interface
+
 #else
 #include <arpa/inet.h>
 #include <fcntl.h>
@@ -46,14 +49,12 @@ ASocket::~ASocket() {
 
 ASocket::ASocket(ASocket &&other) {
     m_sock = other.m_sock;
-    m_port = other.m_port;
     other.m_sock = -1;
 }
 
 ASocket &ASocket::operator=(ASocket &&other) {
     if (this != &other) {
         m_sock = other.m_sock;
-        m_port = other.m_port;
         other.m_sock = -1;
     }
     return *this;
@@ -103,7 +104,22 @@ void ASocket::addSocketPool(SOCKET socket) {
         m_highFd = socket;
 }
 
-void ASocket::setBlocking(bool blocking) {
+//////////////////////////////////////
+
+ANetSocket::ANetSocket(ANetSocket &&other) {
+    m_sock = other.m_sock;
+    m_port = other.m_port;
+    other.m_sock = -1;
+}
+
+ANetSocket &ANetSocket::operator=(ANetSocket &&other) {
+    if (this != &other)
+        m_port = other.m_port;
+    ASocket::operator=(std::move(other));
+    return *this;
+}
+
+void ANetSocket::setBlocking(bool blocking) {
 #ifdef _WIN32
     u_long mode = blocking ? 0 : 1;
     ioctlsocket(m_sock, FIONBIO, &mode);
@@ -117,7 +133,7 @@ void ASocket::setBlocking(bool blocking) {
 #endif
 }
 
-bool ASocket::isBlocking(void) const {
+bool ANetSocket::isBlocking(void) const {
 #ifdef _WIN32
     u_long mode;
     ioctlsocket(m_sock, FIONBIO, &mode);
@@ -128,7 +144,7 @@ bool ASocket::isBlocking(void) const {
 #endif
 }
 
-void ASocket::translateAutomaticAddressing(struct sockaddr_storage &addr_storage, uint16_t port, bool ipv6) {
+void ANetSocket::translateAutomaticAddressing(struct sockaddr_storage &addr_storage, uint16_t port, bool ipv6) {
     if (!ipv6) {
         struct sockaddr_in *addr = reinterpret_cast<struct sockaddr_in *>(&addr_storage);
 
@@ -161,7 +177,7 @@ SocketTCPMaster::SocketTCPMaster(const IP &ip, uint16_t port) {
 
     address.sin_port = htons(port);
 
-    if (bind(m_sock, (sockaddr *)&address, sizeof(address)) < 0)
+    if (bind(m_sock, (sockaddr *)&address, ip.type == AT_IPV6 ? sizeof(sockaddr_in6) : sizeof(sockaddr_in)) < 0)
         throw SocketException("(TCP) Failed to bind socket");
 
     if (listen(m_sock, MAX_LISTEN) < 0)
@@ -193,11 +209,11 @@ SocketTCPMaster::SocketTCPMaster(uint16_t port, bool ipv6) {
 }
 
 SocketTCPMaster::SocketTCPMaster(SocketTCPMaster &&other)
-    : ASocket(std::move(other)) {
+    : ANetSocket(std::move(other)) {
 }
 SocketTCPMaster &SocketTCPMaster::operator=(SocketTCPMaster &&other) {
     if (this != &other)
-        ASocket::operator=(std::move(other));
+        ANetSocket::operator=(std::move(other));
     return *this;
 }
 
@@ -234,8 +250,10 @@ SocketTCP::SocketTCP(const AddressV4 &addr, uint16_t tcpPort, bool block) {
     address.sin_port = htons(m_port);
 
     if (connect(m_sock, (sockaddr *)&address, sizeof(address)) < 0) {
-        if (errno == EINPROGRESS)
+        if (errno == EINPROGRESS) {
+            addSocketPool(m_sock);
             return;
+        }
         socketClose();
         throw SocketException(strerror(errno));
     }
@@ -259,8 +277,10 @@ SocketTCP::SocketTCP(const AddressV6 &addr, uint16_t tcpPort, bool block) {
     address.sin6_port = htons(m_port);
 
     if (connect(m_sock, (sockaddr *)&address, sizeof(address)) < 0) {
-        if (errno == EINPROGRESS)
+        if (errno == EINPROGRESS) {
+            addSocketPool(m_sock);
             return;
+        }
         socketClose();
         throw SocketException(strerror(errno));
     }
@@ -270,11 +290,11 @@ SocketTCP::SocketTCP(const AddressV6 &addr, uint16_t tcpPort, bool block) {
 }
 
 SocketTCP::SocketTCP(SocketTCP &&other)
-    : ASocket(std::move(other)) {
+    : ANetSocket(std::move(other)) {
 }
 SocketTCP &SocketTCP::operator=(SocketTCP &&other) {
     if (this != &other)
-        ASocket::operator=(std::move(other));
+        ANetSocket::operator=(std::move(other));
     return *this;
 }
 
@@ -296,7 +316,7 @@ void SocketTCP::receive(TCPMessage &msg) const {
     /* WIN : need to use these parenthesis, to skip windows.h macro (todo : find why +1, another problem with packed
      * structs ?)*/
     recvSz = receiveReliant(reinterpret_cast<TCPSerializedMessage *>(ptrMsg + recvSz),
-                            CF_MIN(sMsg.curSize + 1, sizeof(TCPSerializedMessage) - recvSz));
+                            CF_NET_MIN(sMsg.curSize + 1, sizeof(TCPSerializedMessage) - recvSz));
 
     msg.setSerialize(sMsg);
 }
@@ -348,7 +368,7 @@ void SocketUDP::init(bool block, uint16_t port) {
     if (setsockopt(m_sock, SOL_SOCKET, SO_BROADCAST, (char *)&opt, sizeof(opt)))
         throw std::runtime_error("(UDP) Failed to set socket options (SO_BROADCAST)");
 #ifdef NET_DONT_FRAG
-#ifdef __FreeBSD__ || defined(__APPLE__)
+#if defined(__FreeBSD__) || defined(__APPLE__)
     if (setsockopt(m_sock, IPPROTO_IP, IP_DONTFRAG, &opt, sizeof(opt)))
 #else
     if (setsockopt(m_sock, IPPROTO_IP, IP_MTU_DISCOVER, &opt, sizeof(opt)))
@@ -365,7 +385,7 @@ SocketUDP::SocketUDP(const IP &ip, uint16_t port, bool block) {
 
     address.sin_port = htons(port);
 
-    if (bind(m_sock, (sockaddr *)&address, sizeof(address)) < 0)
+    if (bind(m_sock, (sockaddr *)&address, ip.type == AT_IPV6 ? sizeof(sockaddr_in6) : sizeof(sockaddr_in)) < 0)
         throw SocketException("(UDP) Failed to bind socket");
 
     addSocketPool(m_sock);
@@ -384,11 +404,11 @@ SocketUDP::SocketUDP(uint16_t port, bool ipv6, bool block) {
 }
 
 SocketUDP::SocketUDP(SocketUDP &&other)
-    : ASocket(std::move(other)) {
+    : ANetSocket(std::move(other)) {
 }
 SocketUDP &SocketUDP::operator=(SocketUDP &&other) {
     if (this != &other)
-        ASocket::operator=(std::move(other));
+        ANetSocket::operator=(std::move(other));
     return *this;
 }
 
@@ -423,6 +443,7 @@ size_t SocketUDP::send(const UDPMessage &msg, const Address &addr) const {
 
 bool SocketUDP::receive(struct sockaddr *addr, UDPSerializedMessage &data, socklen_t *len) const {
     size_t recv = recvfrom(m_sock, reinterpret_cast<char *>(&data), sizeof(UDPSerializedMessage), 0, addr, len);
+    int64_t recvStatus = recv;
 
     int simval = CVar::net_recv_dropsim.getIntValue();
     if (simval > 0) {
@@ -431,35 +452,42 @@ bool SocketUDP::receive(struct sockaddr *addr, UDPSerializedMessage &data, sockl
     }
 
     // checking wouldblock etc... select told us to read so it's not possible
-    if (recv < 0)
+    if (recvStatus < 0) {
+        if (errno == EWOULDBLOCK || errno == EAGAIN)
+            return false;
         throw SocketException("Failed to receive message");
+    }
 
     if (recv < sizeof(UDPSerializedMessage) - MAX_UDP_MSGLEN)
-        throw SocketException("Received message is too small");
+        return false;
     return true;
 }
 
-AddressV4 SocketUDP::receiveV4(UDPMessage &msg) const {
+bool SocketUDP::receiveV4(UDPMessage &msg, AddressV4 &ip) const {
     UDPSerializedMessage sMsg;
     struct sockaddr_in addr = {0};
     socklen_t len = sizeof(addr);
 
-    receive(reinterpret_cast<struct sockaddr *>(&addr), sMsg, &len);
+    if (!receive(reinterpret_cast<struct sockaddr *>(&addr), sMsg, &len))
+        return false;
     msg.setSerialize(sMsg);
 
-    return AddressV4(AT_IPV4, ntohs(addr.sin_port), ntohl(addr.sin_addr.s_addr));
+    ip = AddressV4(AT_IPV4, ntohs(addr.sin_port), ntohl(addr.sin_addr.s_addr));
+    return true;
 }
 
 /* TODO : one day i might directly pack the udpmessage at this point */
-AddressV6 SocketUDP::receiveV6(UDPMessage &msg) const {
+bool SocketUDP::receiveV6(UDPMessage &msg, AddressV6 &ip) const {
     UDPSerializedMessage sMsg;
     struct sockaddr_in6 addr;
     socklen_t len = sizeof(addr);
 
-    receive(reinterpret_cast<struct sockaddr *>(&addr), sMsg, &len);
+    if (!receive(reinterpret_cast<struct sockaddr *>(&addr), sMsg, &len))
+        return false;
     msg.setSerialize(sMsg);
 
-    return AddressV6(AT_IPV6, ntohs(addr.sin6_port), addr.sin6_addr, addr.sin6_scope_id);
+    ip = AddressV6(AT_IPV6, ntohs(addr.sin6_port), addr.sin6_addr, addr.sin6_scope_id);
+    return true;
 }
 
 /*****************************************************/

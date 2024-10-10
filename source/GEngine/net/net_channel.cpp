@@ -7,8 +7,10 @@
 
 #include "GEngine/net/net_channel.hpp"
 #include "GEngine/cvar/net.hpp"
-#include "GEngine/net/socketError.hpp"
+#include "GEngine/net/net_socket_error.hpp"
 #include "GEngine/time/time.hpp"
+
+#include <iostream>
 
 namespace Network {
 
@@ -100,6 +102,7 @@ bool NetChannel::readDatagram(UDPMessage &msg, size_t &readOffset) {
 
     if (header.sequence <= udpInSequence) {
         /*out of order packet, delete it */
+        std::cout << "OOB packet: " << header.sequence << std::endl;
         return false;
     }
 

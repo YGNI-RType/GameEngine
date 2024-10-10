@@ -8,7 +8,7 @@
 #pragma once
 
 #include "net_msg.hpp"
-#include "socket.hpp"
+#include "net_socket.hpp"
 
 #include <memory>
 #include <unordered_map>
@@ -106,14 +106,22 @@ public:
     NetChannel &operator=(NetChannel &&other) = default;
     ~NetChannel() = default;
 
-    const Address &getAddress(void) const {
+    const Address &getAddressTCP(void) const {
         return *m_toTCPAddress;
     }
+    const Address &getAddressUDP(void) const {
+        return *m_toUDPAddress;
+    }
+
     bool isEnabled(void) const {
         return m_enabled;
     }
     bool isDisconnected(void) const {
         return m_disconnect;
+    }
+
+    uint64_t getLastACKPacketId(void) const {
+        return m_udpACKClientLastACK;
     }
 
     const SocketTCP &getTcpSocket(void) const {

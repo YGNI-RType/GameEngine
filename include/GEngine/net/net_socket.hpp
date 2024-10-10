@@ -58,7 +58,6 @@ protected:
     ASocket() = default;
 
     static void addSocketPool(SOCKET socket);
-    static void translateAutomaticAddressing(struct sockaddr_storage &addr, uint16_t port, bool ipv6);
 
     virtual ~ASocket();
 
@@ -67,14 +66,8 @@ private:
     static SOCKET m_highFd;
 
 public:
-    void setBlocking(bool blocking);
-    bool isBlocking(void) const;
-
     int socketClose(void);
 
-    uint16_t getPort(void) const {
-        return m_port;
-    }
     bool isFdSet(fd_set &set) const {
         return FD_ISSET(m_sock, &set);
     }
@@ -87,12 +80,34 @@ public:
 
 protected:
     SOCKET m_sock = -1;
+};
+
+class ANetSocket : public ASocket {
+public:
+    uint16_t getPort(void) const {
+        return m_port;
+    }
+
+    void setBlocking(bool blocking);
+    bool isBlocking(void) const;
+
+    static void translateAutomaticAddressing(struct sockaddr_storage &addr, uint16_t port, bool ipv6);
+
+    ANetSocket(const ANetSocket &other) = delete;
+    ANetSocket &operator=(const ANetSocket &other) = delete;
+    ANetSocket(ANetSocket &&other);
+    ANetSocket &operator=(ANetSocket &&other);
+
+protected:
+    ANetSocket() = default;
+    virtual ~ANetSocket() = default;
+
     uint16_t m_port = -1;
 };
 
 ////////////////////////////////////////
 
-class SocketUDP : public ASocket {
+class SocketUDP : public ANetSocket {
 public:
     SocketUDP() = default;
     SocketUDP(const IP &ip, uint16_t port, bool block = false);
@@ -111,8 +126,8 @@ public:
     size_t send(const UDPMessage &msg, const Address &addr) const;
 
     /* this seems redundant, but to avoid any heap calls, this is necessary */
-    AddressV4 receiveV4(UDPMessage &msg) const;
-    AddressV6 receiveV6(UDPMessage &msg) const;
+    bool receiveV4(UDPMessage &msg, AddressV4 &ip) const;
+    bool receiveV6(UDPMessage &msg, AddressV6 &ip) const;
 
 private:
     bool receive(struct sockaddr *addr, UDPSerializedMessage &sMsg, socklen_t *len) const;
@@ -122,7 +137,7 @@ private:
 
 class SocketTCP;
 
-class SocketTCPMaster : public ASocket {
+class SocketTCPMaster : public ANetSocket {
 public:
     SocketTCPMaster() = default;
     SocketTCPMaster(const IP &ip, uint16_t port);
@@ -139,7 +154,7 @@ public:
     SocketTCP accept(UnknownAddress &unkwAddr) const;
 };
 
-class SocketTCP : public ASocket {
+class SocketTCP : public ANetSocket {
 public:
     enum EventType {
         NONE = 0,

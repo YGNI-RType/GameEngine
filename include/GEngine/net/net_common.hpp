@@ -13,6 +13,9 @@
 #ifdef _WIN32
 #include <WS2tcpip.h>
 #include <winsock2.h>
+
+#undef interface
+
 #else
 #include <sys/socket.h>
 #endif
@@ -44,9 +47,9 @@ typedef unsigned short sa_family_t;
 #define MAX_UDP_MSGLEN 16384
 #define MAX_TCP_MSGLEN 32768
 
-#define CF_MIN(a, b) ((a) < (b) ? (a) : (b))
-#define CF_MAX(a, b) ((a) > (b) ? (a) : (b))
-#define CF_CLAMP(x, a, b) CF_MIN(CF_MAX(x, a), b)
+#define CF_NET_MIN(a, b) ((a) < (b) ? (a) : (b))
+#define CF_NET_MAX(a, b) ((a) > (b) ? (a) : (b))
+#define CF_NET_CLAMP(x, a, b) CF_NET_MIN(CF_NET_MAX(x, a), b)
 
 typedef uint8_t byte_t;
 

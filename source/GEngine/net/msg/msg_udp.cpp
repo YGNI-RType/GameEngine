@@ -6,7 +6,7 @@
 */
 
 #include "GEngine/net/msg.hpp"
-#include "GEngine/net/socket.hpp"
+#include "GEngine/net/net_socket.hpp"
 
 namespace Network {
 UDPMessage::UDPMessage(bool hasHeader, uint8_t type)
@@ -25,8 +25,8 @@ UDPMessage &UDPMessage::operator=(const UDPMessage &other) {
 void UDPMessage::setSerialize(UDPSerializedMessage &msg) {
     m_type = msg.type;
     m_flags = msg.flag;
-    std::memcpy(m_data + m_curSize, &msg.data, msg.curSize);
-    m_curSize += msg.curSize;
+    std::memcpy(m_data, &msg.data, msg.curSize);
+    m_curSize = msg.curSize;
 }
 
 void UDPMessage::getSerialize(UDPSerializedMessage &msg) const {
@@ -81,4 +81,12 @@ void UDPMessage::setAck(bool ack) {
         m_flags &= ~ACK;
 }
 
+uint64_t UDPMessage::getAckNumber(void) const {
+    if (!shouldAck())
+        return 0;
+    UDPG_NetChannelHeader header;
+
+    readData<UDPG_NetChannelHeader>(header);
+    return header.ack;
+}
 } // namespace Network

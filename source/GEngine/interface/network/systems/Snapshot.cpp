@@ -9,6 +9,7 @@
 
 #include "GEngine/net/msg.hpp"
 #include "GEngine/net/net.hpp"
+#include "GEngine/net/net_client.hpp"
 
 struct ComponentNetwork {
     uint64_t entity;
@@ -23,62 +24,112 @@ void Snapshot::init(void) {
 }
 
 void Snapshot::onStartEngine(gengine::system::event::StartEngine &e) {
-    registerClient();
-    createSnapshots();
+    /* TODO : make something other than this to register clients */
+    auto &eventManager = Network::NET::getEventManager();
+
+    eventManager.registerCallback<std::shared_ptr<Network::NetClient>>(
+        Network::Event::CT_OnClientConnect,
+        [this](std::shared_ptr<Network::NetClient> client) {
+            std::lock_guard<std::mutex> lock(m_netMutex);
+
+            registerClient(client);
+        });
+    eventManager.registerCallback<std::shared_ptr<Network::NetClient>>(
+        Network::Event::CT_OnClientDisconnect, [this](std::shared_ptr<Network::NetClient> client) {
+            std::lock_guard<std::mutex> lock(m_netMutex);
+
+            auto it = std::find_if(m_clientSnapshots.begin(), m_clientSnapshots.end(),
+                                   [client](const auto &pair) { return pair.first.getNet().get() == client.get(); });
+            if (it == m_clientSnapshots.end())
+                return;
+            it->first.setShouldDelete(true);
+        });
 }
 
 void Snapshot::onMainLoop(gengine::system::event::MainLoop &e) {
-    m_currentSnapshotId++;
-    createSnapshots();
-    deltaDiff();
+    {
+        std::lock_guard<std::mutex> lock(m_netMutex);
+
+        m_currentSnapshotId++;
+        createSnapshots();
+        deltaDiff();
+    }
+
+    /* make something like this based on ticks */
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
 }
 
-void Snapshot::registerClient(void) {
-    m_clientSnapshots.push_back(snapshots_t());
+/* todo warning : mutex please */
+void Snapshot::registerClient(std::shared_ptr<Network::NetClient> client) {
+    m_clientSnapshots.push_back(std::make_pair<>(SnapshotClient(client, m_currentSnapshotId), snapshots_t()));
 }
 
 void Snapshot::createSnapshots(void) {
-    for (auto &snap : m_clientSnapshots)
+    for (auto &[client, snap] : m_clientSnapshots) {
+        SnapshotClient &cli = client;
+        if (client.shouldDelete()) { /* thread safe way of deleting a client from genengine */
+            m_clientSnapshots.erase(
+                std::remove_if(m_clientSnapshots.begin(), m_clientSnapshots.end(),
+                               [&cli](const auto &pair) { return pair.first.getNet() == cli.getNet(); }),
+                m_clientSnapshots.end());
+            continue;
+        }
+
+        auto &cl = *client.getNet();
+        int64_t i = 0;
+        int64_t size = cl.getSizeIncommingData();
+        /* le type 3 est un example, c'est usercmd par contre */
+        for (; i < size - 1; i++) {
+            size_t readCount;
+            Network::UDPMessage msg(false, 3);
+            if (!cl.popIncommingData(msg, readCount))
+                continue; /* impossible */
+            /* todo : read the data and apply it to the world (another component) */
+        }
+        if (size > 0) {
+            // temp
+            size_t readCount;
+            Network::UDPMessage msg(false, 3);
+            cl.popIncommingData(msg, readCount);
+            client.setLastAck(msg.getAckNumber());
+        }
+
         snap[m_currentSnapshotId % MAX_SNAPSHOT] = m_currentWorld;
+    }
 }
 
+/* ADRIEN /!\ : we need to ensure that we send something, even when 0 bytes */
 void Snapshot::deltaDiff(void) {
-    for (auto &snapshots : m_clientSnapshots) {
+    for (auto &[client, snapshots] : m_clientSnapshots) {
+        /* get that info via callback OnAckUpdate */
+        auto lastReceived = client.getLastAck();
+        auto lastId = client.getSnapshotId() + lastReceived;
+
+        auto diff = m_currentSnapshotId - lastId;
+        std::cout << "diff: " << diff << " | m_currentSnapshotId: " << m_currentSnapshotId << " last id: " << lastId
+                  << " UDP Last ACK: " << lastReceived << std::endl;
+        if (diff > MAX_SNAPSHOT)
+            diff = MAX_SNAPSHOT; /* todo : find dummy snapshot (all 0) to send all */
+
         auto &current = snapshots[m_currentSnapshotId % MAX_SNAPSHOT];
-        auto &last = snapshots[(m_currentSnapshotId - 1) % MAX_SNAPSHOT]; // TODO check which world client is using
-        auto v = ecs::component::deltaDiff(current, last);
-        // for (auto &[e, t, c] : v)
-        //     std::cout << e << " -> " << t.name() << std::endl;
-        // if (v.size())
-        //     std::cout << std::endl;
-        //TODO msg = create UDPMessage(v)
-        if (!v.size())
-            break;
+        auto &last = snapshots[diff % MAX_SNAPSHOT]; // TODO check which world client is using
+        std::vector<ecs::component::component_info_t> v;
+
+        try {
+            v = ecs::component::deltaDiff(current, last);
+        } catch (const std::exception &e) {
+        }
+
         Network::UDPMessage msg(true, Network::SV_SNAPSHOT);
         msg.setAck(true);
-        for (auto &[entity, type, any]: v) {
-            ComponentNetwork c = {.entity = 123456789, .size = 65432};
+        for (auto &[entity, type, any] : v) {
+            ComponentNetwork c = {.entity = entity,
+                                  .size = 65432}; /* todo : found the size of the entity as well as type !!!! */
             strcpy(c.type, type.name());
             msg.appendData(c);
-            break;
-
-            // msg.appendData(any);
         }
-        auto &server = Network::NET::getServer();
 
-        Network::NET::sleep(300);
-        if (!server.isRunning())
-            continue;
-
-        // Network::UDPMessage msg(true, 4);
-        // const char *data = "Coucou je suis le serveir !!";
-        // msg.writeData(static_cast<const void *>(data), std::strlen(data));
-
-        server.sendToAllClients(msg);
-
-        // msg.appendData()
-        // send msg
-        // TODO order send to network
+        client.getNet()->pushData(msg, true);
     }
 }
 } // namespace gengine::interface::network::system

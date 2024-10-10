@@ -8,14 +8,12 @@
 #include "GEngine/net/cl_net_client.hpp"
 
 #include <iostream> // todo : remove
-#include <typeindex>// todo : remove
 
 namespace Network {
 
 bool CLNetClient::connectToServer(size_t index) {
 
     /* Connects to something */
-    // try {
     if (index >= m_pingedServers.size())
         return false;
 
@@ -31,7 +29,7 @@ bool CLNetClient::connectToServer(size_t index) {
 
     sock.setBlocking(false);
     m_netChannel = std::move(NetChannel(false, std::move(addr), std::move(sock)));
-    //     /* todo : some error handling just in case ? */
+    /* todo : some error handling just in case ? */
 
     m_state = CS_CONNECTED;
     m_connectionState = CON_CONNECTING;
@@ -97,31 +95,23 @@ bool CLNetClient::handleUDPEvents(UDPMessage &msg, const Address &addr) {
     }
 }
 
-struct ComponentNetwork {// todo : remove
-    uint64_t entity;
-    char type[255];
-    uint16_t size;
-};
-
 bool CLNetClient::handleServerUDP(UDPMessage &msg, const Address &addr) {
     size_t readOffset = 0;
 
     if (!m_netChannel.isEnabled() ||
-        addr != m_netChannel.getAddress()) // why sending udp packets to the client ? who are you ?
+        addr != m_netChannel.getAddressUDP()) // why sending udp packets to the client ? who are you ?
         return false;
 
     if (!m_netChannel.readDatagram(msg, readOffset))
         return true;
 
     switch (msg.getType()) {
-        case SV_SNAPSHOT:
-            ComponentNetwork c{.entity = 0, .size = 0};
-            // std::cout << "CL: got udp message from server: " << std::endl;
-            msg.readContinuousData(c, readOffset);
-            std::cout << c.entity << " -> name: [" << std::string(c.type) << "] size: " << c.size << std::endl;
+    case SV_SNAPSHOT:
+        pushIncommingDataAck(msg, readOffset);
+        /* todo : add warning if queue il full ? */
         break;
-        // default:
-        //     break;
+    default:
+        break;
     }
     /* todo : add things here */
     return true;
@@ -206,4 +196,48 @@ bool CLNetClient::sendDatagram(UDPMessage &msg) {
     return m_netChannel.sendDatagram(m_socketUdp, msg);
 }
 
+/** Net Queue **/
+
+bool CLNetClient::pushData(const UDPMessage &msg) {
+    return m_packOutData.push(msg, 0);
+}
+
+bool CLNetClient::popIncommingData(UDPMessage &msg, size_t &readCount, bool shouldAck) {
+    if (shouldAck)
+        return m_packInDataAck.pop(msg, readCount, msg.getType());
+    return m_packInData.pop(msg, readCount, msg.getType());
+}
+
+bool CLNetClient::retrieveWantedOutgoingData(UDPMessage &msg, size_t &readCount) {
+    return m_packOutData.pop(msg, readCount);
+}
+
+bool CLNetClient::pushIncommingDataAck(const UDPMessage &msg, size_t readCount) {
+    return m_packInDataAck.push(msg, readCount);
+}
+
+bool CLNetClient::pushIncommingData(const UDPMessage &msg, size_t readCount) {
+    return m_packInData.push(msg, readCount);
+}
+
+/***************/
+
+bool CLNetClient::sendPackets(void) {
+    if (!m_enabled || !m_netChannel.isEnabled())
+        return false;
+
+    size_t byteSent = 0;
+    while (!m_packOutData.empty() || byteSent < m_maxRate) {
+        UDPMessage msg(0, 0);
+        size_t readOffset;
+        if (!retrieveWantedOutgoingData(msg, readOffset))
+            return false;
+
+        size_t size = msg.getSize();
+        if (!sendDatagram(msg))
+            return false; /* how */
+        byteSent += size;
+    }
+    return true;
+}
 } // namespace Network

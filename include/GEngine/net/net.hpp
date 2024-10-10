@@ -12,9 +12,11 @@
 #include "net_address.hpp"
 #include "net_client.hpp"
 #include "net_common.hpp"
+#include "net_event.hpp"
 #include "net_server.hpp"
-#include "socket.hpp"
+#include "net_socket.hpp"
 
+#include <thread>
 #include <vector>
 
 namespace Network {
@@ -31,19 +33,22 @@ private:
 
     static std::vector<IP> g_localIPs;
 
-    static bool enabled;
+    static std::atomic_bool mg_aEnable;
+    static std::mutex mg_mutex;
+    static std::thread mg_networkThread;
 
-    static bool inittedClient;
+    static uint16_t mg_currentUnusedPort;
 
-    static uint16_t currentUnusedPort;
+    static Event::Manager mg_eventManager;
 
     /* Init everything */
 public:
-    static void init(void);
+    static bool init(void);
     static void stop(void);
+    static bool start(void);
 
-    static void initServer(void);
-    static void initClient(void);
+    static bool initServer(void);
+    static bool initClient(void);
 
 private:
     static void getLocalAddress(void);
@@ -71,6 +76,10 @@ public:
     }
     static NetServer &getServer(void) {
         return mg_server;
+    }
+
+    static Event::Manager &getEventManager(void) {
+        return mg_eventManager;
     }
 
 public:

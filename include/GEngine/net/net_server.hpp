@@ -7,8 +7,9 @@
 
 #pragma once
 
+#include "events/socket_event.hpp"
 #include "net_client.hpp"
-#include "socket.hpp"
+#include "net_socket.hpp"
 
 #include <algorithm>
 #include <memory>
@@ -17,13 +18,14 @@
 namespace Network {
 class NetServer {
 public:
-    NetServer(SocketUDP &m_socketUdpV4, SocketUDP &m_socketUdpV6)
-        : m_socketUdpV4(m_socketUdpV4)
-        , m_socketUdpV6(m_socketUdpV6) {};
+    NetServer(SocketUDP &socketUdpV4, SocketUDP &socketUdpV6)
+        : m_socketUdpV4(socketUdpV4)
+        , m_socketUdpV6(socketUdpV6){};
     /* todo : add to support loopback client for listen servers */
     ~NetServer() = default;
 
     uint16_t start(size_t maxClients, const std::vector<IP> &g_localIPs, uint16_t currentUnusedPort);
+    uint16_t start(size_t maxClients, uint16_t currentUnusedPort);
     void stop(void);
 
     void createSets(fd_set &readSet);
@@ -54,8 +56,9 @@ public:
     void respondPingServers(const UDPMessage &msg, SocketUDP &udpsocket, const Address &addr);
     bool handleUdpMessageClients(SocketUDP &socket, UDPMessage &msg, const Address &addr);
 
-    void handleClientCMD_UDP(SocketUDP &socket, NetClient &client, const UDPMessage &msg, size_t &readOffset);
+    bool sendPackets(void);
     void sendToAllClients(UDPMessage &msg);
+    void sendToClient(NetClient &client, UDPMessage &msg);
 
 private:
     bool m_isRunning = false;
@@ -67,7 +70,7 @@ private:
     SocketUDP &m_socketUdpV6;
 
     size_t m_maxClients;
-    std::vector<std::unique_ptr<NetClient>> m_clients;
+    std::vector<std::shared_ptr<NetClient>> m_clients;
 };
 
 } // namespace Network

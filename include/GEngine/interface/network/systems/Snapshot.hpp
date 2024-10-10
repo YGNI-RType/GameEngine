@@ -8,6 +8,7 @@
 #pragma once
 
 #include <array>
+#include <mutex>
 
 #include "GEngine/BaseEngine.hpp"
 
@@ -17,7 +18,52 @@
 
 #define MAX_SNAPSHOT 60
 
+namespace Network {
+class NetClient;
+} // namespace Network
+
 namespace gengine::interface::network::system {
+
+class SnapshotClient {
+public:
+    SnapshotClient(std::shared_ptr<Network::NetClient> client, uint64_t firsSnapshotId)
+        : m_client(client)
+        , m_firsSnapshotId(firsSnapshotId) {
+    }
+
+    std::shared_ptr<Network::NetClient> getNet(void) const {
+        return m_client;
+    }
+
+    uint64_t getSnapshotId(void) const {
+        return m_firsSnapshotId;
+    }
+    void setSnapshotId(uint64_t id) {
+        m_firsSnapshotId = id;
+    }
+
+    bool shouldDelete(void) const {
+        return m_shouldDelete;
+    }
+    void setShouldDelete(bool shouldDelete) {
+        m_shouldDelete = shouldDelete;
+    }
+
+    uint64_t getLastAck(void) const {
+        return m_lastAck;
+    }
+    void setLastAck(uint64_t lastAck) {
+        m_lastAck = lastAck;
+    }
+
+private:
+    std::shared_ptr<Network::NetClient> m_client;
+    uint64_t m_firsSnapshotId;
+
+    uint64_t m_lastAck = 0;
+    bool m_shouldDelete = false;
+};
+
 class Snapshot : public System<Snapshot> {
 public:
     using snapshot_t = BaseEngine::world_t;
@@ -31,13 +77,15 @@ public:
     void onStartEngine(gengine::system::event::StartEngine &);
     void onMainLoop(gengine::system::event::MainLoop &);
 
-    void registerClient(void);
+    void registerClient(std::shared_ptr<Network::NetClient> client);
     void createSnapshots(void);
     void deltaDiff(void);
 
 private:
     const snapshot_t &m_currentWorld;
-    std::vector<snapshots_t> m_clientSnapshots;
+    std::vector<std::pair<SnapshotClient, snapshots_t>> m_clientSnapshots;
     uint64_t m_currentSnapshotId = 0;
+
+    mutable std::mutex m_netMutex;
 };
 } // namespace gengine::interface::network::system

@@ -50,8 +50,12 @@ public:
     uint64_t getSize() const {
         return m_curSize;
     }
+
     uint8_t getType() const {
         return m_type;
+    }
+    void setType(uint8_t type) {
+        m_type = type;
     }
 
     virtual const byte_t *getData() const = 0;
@@ -94,8 +98,9 @@ public:
         return sizeof(T);
     }
 
-    void writeData(const void *data, std::size_t size);
-    void readData(void *data, std::size_t size) const;
+    void appendData(const void *data, std::size_t size);
+    void writeData(const void *data, std::size_t size, bool updateSize = true);
+    void readData(void *data, std::size_t offset, std::size_t size) const;
 
 protected:
     AMessage(uint8_t type);
@@ -169,6 +174,14 @@ public:
         return m_flags & ACK;
     }
 
+    uint8_t getFlags() const {
+        return m_flags;
+    }
+
+    void setFlag(uint8_t flag) {
+        m_flags |= flag;
+    }
+
     void setCompressed(bool compressed);
     void setHeader(bool header);
     void setFragmented(bool fragmented);
@@ -181,6 +194,8 @@ public:
     void getSerialize(UDPSerializedMessage &msg) const;
     std::vector<UDPSerializedMessage> getSerializeFragmented(void) const;
     void setSerialize(UDPSerializedMessage &msg);
+
+    uint64_t getAckNumber(void) const;
 
 private:
     byte_t *getDataMember() override final {
