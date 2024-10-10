@@ -106,7 +106,6 @@ bool NetChannel::readDatagram(UDPMessage &msg, size_t &readOffset) {
         return false;
     }
 
-    std::cout << "Seq packet: " << header.sequence << std::endl;
     if (msg.shouldAck()) { /* only care about reliable packets */
         m_udpACKClientLastACK = header.ack;
         m_droppedPackets = header.sequence - udpInSequence + 1;

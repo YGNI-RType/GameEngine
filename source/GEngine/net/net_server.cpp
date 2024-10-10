@@ -120,7 +120,7 @@ bool NetServer::handleUDPEvent(SocketUDP &socket, UDPMessage &msg, const Address
 bool NetServer::handleUdpMessageClients(SocketUDP &socket, UDPMessage &msg, const Address &addr) {
     for (const auto &client : m_clients) {
         auto &channel = client->getChannel();
-        if (channel.getAddress() != addr)
+        if (channel.getAddressUDP() != addr)
             continue;
 
         client->handleClientDatagram(msg);

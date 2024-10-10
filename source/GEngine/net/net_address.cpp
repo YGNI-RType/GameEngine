@@ -19,6 +19,9 @@ bool Address::operator==(const Address &other) const {
     if (m_type != other.getType())
         return false;
 
+    if (m_port != other.getPort())
+        return false;
+
     return isEqual(getData(), other.getData(), m_mask);
 }
 

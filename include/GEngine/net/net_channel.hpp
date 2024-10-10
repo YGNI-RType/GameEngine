@@ -106,9 +106,13 @@ public:
     NetChannel &operator=(NetChannel &&other) = default;
     ~NetChannel() = default;
 
-    const Address &getAddress(void) const {
+    const Address &getAddressTCP(void) const {
         return *m_toTCPAddress;
     }
+    const Address &getAddressUDP(void) const {
+        return *m_toUDPAddress;
+    }
+
     bool isEnabled(void) const {
         return m_enabled;
     }

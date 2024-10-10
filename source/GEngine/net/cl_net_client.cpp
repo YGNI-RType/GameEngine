@@ -99,7 +99,7 @@ bool CLNetClient::handleServerUDP(UDPMessage &msg, const Address &addr) {
     size_t readOffset = 0;
 
     if (!m_netChannel.isEnabled() ||
-        addr != m_netChannel.getAddress()) // why sending udp packets to the client ? who are you ?
+        addr != m_netChannel.getAddressUDP()) // why sending udp packets to the client ? who are you ?
         return false;
 
     if (!m_netChannel.readDatagram(msg, readOffset))
