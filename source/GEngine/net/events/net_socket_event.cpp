@@ -10,7 +10,7 @@
 namespace Network::Event {
 
 SocketEvent::SocketEvent() {
-#ifdef _WIN32
+#ifdef HAS_NOT_EVENTFD
     m_sockConnect = socket(AF_INET, SOCK_STREAM, 0);
     if (m_sockConnect == INVALID_SOCKET) {
         WSACleanup();
@@ -79,7 +79,7 @@ SocketEvent::SocketEvent() {
 }
 
 SocketEvent::~SocketEvent() {
-#ifdef _WIN32
+#ifdef HAS_NOT_EVENTFD
     if (m_sockConnect != -1)
         closesocket(m_sockConnect);
 #endif
@@ -88,7 +88,7 @@ SocketEvent::~SocketEvent() {
 SocketEvent::SocketEvent(SocketEvent &&other)
     : ASocket(std::move(other)) {
     m_sock = other.m_sock;
-#ifdef _WIN32
+#ifdef HAS_NOT_EVENTFD
     m_sockConnect = other.m_sockConnect;
     other.m_sockConnect = -1;
 #endif
@@ -104,7 +104,7 @@ SocketEvent &SocketEvent::operator=(SocketEvent &&other) {
 }
 
 void SocketEvent::signal() {
-#ifdef _WIN32
+#ifdef HAS_NOT_EVENTFD
     if (!m_hasRead)
         return;
 
@@ -117,7 +117,7 @@ void SocketEvent::signal() {
 }
 
 void SocketEvent::wait() {
-#ifdef _WIN32
+#ifdef HAS_NOT_EVENTFD
     if (m_hasRead)
         return;
 

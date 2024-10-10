@@ -22,6 +22,10 @@ namespace Network::Event {
 #include <unistd.h>
 #endif
 
+#if defined(_WIN32) || defined(__APPLE__)
+    #define HAS_NOT_EVENTFD = 1
+#endif
+
 class SocketEvent : public ASocket {
 public:
     SocketEvent();
