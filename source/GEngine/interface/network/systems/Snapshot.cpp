@@ -46,11 +46,13 @@ void Snapshot::onStartEngine(gengine::system::event::StartEngine &e) {
 }
 
 void Snapshot::onMainLoop(gengine::system::event::MainLoop &e) {
-    std::lock_guard<std::mutex> lock(m_netMutex);
+    {
+        std::lock_guard<std::mutex> lock(m_netMutex);
 
-    m_currentSnapshotId++;
-    createSnapshots();
-    deltaDiff();
+        m_currentSnapshotId++;
+        createSnapshots();
+        deltaDiff();
+    }
 
     /* make something like this based on ticks */
     std::this_thread::sleep_for(std::chrono::milliseconds(300));
