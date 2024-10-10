@@ -18,12 +18,14 @@ namespace Network::Event {
 #undef interface
 
 #else
+#ifndef __APPLE__
 #include <sys/eventfd.h>
+#endif
 #include <unistd.h>
 #endif
 
 #if defined(_WIN32) || defined(__APPLE__)
-    #define HAS_NOT_EVENTFD = 1
+#define HAS_NOT_EVENTFD = 1
 #endif
 
 class SocketEvent : public ASocket {

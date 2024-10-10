@@ -90,6 +90,8 @@ void AddressV4::toSockAddr(sockaddr *addr) const {
     case AT_UNSPEC:
         s->sin_addr.s_addr = htonl(INADDR_ANY);
         break;
+    default:
+        break;
     }
 }
 
@@ -151,6 +153,8 @@ void AddressV6::toSockAddr(sockaddr *addr) const {
         break;
     case AT_LOOPBACK:
         s->sin6_addr = in6addr_loopback;
+        break;
+    default:
         break;
     }
 }
