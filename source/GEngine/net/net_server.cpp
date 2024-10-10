@@ -8,7 +8,6 @@
 #include "GEngine/net/net_server.hpp"
 #include "GEngine/cvar/net.hpp"
 
-#include "GEngine/interface/network/systems/Snapshot.hpp"
 #include "GEngine/net/net.hpp"
 
 #include <iostream>

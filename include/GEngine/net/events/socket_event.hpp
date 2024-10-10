@@ -9,7 +9,6 @@
 
 #include "../net_socket.hpp"
 
-namespace Network::Event {
 #ifdef _WIN32
 #include <atomic>
 #include <winsock2.h>
@@ -28,6 +27,7 @@ namespace Network::Event {
 #define HAS_NOT_EVENTFD = 1
 #endif
 
+namespace Network::Event {
 class SocketEvent : public ASocket {
 public:
     SocketEvent();

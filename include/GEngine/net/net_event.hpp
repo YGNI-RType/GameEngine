@@ -14,6 +14,7 @@
 #include <memory>
 #include <queue>
 #include <thread>
+#include <mutex>
 #include <typeindex>
 
 namespace Network::Event {

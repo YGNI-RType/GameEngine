@@ -7,6 +7,9 @@
 
 #include "GEngine/net/events/socket_event.hpp"
 
+#include <stdexcept>
+#include <cstring>
+
 namespace Network::Event {
 
 SocketEvent::SocketEvent() {
@@ -52,7 +55,6 @@ SocketEvent::SocketEvent() {
     }
 
     if (connect(m_sockConnect, (struct sockaddr *)&addr, sizeof(addr)) == SOCKET_ERROR) {
-        std::cout << WSAGetLastError() << std::endl;
         closesocket(m_sockConnect);
         WSACleanup();
         throw std::runtime_error("Failed to connect to socket");
@@ -87,18 +89,19 @@ SocketEvent::~SocketEvent() {
 
 SocketEvent::SocketEvent(SocketEvent &&other)
     : ASocket(std::move(other)) {
-    m_sock = other.m_sock;
 #ifdef HAS_NOT_EVENTFD
     m_sockConnect = other.m_sockConnect;
     other.m_sockConnect = -1;
 #endif
-    other.m_sock = -1;
 }
 
 SocketEvent &SocketEvent::operator=(SocketEvent &&other) {
     if (this != &other) {
-        m_sock = other.m_sock;
-        other.m_sock = -1;
+        ASocket::operator=(std::move(other));
+#ifdef HAS_NOT_EVENTFD
+        m_sockConnect = other.m_sockConnect;
+        other.m_sockConnect = -1;
+#endif
     }
     return *this;
 }
