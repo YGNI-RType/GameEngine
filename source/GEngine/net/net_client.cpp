@@ -13,7 +13,8 @@
 #include <iostream>
 
 namespace Network {
-NetClient::NetClient(std::unique_ptr<Address> addr, SocketTCP &&socket, SocketUDP &socketudp, Event::SocketEvent &socketEvent)
+NetClient::NetClient(std::unique_ptr<Address> addr, SocketTCP &&socket, SocketUDP &socketudp,
+                     Event::SocketEvent &socketEvent)
     : m_channel(true, std::move(addr), std::move(socket))
     , m_socketUdp(socketudp)
     , m_packOutData(socketEvent)
@@ -49,6 +50,9 @@ bool NetClient::handleClientStream(void) {
     if (!m_channel.readStream(msg))
         return false;
 
+    if (m_channel.isDisconnected())
+        return true;
+
     std::cout << "SV: client just sent TCP specific message" << std::endl;
     switch (msg.getType()) {
     case CL_CONNECT_INFORMATION: {
@@ -73,8 +77,8 @@ bool NetClient::handleClientDatagram(UDPMessage &msg) {
     if (msg.shouldAck())
         std::cout << "SV: client just sent UDP specific message" << std::endl;
     switch (msg.getType()) {
-        default:
-            return pushIncommingData(msg, readOffset);
+    default:
+        return pushIncommingData(msg, readOffset);
     }
 }
 
