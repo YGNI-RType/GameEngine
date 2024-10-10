@@ -316,7 +316,7 @@ void SocketTCP::receive(TCPMessage &msg) const {
     /* WIN : need to use these parenthesis, to skip windows.h macro (todo : find why +1, another problem with packed
      * structs ?)*/
     recvSz = receiveReliant(reinterpret_cast<TCPSerializedMessage *>(ptrMsg + recvSz),
-                            CF_MIN(sMsg.curSize + 1, sizeof(TCPSerializedMessage) - recvSz));
+                            CF_NET_MIN(sMsg.curSize + 1, sizeof(TCPSerializedMessage) - recvSz));
 
     msg.setSerialize(sMsg);
 }
@@ -368,7 +368,7 @@ void SocketUDP::init(bool block, uint16_t port) {
     if (setsockopt(m_sock, SOL_SOCKET, SO_BROADCAST, (char *)&opt, sizeof(opt)))
         throw std::runtime_error("(UDP) Failed to set socket options (SO_BROADCAST)");
 #ifdef NET_DONT_FRAG
-#ifdef __FreeBSD__ || defined(__APPLE__)
+#if defined(__FreeBSD__) || defined(__APPLE__)
     if (setsockopt(m_sock, IPPROTO_IP, IP_DONTFRAG, &opt, sizeof(opt)))
 #else
     if (setsockopt(m_sock, IPPROTO_IP, IP_MTU_DISCOVER, &opt, sizeof(opt)))

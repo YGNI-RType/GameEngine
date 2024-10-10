@@ -66,10 +66,11 @@ void Snapshot::registerClient(std::shared_ptr<Network::NetClient> client) {
 
 void Snapshot::createSnapshots(void) {
     for (auto &[client, snap] : m_clientSnapshots) {
+        SnapshotClient &cli = client;
         if (client.shouldDelete()) { /* thread safe way of deleting a client from genengine */
             m_clientSnapshots.erase(
                 std::remove_if(m_clientSnapshots.begin(), m_clientSnapshots.end(),
-                               [&client](const auto &pair) { return pair.first.getNet() == client.getNet(); }),
+                               [&cli](const auto &pair) { return pair.first.getNet() == cli.getNet(); }),
                 m_clientSnapshots.end());
             continue;
         }
@@ -78,7 +79,7 @@ void Snapshot::createSnapshots(void) {
         int64_t i = 0;
         int64_t size = cl.getSizeIncommingData();
         /* le type 3 est un example, c'est usercmd par contre */
-        for (i; i < size - 1; i++) {
+        for (; i < size - 1; i++) {
             size_t readCount;
             Network::UDPMessage msg(false, 3);
             if (!cl.popIncommingData(msg, readCount))
