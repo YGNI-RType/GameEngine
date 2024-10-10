@@ -5,8 +5,8 @@
 ** net_server
 */
 
-#include "GEngine/net/net_server.hpp"
 #include "GEngine/cvar/net.hpp"
+#include "GEngine/net/net_server.hpp"
 
 #include "GEngine/interface/network/systems/Snapshot.hpp"
 
