@@ -23,6 +23,8 @@ private:
     struct Segment {
         uint32_t id;
         uint8_t flag;
+        uint64_t msgSize;
+
         size_t readCount = 0; /* only in incomming package */
     };
 
@@ -45,7 +47,7 @@ public:
         if (idSegment == -1)
             return false;
 
-        Segment segment = {idSegment, msg.getFlags(), readcount};
+        Segment segment = {idSegment, msg.getFlags(), msg.getSize(), readcount};
         deconstructMessage(msg, segment);
         q.push(segment);
         m_nbUsed++;
@@ -65,6 +67,7 @@ public:
         auto segment = queueSegment.front();
         segment.readCount = readcount;
         segment.flag = msg.getFlags();
+        segment.msgSize = msg.getSize();
 
         queueSegment.pop();
         constructMessage(segment.id);
@@ -132,14 +135,18 @@ public:
 
 private:
     void constructMessage(UDPMessage &msg, const Segment &segment, size_t &readCount) const {
+        auto data = static_cast<const void *>(m_data.data() + segment.id * MAX_PACKET_SIZE);
+
         msg.setFlag(segment.flag);
-        msg.writeData(m_data.data() + segment.id * MAX_PACKET_SIZE, MAX_PACKET_SIZE);
+        msg.writeData(data, segment.msgSize);
         readCount = segment.readCount;
     }
 
     void deconstructMessage(const UDPMessage &msg, Segment &segment) {
+        auto data = m_data.data() + segment.id * MAX_PACKET_SIZE;
+
         segment.flag = msg.getFlags();
-        msg.readData(m_data.data() + segment.id * MAX_PACKET_SIZE, CF_MIN(MAX_PACKET_SIZE, msg.getSize()));
+        msg.readData(data, 0, segment.msgSize);
     }
 
     uint32_t getFreeSegment(void) {

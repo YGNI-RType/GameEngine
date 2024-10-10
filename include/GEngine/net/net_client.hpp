@@ -72,7 +72,8 @@ public:
     void recvDatagram(UDPMessage &msg);
 
     bool handleTCPEvents(fd_set &readSet);
-    bool handleClientMsg(void);
+    bool handleClientStream(void);
+    bool handleClientDatagram(UDPMessage &msg);
 
 public:
     bool sendPackets(void);

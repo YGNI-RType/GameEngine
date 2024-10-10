@@ -43,7 +43,7 @@ void NetClient::recvDatagram(UDPMessage &msg) {
     std::cout << "SV: client just sent UDP specific message" << std::endl;
 }
 
-bool NetClient::handleClientMsg(void) {
+bool NetClient::handleClientStream(void) {
     TCPMessage msg(0);
 
     if (!m_channel.readStream(msg))
@@ -64,13 +64,27 @@ bool NetClient::handleClientMsg(void) {
     return true;
 }
 
+bool NetClient::handleClientDatagram(UDPMessage &msg) {
+    size_t readOffset = 0;
+
+    if (!m_channel.readDatagram(msg, readOffset))
+        return false;
+
+    if (msg.shouldAck())
+        std::cout << "SV: client just sent UDP specific message" << std::endl;
+    switch (msg.getType()) {
+        default:
+            return pushIncommingData(msg, readOffset);
+    }
+}
+
 bool NetClient::handleTCPEvents(fd_set &readSet) {
     auto &socket = m_channel.getTcpSocket();
     if (!socket.isFdSet(readSet))
         return false;
 
     socket.removeFdSet(readSet);
-    return handleClientMsg();
+    return handleClientStream();
 }
 
 /** Net Queue **/

@@ -72,21 +72,21 @@ void Snapshot::createSnapshots(void) {
         auto &cl = *client.getNet();
         int64_t i = 0;
         int64_t size = cl.getSizeIncommingData();
+        /* le type 3 est un example, c'est usercmd par contre */
         for (i; i < size - 1; i++) {
-            Network::UDPMessage msg(false, 0);
             size_t readCount;
+            Network::UDPMessage msg(false, 3);
             if (!cl.popIncommingData(msg, readCount))
                 continue; /* impossible */
             /* todo : read the data and apply it to the world (another component) */
         }
         if (size > 0) {
             // temp
-            Network::UDPMessage msg(false, 0);
             size_t readCount;
+            Network::UDPMessage msg(false, 3);
             cl.popIncommingData(msg, readCount);
             client.setLastAck(msg.getAckNumber());
         }
-
 
         snap[m_currentSnapshotId % MAX_SNAPSHOT] = m_currentWorld;
     }

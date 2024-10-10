@@ -76,11 +76,11 @@ void Manager::handleNewEngineReq(InfoHeader &header) {
 
 void Manager::sendPackets(void) {
     NetServer &server = NET::getServer();
-    if (!server.sendPackets())
+    if (server.sendPackets())
         return;
 
     CLNetClient &client = NET::getClient();
-    if (!client.sendPackets())
+    if (client.sendPackets())
         return;
 }
 } // namespace Network::Event

@@ -98,8 +98,9 @@ public:
         return sizeof(T);
     }
 
-    void writeData(const void *data, std::size_t size);
-    void readData(void *data, std::size_t size) const;
+    void appendData(const void *data, std::size_t size);
+    void writeData(const void *data, std::size_t size, bool updateSize = true);
+    void readData(void *data, std::size_t offset, std::size_t size) const;
 
 protected:
     AMessage(uint8_t type);

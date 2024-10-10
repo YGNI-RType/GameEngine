@@ -123,17 +123,10 @@ bool NetServer::handleUdpMessageClients(SocketUDP &socket, UDPMessage &msg, cons
         if (channel.getAddress() != addr)
             continue;
 
-        size_t readOffset = 0;
-        if (!channel.readDatagram(msg, readOffset))
-            return true;
-        handleClientCMD_UDP(socket, *client, msg, readOffset);
+        client->handleClientDatagram(msg);
         return true;
     }
     return false;
-}
-
-void NetServer::handleClientCMD_UDP(SocketUDP &socket, NetClient &client, const UDPMessage &msg, size_t &readOffset) {
-    std::cout << "SV: received command !!" << std::endl;
 }
 
 bool NetServer::handleTCPEvent(fd_set &readSet) {
