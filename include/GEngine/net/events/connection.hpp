@@ -10,14 +10,12 @@
 #include <cstdint>
 #include <string>
 
-namespace Network::Event
-{
-    struct ConnectInfo {
-        std::string ip;
-        uint16_t port;
+namespace Network::Event {
+struct ConnectInfo {
+    std::string ip;
+    uint16_t port;
 
-        size_t pingIndex = -1;
-    };
+    size_t pingIndex = -1;
+};
 
-    
-} // namespace Network
+} // namespace Network::Event

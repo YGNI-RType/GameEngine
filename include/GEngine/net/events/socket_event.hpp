@@ -11,9 +11,9 @@
 
 namespace Network::Event {
 #ifdef _WIN32
+#include <atomic>
 #include <winsock2.h>
 #include <ws2tcpip.h>
-#include <atomic>
 
 #undef interface
 

@@ -7,9 +7,9 @@
 
 #pragma once
 
+#include "events/socket_event.hpp"
 #include "net_channel.hpp"
 #include "net_queue.hpp"
-#include "events/socket_event.hpp"
 
 #include <memory>
 #include <string>

@@ -30,7 +30,7 @@ private:
 
 public:
     NetQueue(Event::SocketEvent &socketEvent)
-        : m_socketEvent(socketEvent) {};
+        : m_socketEvent(socketEvent){};
 
     bool push(const UDPMessage &msg, size_t readcount) {
         std::unique_lock<std::mutex> lock(m_mutex);

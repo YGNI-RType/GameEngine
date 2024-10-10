@@ -18,9 +18,8 @@
 
 #define MAX_SNAPSHOT 60
 
-namespace Network
-{
-    class NetClient;
+namespace Network {
+class NetClient;
 } // namespace Network
 
 namespace gengine::interface::network::system {
@@ -28,7 +27,8 @@ namespace gengine::interface::network::system {
 class SnapshotClient {
 public:
     SnapshotClient(std::shared_ptr<Network::NetClient> client, uint64_t firsSnapshotId)
-        : m_client(client), m_firsSnapshotId(firsSnapshotId) {
+        : m_client(client)
+        , m_firsSnapshotId(firsSnapshotId) {
     }
 
     std::shared_ptr<Network::NetClient> getNet(void) const {
@@ -83,7 +83,7 @@ public:
 
 private:
     const snapshot_t &m_currentWorld;
-    std::vector<std::pair<SnapshotClient,snapshots_t>> m_clientSnapshots;
+    std::vector<std::pair<SnapshotClient, snapshots_t>> m_clientSnapshots;
     uint64_t m_currentSnapshotId = 0;
 
     mutable std::mutex m_netMutex;

@@ -28,7 +28,8 @@ void Snapshot::onStartEngine(gengine::system::event::StartEngine &e) {
     auto &eventManager = Network::NET::getEventManager();
 
     eventManager.registerCallback<std::shared_ptr<Network::NetClient>>(
-        Network::Event::CT_OnClientConnect, [this](std::shared_ptr<Network::NetClient> client) {
+        Network::Event::CT_OnClientConnect,
+        [this](std::shared_ptr<Network::NetClient> client) {
             std::lock_guard<std::mutex> lock(m_netMutex);
 
             registerClient(client);
@@ -66,8 +67,10 @@ void Snapshot::registerClient(std::shared_ptr<Network::NetClient> client) {
 void Snapshot::createSnapshots(void) {
     for (auto &[client, snap] : m_clientSnapshots) {
         if (client.shouldDelete()) { /* thread safe way of deleting a client from genengine */
-            m_clientSnapshots.erase(std::remove_if(m_clientSnapshots.begin(), m_clientSnapshots.end(),
-                [&client](const auto &pair) { return pair.first.getNet() == client.getNet(); }), m_clientSnapshots.end());
+            m_clientSnapshots.erase(
+                std::remove_if(m_clientSnapshots.begin(), m_clientSnapshots.end(),
+                               [&client](const auto &pair) { return pair.first.getNet() == client.getNet(); }),
+                m_clientSnapshots.end());
             continue;
         }
 

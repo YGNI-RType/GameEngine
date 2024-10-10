@@ -52,7 +52,9 @@ public:
     void storeEvent(std::unique_ptr<InfoHeader> info);
     void sendPackets(void);
 
-    SocketEvent &getSocketEvent() { return m_socketEvent; }
+    SocketEvent &getSocketEvent() {
+        return m_socketEvent;
+    }
 
     /** callback **/
 

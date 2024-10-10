@@ -30,7 +30,7 @@ public:
         , m_netChannel(NetChannel(false, nullptr, SocketTCP()))
         , m_packOutData(socketEvent)
         , m_packInData(socketEvent)
-        , m_packInDataAck(socketEvent) {};
+        , m_packInDataAck(socketEvent){};
     ~CLNetClient() = default;
 
     void init(void);
@@ -64,7 +64,6 @@ public:
         return m_connectionState >= CON_AUTHORIZING;
     }
 
-
 public:
     bool sendPackets(void);
     bool sendDatagram(UDPMessage &finishedMsg);
@@ -90,7 +89,6 @@ public:
     }
 
 private:
-
     bool retrieveWantedOutgoingData(UDPMessage &msg, size_t &readCount);
     bool pushIncommingData(const UDPMessage &msg, size_t readCount);
     bool pushIncommingDataAck(const UDPMessage &msg, size_t readCount);
@@ -102,8 +100,8 @@ private:
     connectionState m_connectionState = CON_UNINITIALIZED;
 
     /* todo : change based on average size */
-    NetQueue<24, 160> m_packOutData;  /* todo : get the size of Usercmd + own voip / */
-    NetQueue<32, 1400> m_packInData;  /* voiceip etc.. */
+    NetQueue<24, 160> m_packOutData;   /* todo : get the size of Usercmd + own voip / */
+    NetQueue<32, 1400> m_packInData;   /* voiceip etc.. */
     NetQueue<4, 1400> m_packInDataAck; /* snapshot */
 
     SocketUDP &m_socketUdp;
@@ -114,6 +112,5 @@ private:
 
     /* in bytes from data (header do not count), can be updated via cvar */
     size_t m_maxRate = 10000;
-
 };
 } // namespace Network
