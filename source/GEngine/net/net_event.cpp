@@ -55,13 +55,11 @@ void Manager::handleNewEngineReq(InfoHeader &header) {
 
         client.disconnectFromServer();
     } break;
-    case SEND_QUEUED_PACKET: /* send a tcp message */
-        sendPackets();
-        break;
     case PING:
         NET::pingServers();
         break;
     default:
+        sendPackets();
         break;
     }
 }

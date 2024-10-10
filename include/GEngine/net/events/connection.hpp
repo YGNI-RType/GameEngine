@@ -13,10 +13,10 @@
 namespace Network::Event
 {
     struct ConnectInfo {
-        size_t pingIndex;
-
         std::string ip;
         uint16_t port;
+
+        size_t pingIndex = -1;
     };
 
     

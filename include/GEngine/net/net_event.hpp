@@ -35,13 +35,15 @@ public:
     Manager() = default;
     ~Manager() = default;
 
+    /* game engine thread */
     template <typename T>
     void addEvent(Type type, const T &data) {
-        Info<T> info;
+        std::unique_ptr<Info<T>> info = std::make_unique<Info<T>>();
 
-        info.type = type;
-        info.data = std::make_unique<T>(data);
-        storeEvent(std::make_unique<InfoHeader>(info));
+        info->type = type;
+        info->data = std::make_unique<T>(data);
+        storeEvent(std::move(info));
+        m_socketEvent.signal();
     }
 
     void createSets(fd_set &readSet);
