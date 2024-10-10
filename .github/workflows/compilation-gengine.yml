@@ -89,6 +89,7 @@ jobs:
 
   beautify:
     runs-on: ubuntu-latest
+    container: fedora:40
     steps:
       - uses: actions/checkout@v4
 
