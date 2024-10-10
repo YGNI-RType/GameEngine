@@ -7,7 +7,9 @@
 
 #pragma once
 
+#include "events/socket_event.hpp"
 #include "net_channel.hpp"
+#include "net_queue.hpp"
 
 #include <memory>
 #include <string>
@@ -52,7 +54,7 @@ private:
 class NetClient {
 
 public:
-    NetClient(std::unique_ptr<Address> addr, SocketTCP &&socket, SocketUDP &socketudp);
+    NetClient(std::unique_ptr<Address> addr, SocketTCP &&socket, SocketUDP &socketudp, Event::SocketEvent &socketEvent);
     ~NetClient() = default;
 
     NetChannel &getChannel(void) {
@@ -67,12 +69,30 @@ public:
         return m_channel.isDisconnected();
     }
 
-    void sendDatagram(UDPMessage &msg);
     void recvDatagram(UDPMessage &msg);
 
     bool handleTCPEvents(fd_set &readSet);
-    bool handleClientMsg(void);
+    bool handleClientStream(void);
+    bool handleClientDatagram(UDPMessage &msg);
+
+public:
+    bool sendPackets(void);
+    bool sendDatagram(UDPMessage &msg);
     void sendStream(const TCPMessage &msg);
+
+public:
+    /** Net Queue **/
+
+    bool pushData(const UDPMessage &msg, bool shouldAck);
+    bool popIncommingData(UDPMessage &msg, size_t &readCount);
+    size_t getSizeIncommingData(void) const {
+        return m_packInData.size();
+    }
+
+private:
+    bool retrieveWantedOutgoingData(UDPMessage &msg, size_t &readCount);
+    bool retrieveWantedOutgoingDataAck(UDPMessage &msg, size_t &readCount);
+    bool pushIncommingData(const UDPMessage &msg, size_t readCount);
 
 private:
     NetChannel m_channel;
@@ -82,12 +102,19 @@ private:
     clientState m_state = CS_FREE;
     connectionState m_connectionState = CON_UNINITIALIZED;
 
+    /* todo : change based on average size */
+    NetQueue<16, 160> m_packInData;      /* todo : get the size of Usercmd + own voip / */
+    NetQueue<32, 1400> m_packOutData;    /* voiceip etc.. */
+    NetQueue<24, 1400> m_packOutDataAck; /* snapshot */
+
     // NetClientSnapshot m_snapshots[PACKET_BACKUP];
 
     /* sends CMD, not any data */
 
     SocketUDP &m_socketUdp;
 
-    uint16_t ping;
+    uint16_t ping = 0;
+
+    size_t m_maxRate = 0;
 };
 } // namespace Network

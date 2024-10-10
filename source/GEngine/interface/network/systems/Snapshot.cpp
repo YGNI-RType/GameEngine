@@ -21,14 +21,6 @@ std::shared_ptr<Network::NetClient> SnapshotClient::getNet(void) const {
     return m_client;
 }
 
-uint64_t SnapshotClient::getSnapshotId(void) const {
-    return m_firsSnapshotId;
-}
-
-void SnapshotClient::setSnapshotId(uint64_t id) {
-    m_firsSnapshotId = id;
-}
-
 Snapshot::Snapshot(const snapshot_t &currentWorld)
     : m_currentWorld(currentWorld)
     , m_dummySnapshot(currentWorld) { // TODO dummy must created after components registered
@@ -40,16 +32,38 @@ void Snapshot::init(void) {
 }
 
 void Snapshot::onStartEngine(gengine::system::event::StartEngine &e) {
-    Network::NET::initServer(*this);
+    /* TODO : make something other than this to register clients */
+    auto &eventManager = Network::NET::getEventManager();
+
+    eventManager.registerCallback<std::shared_ptr<Network::NetClient>>(
+        Network::Event::CT_OnClientConnect, [this](std::shared_ptr<Network::NetClient> client) {
+            std::lock_guard<std::mutex> lock(m_netMutex);
+
+            registerClient(client);
+        });
+    eventManager.registerCallback<std::shared_ptr<Network::NetClient>>(
+        Network::Event::CT_OnClientDisconnect, [this](std::shared_ptr<Network::NetClient> client) {
+            std::lock_guard<std::mutex> lock(m_netMutex);
+
+            auto it = std::find_if(m_clientSnapshots.begin(), m_clientSnapshots.end(),
+                                   [client](const auto &pair) { return pair.first.getNet().get() == client.get(); });
+            if (it == m_clientSnapshots.end())
+                return;
+            it->first.setShouldDelete(true);
+        });
 }
 
 void Snapshot::onMainLoop(gengine::system::event::MainLoop &e) {
-    m_currentSnapshotId++;
-    createSnapshots();
-    getAndSendDeltaDiff();
+    {
+        std::lock_guard<std::mutex> lock(m_netMutex);
 
-    // /* todo:  ça serait pas vraiment snapshot, plus un systeme network donc */
-    Network::NET::sleep(300);
+        m_currentSnapshotId++;
+        createSnapshots();
+        getAndSendDeltaDiff();
+    }
+
+    /* make something like this based on ticks */
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
 }
 
 /* todo warning : mutex please */
@@ -61,13 +75,33 @@ void Snapshot::registerClient(std::shared_ptr<Network::NetClient> client) {
 void Snapshot::createSnapshots(void) {
     for (auto &[client, snap] : m_clientSnapshots) {
         SnapshotClient &cli = client;
-        if (client.getNet()->isDisconnected()) { /* thread safe way of deleting a client from genengine */
+        if (client.shouldDelete()) { /* thread safe way of deleting a client from genengine */
             m_clientSnapshots.erase(
                 std::remove_if(m_clientSnapshots.begin(), m_clientSnapshots.end(),
                                [&cli](const auto &pair) { return pair.first.getNet() == cli.getNet(); }),
                 m_clientSnapshots.end());
             continue;
         }
+
+        auto &cl = *client.getNet();
+        int64_t i = 0;
+        int64_t size = cl.getSizeIncommingData();
+        /* le type 3 est un example, c'est usercmd par contre */
+        for (; i < size - 1; i++) {
+            size_t readCount;
+            Network::UDPMessage msg(false, 3);
+            if (!cl.popIncommingData(msg, readCount))
+                continue; /* impossible */
+            /* todo : read the data and apply it to the world (another component) */
+        }
+        if (size > 0) {
+            // temp
+            size_t readCount;
+            Network::UDPMessage msg(false, 3);
+            cl.popIncommingData(msg, readCount);
+            client.setLastAck(msg.getAckNumber());
+        }
+
         snap[m_currentSnapshotId % MAX_SNAPSHOT] = m_currentWorld;
     }
 }
@@ -76,8 +110,9 @@ void Snapshot::getAndSendDeltaDiff(void) {
     auto &server = Network::NET::getServer();
 
     for (auto &[client, snapshots] : m_clientSnapshots) {
-        auto lastReceived = client.getNet()->getChannel().getLastACKPacketId();
-        auto lastId = client.getSnapshotId() + lastReceived;
+        /* get that info via callback OnAckUpdate */
+        auto lastReceived = client.getLastAck();
+        auto lastId = client.getLastAck() + lastReceived;
         auto diff = m_currentSnapshotId - lastId;
         std::cout << "diff: " << diff << " | m_currentSnapshotId: " << m_currentSnapshotId << " last id: " << lastId
                   << " UDP Last ACK: " << lastReceived << std::endl;
@@ -100,9 +135,7 @@ void Snapshot::getAndSendDeltaDiff(void) {
 
         if (!server.isRunning())
             continue;
-        // for (auto &cl : getClients)
-        //     cl.pushData(msg, true);
-        server.sendToClient(*client.getNet(), msg);
+        client.getNet()->pushData(msg, true);
     }
 }
 

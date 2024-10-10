@@ -22,12 +22,13 @@ void Updater::init(void) {
 // }
 
 void Updater::onMainLoop(gengine::system::event::MainLoop &e) {
-    Network::UDPMessage msg(true, Network::SV_SNAPSHOT);
-    size_t size = 0; // cl.getSizeIncommingData();
+    Network::CLNetClient &cl = Network::NET::getClient();
+    ;
+    size_t size = cl.getSizeIncommingData(Network::SV_SNAPSHOT, true);
     for (size_t i = 0; i < size; i++) {
-        Network::UDPMessage msg(false, 0);
+        Network::UDPMessage msg(true, Network::SV_SNAPSHOT);
         size_t readCount;
-        if (1) //! cl.popIncommingData(msg, readCount))
+        if (!cl.popIncommingData(msg, readCount, true))
             continue;
         handleSnapshotMsg(msg, readCount);
     }
@@ -39,7 +40,7 @@ void Updater::handleSnapshotMsg(Network::UDPMessage &msg, size_t readCount) {
     for (int i = 0; i < nb; i++) {
         NetworkComponent c;
         msg.readContinuousData(c, readCount);
-        // std::cout << c.entity << " -> name: [" << c.type << "] size: " << c.size << std::endl;
+        std::cout << c.entity << " -> name: [" << c.typeId << "] size: " << c.size << std::endl;
         std::vector<Network::byte_t> component(c.size);
         msg.readData(component.data(), readCount, c.size);
         auto &type = getTypeindex(c.typeId); // TODO array for opti

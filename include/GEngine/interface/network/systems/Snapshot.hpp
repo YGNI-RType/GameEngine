@@ -8,6 +8,7 @@
 #pragma once
 
 #include <array>
+#include <mutex>
 
 #include "GEngine/BaseEngine.hpp"
 
@@ -31,13 +32,26 @@ public:
 
     std::shared_ptr<Network::NetClient> getNet(void) const;
 
-    uint64_t getSnapshotId(void) const;
+    uint64_t getLastAck(void) const {
+        return m_lastAck;
+    }
+    void setLastAck(uint64_t lastAck) {
+        m_lastAck = lastAck;
+    }
 
-    void setSnapshotId(uint64_t id);
+    bool shouldDelete(void) const {
+        return m_shouldDelete;
+    }
+    void setShouldDelete(bool shouldDelete) {
+        m_shouldDelete = shouldDelete;
+    }
 
 private:
     std::shared_ptr<Network::NetClient> m_client;
     uint64_t m_firsSnapshotId;
+
+    uint64_t m_lastAck = 0;
+    bool m_shouldDelete = false;
 };
 
 class Snapshot : public System<Snapshot> {
@@ -62,5 +76,7 @@ private:
     uint64_t m_currentSnapshotId = -1;
 
     std::vector<ecs::component::component_info_t> getDeltaDiff(const snapshot_t &snap1, const snapshot_t &snap2) const;
+
+    mutable std::mutex m_netMutex;
 };
 } // namespace gengine::interface::network::system

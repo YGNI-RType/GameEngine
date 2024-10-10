@@ -15,7 +15,9 @@
 #include <winsock2.h>
 
 typedef uint32_t in_addr_t;
+
 #undef interface
+
 #else
 #include <arpa/inet.h>
 #include <fcntl.h>

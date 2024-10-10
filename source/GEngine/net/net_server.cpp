@@ -8,30 +8,22 @@
 #include "GEngine/net/net_server.hpp"
 #include "GEngine/cvar/net.hpp"
 
-#include "GEngine/interface/network/systems/Snapshot.hpp"
+#include "GEngine/net/net.hpp"
 
 #include <iostream>
 
 namespace Network {
 
-uint16_t NetServer::start(size_t maxClients, const std::vector<IP> &g_localIPs, uint16_t currentUnusedPort,
-                          gengine::interface::network::system::Snapshot &snapshot) {
+uint16_t NetServer::start(size_t maxClients, uint16_t currentUnusedPort) {
     // TODO : cloes everything if already initted
     if (m_isRunning)
         return currentUnusedPort;
 
-    m_snapshotSystem = &snapshot;
-    for (const IP &ip : g_localIPs) { // todo : force an ip, find the best ip
-                                      // (privileging pubilc interface)
-        if (ip.type == AT_IPV4) {
-            m_socketv4 = openSocketTcp(currentUnusedPort, false);
-            currentUnusedPort++;
-        }
-        if (ip.type == AT_IPV6 && CVar::net_ipv6.getIntValue()) { // check if ipv6 is supported
-            m_socketv6 = openSocketTcp(ip, currentUnusedPort);
-            currentUnusedPort++;
-        }
-        break;
+    m_socketv4 = openSocketTcp(currentUnusedPort, false);
+    currentUnusedPort++;
+    if (CVar::net_ipv6.getIntValue()) { // check if ipv6 is supported
+        m_socketv6 = openSocketTcp(currentUnusedPort, true);
+        currentUnusedPort++;
     }
 
     m_maxClients = maxClients;
@@ -87,11 +79,11 @@ void NetServer::handleNewClient(SocketTCPMaster &socket) {
     auto clientAddrType = unkwAddr.getType();
     if (clientAddrType == AT_IPV4)
         cl = std::make_shared<NetClient>(std::make_unique<AddressV4>(unkwAddr.getV4()), std::move(newSocket),
-                                         m_socketUdpV4);
+                                         m_socketUdpV4, NET::getEventManager().getSocketEvent());
 
     else if (clientAddrType == AT_IPV6)
         cl = std::make_shared<NetClient>(std::make_unique<AddressV6>(unkwAddr.getV6()), std::move(newSocket),
-                                         m_socketUdpV6);
+                                         m_socketUdpV6, NET::getEventManager().getSocketEvent());
     else
         return; /* impossible */
 
@@ -107,7 +99,7 @@ void NetServer::handleNewClient(SocketTCPMaster &socket) {
 
     std::cout << "SV: Client challange: " << channel.getChallenge() << std::endl;
 
-    // m_snapshotSystem->registerClient(cl);
+    NET::getEventManager().invokeCallbacks(Event::CT_OnClientConnect, cl);
     channel.sendStream(msg);
 }
 
@@ -127,20 +119,13 @@ bool NetServer::handleUDPEvent(SocketUDP &socket, UDPMessage &msg, const Address
 bool NetServer::handleUdpMessageClients(SocketUDP &socket, UDPMessage &msg, const Address &addr) {
     for (const auto &client : m_clients) {
         auto &channel = client->getChannel();
-        if (channel.getAddress() != addr)
+        if (channel.getAddressUDP() != addr)
             continue;
 
-        size_t readOffset = 0;
-        if (!channel.readDatagram(msg, readOffset))
-            return true;
-        handleClientCMD_UDP(socket, *client, msg, readOffset);
+        client->handleClientDatagram(msg);
         return true;
     }
     return false;
-}
-
-void NetServer::handleClientCMD_UDP(SocketUDP &socket, NetClient &client, const UDPMessage &msg, size_t &readOffset) {
-    std::cout << "SV: received command !!" << std::endl;
 }
 
 bool NetServer::handleTCPEvent(fd_set &readSet) {
@@ -167,11 +152,21 @@ bool NetServer::handleTCPEvent(fd_set &readSet) {
                                                    return cl.get() == client.get();
                                                }),
                                 m_clients.end());
+                NET::getEventManager().invokeCallbacks(Event::CT_OnClientDisconnect, client);
             }
             return true;
         }
 
     return false;
+}
+
+bool NetServer::sendPackets(void) {
+    if (!isRunning())
+        return false;
+
+    for (const auto &client : m_clients)
+        client->sendPackets();
+    return true;
 }
 
 void NetServer::sendToAllClients(UDPMessage &msg) {

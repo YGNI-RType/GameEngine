@@ -45,8 +45,10 @@ set_target_properties(GEngine_static PROPERTIES
 )
 
 find_package(raylib CONFIG REQUIRED)
-target_link_libraries(GEngine raylib)
-target_link_libraries(GEngine_static raylib)
+find_package(glfw3 CONFIG REQUIRED)
+
+target_link_libraries(GEngine raylib glfw)
+target_link_libraries(GEngine_static raylib glfw)
 
 install(TARGETS GEngine GEngine_static
         EXPORT GEngine_targets
@@ -62,6 +64,7 @@ install(EXPORT GEngine_targets
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/GEngineConfig.cmake"
 "include(CMakeFindDependencyMacro)\n"
 "find_dependency(raylib CONFIG REQUIRED)\n"
+"find_dependency(glfw3 CONFIG REQUIRED)\n"
 "include(\"\${CMAKE_CURRENT_LIST_DIR}/GEngineTargets.cmake\")\n"
 )
 

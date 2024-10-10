@@ -5,9 +5,9 @@
 ** socket
 */
 
-#include "GEngine/net/socket.hpp"
+#include "GEngine/net/net_socket.hpp"
 #include "GEngine/cvar/net.hpp"
-#include "GEngine/net/socketError.hpp"
+#include "GEngine/net/net_socket_error.hpp"
 
 #include <algorithm>
 #include <cerrno>
@@ -23,7 +23,9 @@
 #include <winsock2.h>
 #include <ws2spi.h>
 #include <ws2tcpip.h>
+
 #undef interface
+
 #else
 #include <arpa/inet.h>
 #include <fcntl.h>
@@ -36,7 +38,6 @@ namespace Network {
 
 #ifdef _WIN32
 WSADATA ASocket::winsockdata;
-#undef interface
 #endif
 
 SOCKET ASocket::m_highFd = -1;
@@ -48,14 +49,12 @@ ASocket::~ASocket() {
 
 ASocket::ASocket(ASocket &&other) {
     m_sock = other.m_sock;
-    m_port = other.m_port;
     other.m_sock = -1;
 }
 
 ASocket &ASocket::operator=(ASocket &&other) {
     if (this != &other) {
         m_sock = other.m_sock;
-        m_port = other.m_port;
         other.m_sock = -1;
     }
     return *this;
@@ -72,7 +71,6 @@ void ASocket::initLibs(void) {
     }
 
     // Com_Printf( "Winsock Initialized\n" );
-#undef interface
 #endif
     FD_ZERO(&m_fdSet);
 }
@@ -87,7 +85,6 @@ int ASocket::socketClose(void) {
     status = shutdown(m_sock, SD_BOTH);
     if (status == 0)
         status = closesocket(m_sock);
-#undef interface
 #else
     status = shutdown(m_sock, SHUT_RDWR);
     if (status == 0)
@@ -107,11 +104,25 @@ void ASocket::addSocketPool(SOCKET socket) {
         m_highFd = socket;
 }
 
-void ASocket::setBlocking(bool blocking) {
+//////////////////////////////////////
+
+ANetSocket::ANetSocket(ANetSocket &&other) {
+    m_sock = other.m_sock;
+    m_port = other.m_port;
+    other.m_sock = -1;
+}
+
+ANetSocket &ANetSocket::operator=(ANetSocket &&other) {
+    if (this != &other)
+        m_port = other.m_port;
+    ASocket::operator=(std::move(other));
+    return *this;
+}
+
+void ANetSocket::setBlocking(bool blocking) {
 #ifdef _WIN32
     u_long mode = blocking ? 0 : 1;
     ioctlsocket(m_sock, FIONBIO, &mode);
-#undef interface
 #else
     int flags = fcntl(m_sock, F_GETFL, 0);
     if (blocking)
@@ -122,19 +133,18 @@ void ASocket::setBlocking(bool blocking) {
 #endif
 }
 
-bool ASocket::isBlocking(void) const {
+bool ANetSocket::isBlocking(void) const {
 #ifdef _WIN32
     u_long mode;
     ioctlsocket(m_sock, FIONBIO, &mode);
     return mode == 0;
-#undef interface
 #else
     int flags = fcntl(m_sock, F_GETFL, 0);
     return (flags & O_NONBLOCK) == 0;
 #endif
 }
 
-void ASocket::translateAutomaticAddressing(struct sockaddr_storage &addr_storage, uint16_t port, bool ipv6) {
+void ANetSocket::translateAutomaticAddressing(struct sockaddr_storage &addr_storage, uint16_t port, bool ipv6) {
     if (!ipv6) {
         struct sockaddr_in *addr = reinterpret_cast<struct sockaddr_in *>(&addr_storage);
 
@@ -167,7 +177,7 @@ SocketTCPMaster::SocketTCPMaster(const IP &ip, uint16_t port) {
 
     address.sin_port = htons(port);
 
-    if (bind(m_sock, (sockaddr *)&address, sizeof(address)) < 0)
+    if (bind(m_sock, (sockaddr *)&address, ip.type == AT_IPV6 ? sizeof(sockaddr_in6) : sizeof(sockaddr_in)) < 0)
         throw SocketException("(TCP) Failed to bind socket");
 
     if (listen(m_sock, MAX_LISTEN) < 0)
@@ -199,11 +209,11 @@ SocketTCPMaster::SocketTCPMaster(uint16_t port, bool ipv6) {
 }
 
 SocketTCPMaster::SocketTCPMaster(SocketTCPMaster &&other)
-    : ASocket(std::move(other)) {
+    : ANetSocket(std::move(other)) {
 }
 SocketTCPMaster &SocketTCPMaster::operator=(SocketTCPMaster &&other) {
     if (this != &other)
-        ASocket::operator=(std::move(other));
+        ANetSocket::operator=(std::move(other));
     return *this;
 }
 
@@ -240,8 +250,10 @@ SocketTCP::SocketTCP(const AddressV4 &addr, uint16_t tcpPort, bool block) {
     address.sin_port = htons(m_port);
 
     if (connect(m_sock, (sockaddr *)&address, sizeof(address)) < 0) {
-        if (errno == EINPROGRESS)
+        if (errno == EINPROGRESS) {
+            addSocketPool(m_sock);
             return;
+        }
         socketClose();
         throw SocketException(strerror(errno));
     }
@@ -265,8 +277,10 @@ SocketTCP::SocketTCP(const AddressV6 &addr, uint16_t tcpPort, bool block) {
     address.sin6_port = htons(m_port);
 
     if (connect(m_sock, (sockaddr *)&address, sizeof(address)) < 0) {
-        if (errno == EINPROGRESS)
+        if (errno == EINPROGRESS) {
+            addSocketPool(m_sock);
             return;
+        }
         socketClose();
         throw SocketException(strerror(errno));
     }
@@ -276,11 +290,11 @@ SocketTCP::SocketTCP(const AddressV6 &addr, uint16_t tcpPort, bool block) {
 }
 
 SocketTCP::SocketTCP(SocketTCP &&other)
-    : ASocket(std::move(other)) {
+    : ANetSocket(std::move(other)) {
 }
 SocketTCP &SocketTCP::operator=(SocketTCP &&other) {
     if (this != &other)
-        ASocket::operator=(std::move(other));
+        ANetSocket::operator=(std::move(other));
     return *this;
 }
 
@@ -302,7 +316,7 @@ void SocketTCP::receive(TCPMessage &msg) const {
     /* WIN : need to use these parenthesis, to skip windows.h macro (todo : find why +1, another problem with packed
      * structs ?)*/
     recvSz = receiveReliant(reinterpret_cast<TCPSerializedMessage *>(ptrMsg + recvSz),
-                            CF_MIN(sMsg.curSize + 1, sizeof(TCPSerializedMessage) - recvSz));
+                            CF_NET_MIN(sMsg.curSize + 1, sizeof(TCPSerializedMessage) - recvSz));
 
     msg.setSerialize(sMsg);
 }
@@ -354,7 +368,7 @@ void SocketUDP::init(bool block, uint16_t port) {
     if (setsockopt(m_sock, SOL_SOCKET, SO_BROADCAST, (char *)&opt, sizeof(opt)))
         throw std::runtime_error("(UDP) Failed to set socket options (SO_BROADCAST)");
 #ifdef NET_DONT_FRAG
-#ifdef __FreeBSD__ || defined(__APPLE__)
+#if defined(__FreeBSD__) || defined(__APPLE__)
     if (setsockopt(m_sock, IPPROTO_IP, IP_DONTFRAG, &opt, sizeof(opt)))
 #else
     if (setsockopt(m_sock, IPPROTO_IP, IP_MTU_DISCOVER, &opt, sizeof(opt)))
@@ -371,7 +385,7 @@ SocketUDP::SocketUDP(const IP &ip, uint16_t port, bool block) {
 
     address.sin_port = htons(port);
 
-    if (bind(m_sock, (sockaddr *)&address, sizeof(address)) < 0)
+    if (bind(m_sock, (sockaddr *)&address, ip.type == AT_IPV6 ? sizeof(sockaddr_in6) : sizeof(sockaddr_in)) < 0)
         throw SocketException("(UDP) Failed to bind socket");
 
     addSocketPool(m_sock);
@@ -390,11 +404,11 @@ SocketUDP::SocketUDP(uint16_t port, bool ipv6, bool block) {
 }
 
 SocketUDP::SocketUDP(SocketUDP &&other)
-    : ASocket(std::move(other)) {
+    : ANetSocket(std::move(other)) {
 }
 SocketUDP &SocketUDP::operator=(SocketUDP &&other) {
     if (this != &other)
-        ASocket::operator=(std::move(other));
+        ANetSocket::operator=(std::move(other));
     return *this;
 }
 

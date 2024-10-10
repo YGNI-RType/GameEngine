@@ -20,12 +20,13 @@
 #include "GEngine/net/net.hpp"
 #include "GEngine/cvar/net.hpp"
 #include "GEngine/net/msg.hpp"
-#include "GEngine/net/socketError.hpp"
+#include "GEngine/net/net_socket_error.hpp"
 
 #include "GEngine/cvar/net.hpp"
 
 #include <algorithm>
 #include <cstring>
+#include <thread>
 
 #ifdef _WIN32
 // TODO : remove unused
@@ -38,6 +39,7 @@ typedef int socklen_t;
 typedef u_long ioctlarg_t;
 
 #define socketError WSAGetLastError()
+#undef interface
 
 #undef interface
 #else
@@ -68,60 +70,76 @@ SocketTCPMaster NET::mg_socketListenTcp;
 SocketUDP NET::mg_socketUdpV6;
 SocketTCPMaster NET::mg_socketListenTcpV6;
 
+Event::Manager NET::mg_eventManager;
 NetServer NET::mg_server(mg_socketUdp, mg_socketUdpV6);
 CLNetClient NET::mg_client(CVar::net_ipv6.getIntValue() ? mg_socketUdpV6 : mg_socketUdp,
-                           CVar::net_ipv6.getIntValue() ? AT_IPV6 : AT_IPV4);
+                           CVar::net_ipv6.getIntValue() ? AT_IPV6 : AT_IPV4, mg_eventManager.getSocketEvent());
 
 std::vector<IP> NET::g_localIPs;
 
-uint16_t NET::currentUnusedPort = DEFAULT_PORT;
+std::thread NET::mg_networkThread;
 
-bool NET::enabled = false;
+std::uint16_t NET::mg_currentUnusedPort = DEFAULT_PORT;
+
+std::atomic_bool NET::mg_aEnable = false;
+std::mutex NET::mg_mutex;
 
 /***************/
 
-void NET::init(void) {
+bool NET::init(void) {
+    if (mg_aEnable)
+        return false;
+
+    mg_aEnable = true;
+    std::lock_guard<std::mutex> lock(mg_mutex);
     ASocket::initLibs();
 
-    getLocalAddress();
-
-    for (const IP &ip : g_localIPs) { // todo : force an ip, find the best ip
-                                      // (privileging pubilc interface)
-        if (ip.type == AT_IPV4) {
-            /* todo : this is stupid */
-            mg_socketUdp = openSocketUdp(currentUnusedPort, false);
-            currentUnusedPort++;
-        }
-        if (ip.type == AT_IPV6 && CVar::net_ipv6.getIntValue()) { // check if ipv6 is supported
-            mg_socketUdpV6 = openSocketUdp(ip, currentUnusedPort);
-            currentUnusedPort++;
-        }
-        break;
+    mg_socketUdp = openSocketUdp(mg_currentUnusedPort, false);
+    mg_currentUnusedPort++;
+    if (CVar::net_ipv6.getIntValue()) { // check if ipv6 is supported
+        mg_socketUdpV6 = openSocketUdp(mg_currentUnusedPort, true);
+        mg_currentUnusedPort++;
     }
-
-    enabled = true;
+    return true;
 }
 
-void NET::initServer(gengine::interface::network::system::Snapshot &snapshot) {
-    if (!NET::enabled)
-        return;
+bool NET::initServer(void) {
+    std::lock_guard<std::mutex> lock(mg_mutex);
+    if (!NET::mg_aEnable)
+        return false;
 
-    currentUnusedPort =
-        NET::mg_server.start(CVar::sv_maxplayers.getIntValue(), g_localIPs, currentUnusedPort, snapshot);
+    mg_currentUnusedPort = NET::mg_server.start(CVar::sv_maxplayers.getIntValue(), mg_currentUnusedPort);
+    return true;
 }
 
-void NET::initClient(void) {
-    if (!NET::enabled)
-        return;
+bool NET::start(void) {
+    if (!NET::mg_aEnable)
+        return false;
+
+    mg_networkThread = std::thread([]() {
+        while (mg_aEnable)
+            sleep(30000);
+    });
+    return true;
+}
+
+bool NET::initClient(void) {
+    std::lock_guard<std::mutex> lock(mg_mutex);
+    if (!NET::mg_aEnable)
+        return false;
 
     mg_client.init();
+    return true;
 }
 
 void NET::stop(void) {
     NET::mg_server.stop();
 
     g_localIPs.clear();
-    enabled = false;
+    mg_aEnable = false;
+
+    /* end of thread */
+    mg_networkThread.join();
 }
 
 void NET::getLocalAddress(void) {
@@ -260,6 +278,7 @@ void NET::createSets(fd_set &readSet) {
 
     mg_server.createSets(readSet);
     mg_client.createSets(readSet);
+    mg_eventManager.createSets(readSet);
 
     mg_socketUdp.setFdSet(readSet);
     if (CVar::net_ipv6.getIntValue())
@@ -274,9 +293,12 @@ bool NET::handleUdpEvent(SocketUDP &socket, UDPMessage &msg, const Address &addr
 }
 
 bool NET::handleEvents(fd_set &readSet) {
+    if (mg_eventManager.handleEvent(readSet))
+        return true;
+
     if (mg_socketUdp.isFdSet(readSet)) {
         UDPMessage msg(0, 0);
-        while (1) {
+        while (true) {
             AddressV4 addr(AT_IPV6, 0);
             bool shouldContinue = mg_socketUdp.receiveV4(msg, addr);
             if (!shouldContinue)
@@ -286,7 +308,7 @@ bool NET::handleEvents(fd_set &readSet) {
     }
     if (CVar::net_ipv6.getIntValue() && mg_socketUdpV6.isFdSet(readSet)) {
         UDPMessage msg(0, 0);
-        while (1) {
+        while (true) {
             AddressV6 addr(AT_IPV6, 0);
             bool shouldContinue = mg_socketUdp.receiveV6(msg, addr);
             if (!shouldContinue)
