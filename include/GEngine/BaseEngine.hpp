@@ -29,7 +29,7 @@ public:
 
     const world_t &getWorld(void) {
         return m_ecs.getComponentMap();
-    }
+    } // TODO keep ?
 
 private:
     ecs::ECS m_ecs;

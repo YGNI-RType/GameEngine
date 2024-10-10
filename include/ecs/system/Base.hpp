@@ -43,7 +43,15 @@ public:
     template <typename T>
     component::SparseArray<T> &getComponents(void);
 
+    template <typename T>
+    void setComponent(entity::Entity entity, const T &component);
+    template <typename T, class... Params>
+    void setComponent(entity::Entity entity, Params &&...p);
     void setComponent(entity::Entity entity, const std::type_index &type, const std::any &comp);
+
+    template <typename T>
+    void unsetComponent(entity::Entity entity);
+    void unsetComponent(entity::Entity entity, const std::type_index &type);
 
     template <class T, class... Params>
     void registerSystem(Params &&...p);
@@ -65,6 +73,14 @@ public:
     void pause(void);
 
     void resume(void);
+
+    ecs::component::ComponentTools::component_id_t getComponentId(const std::type_index &type) const;
+    const std::type_index &getTypeindex(ecs::component::ComponentTools::component_id_t id) const;
+    ecs::component::ComponentTools::component_size_t getComponentSize(const std::type_index &type) const;
+    std::vector<ecs::component::component_info_t> compareComponents(const std::type_index &type, const std::any &any1,
+                                                                    const std::any &any2) const;
+    const void *toVoid(const std::type_index &type, const std::any &any) const;
+    const std::any toAny(const std::type_index &type, const void *component) const;
 
 private:
     friend class system::Manager;

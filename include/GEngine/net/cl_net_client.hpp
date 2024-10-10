@@ -30,7 +30,7 @@ public:
         , m_netChannel(NetChannel(false, nullptr, SocketTCP()))
         , m_packOutData(socketEvent)
         , m_packInData(socketEvent)
-        , m_packInDataAck(socketEvent){};
+        , m_packInDataAck(socketEvent) {};
     ~CLNetClient() = default;
 
     void init(void);

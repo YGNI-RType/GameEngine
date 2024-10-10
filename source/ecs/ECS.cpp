@@ -14,7 +14,7 @@ ECS::ECS()
 }
 
 void ECS::killEntity(entity::Entity entity) {
-    destroyComponents(entity);
+    unsetComponents(entity);
     destroyEntity(entity);
 }
 

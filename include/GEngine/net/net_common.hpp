@@ -31,6 +31,7 @@ namespace Network {
 #define sa_family_t ADDRESS_FAMILY
 #else
 typedef unsigned short sa_family_t;
+#undef interface
 #endif
 #endif
 

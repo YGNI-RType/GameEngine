@@ -41,6 +41,7 @@ typedef u_long ioctlarg_t;
 #define socketError WSAGetLastError()
 #undef interface
 
+#undef interface
 #else
 #include <arpa/inet.h>
 #include <errno.h>
@@ -228,21 +229,19 @@ void NET::addLocalAddress(char *ifname, struct sockaddr *sockaddr, struct sockad
 }
 
 void NET::sortLocalAddresses(void) {
-    std::sort(
-        g_localIPs.begin(), g_localIPs.end(),
-        [](const IP &a, const IP &b) {
-            if (a.type == AT_LOOPBACK)
-                return true;
-            if (b.type == AT_LOOPBACK)
-                return false;
-
-            if (a.type == AT_IPV4 && b.type == AT_IPV6)
-                return true;
-            if (a.type == AT_IPV6 && b.type == AT_IPV4)
-                return false;
-
+    std::sort(g_localIPs.begin(), g_localIPs.end(), [](const IP &a, const IP &b) {
+        if (a.type == AT_LOOPBACK)
+            return true;
+        if (b.type == AT_LOOPBACK)
             return false;
-        });
+
+        if (a.type == AT_IPV4 && b.type == AT_IPV6)
+            return true;
+        if (a.type == AT_IPV6 && b.type == AT_IPV4)
+            return false;
+
+        return false;
+    });
 }
 
 bool NET::isLanAddress(const Address &addr) {

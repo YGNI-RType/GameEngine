@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
+** GameEngine
 ** File description:
-** NetworkMainLoop.hpp
+** Snapshot.hpp
 */
 
 #pragma once
@@ -16,6 +16,8 @@
 #include "GEngine/libdev/systems/events/MainLoop.hpp"
 #include "GEngine/libdev/systems/events/Native.hpp"
 
+#include "GEngine/interface/network/systems/NetworkComponent.hpp"
+
 #define MAX_SNAPSHOT 60
 
 namespace Network {
@@ -26,20 +28,15 @@ namespace gengine::interface::network::system {
 
 class SnapshotClient {
 public:
-    SnapshotClient(std::shared_ptr<Network::NetClient> client, uint64_t firsSnapshotId)
-        : m_client(client)
-        , m_firsSnapshotId(firsSnapshotId) {
-    }
+    SnapshotClient(std::shared_ptr<Network::NetClient> client, uint64_t firsSnapshotId);
 
-    std::shared_ptr<Network::NetClient> getNet(void) const {
-        return m_client;
-    }
+    std::shared_ptr<Network::NetClient> getNet(void) const;
 
-    uint64_t getSnapshotId(void) const {
-        return m_firsSnapshotId;
+    uint64_t getLastAck(void) const {
+        return m_lastAck;
     }
-    void setSnapshotId(uint64_t id) {
-        m_firsSnapshotId = id;
+    void setLastAck(uint64_t lastAck) {
+        m_lastAck = lastAck;
     }
 
     bool shouldDelete(void) const {
@@ -47,13 +44,6 @@ public:
     }
     void setShouldDelete(bool shouldDelete) {
         m_shouldDelete = shouldDelete;
-    }
-
-    uint64_t getLastAck(void) const {
-        return m_lastAck;
-    }
-    void setLastAck(uint64_t lastAck) {
-        m_lastAck = lastAck;
     }
 
 private:
@@ -69,9 +59,7 @@ public:
     using snapshot_t = BaseEngine::world_t;
     using snapshots_t = std::array<snapshot_t, MAX_SNAPSHOT>;
 
-    Snapshot(const snapshot_t &currentWorld)
-        : m_currentWorld(currentWorld) {
-    }
+    Snapshot(const snapshot_t &currentWorld);
 
     void init(void) override;
     void onStartEngine(gengine::system::event::StartEngine &);
@@ -79,12 +67,15 @@ public:
 
     void registerClient(std::shared_ptr<Network::NetClient> client);
     void createSnapshots(void);
-    void deltaDiff(void);
+    void getAndSendDeltaDiff(void);
 
 private:
     const snapshot_t &m_currentWorld;
+    snapshot_t m_dummySnapshot;
     std::vector<std::pair<SnapshotClient, snapshots_t>> m_clientSnapshots;
-    uint64_t m_currentSnapshotId = 0;
+    uint64_t m_currentSnapshotId = -1;
+
+    std::vector<ecs::component::component_info_t> getDeltaDiff(const snapshot_t &snap1, const snapshot_t &snap2) const;
 
     mutable std::mutex m_netMutex;
 };

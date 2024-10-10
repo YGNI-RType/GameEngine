@@ -14,7 +14,7 @@ void KeyboardCatcher::init(void) {
 }
 
 void KeyboardCatcher::onMainLoop(gengine::system::event::MainLoop &e) {
-    for (KeyboardKey key = KEY_APOSTROPHE; key != KEY_NULL; ++key) {
+    for (KeyboardKey key = KEY_SPACE; key != KEY_NULL; ++key) {
         if (IsKeyReleased(key))
             processKeyInput(key, InputState::RELEASE);
         if (IsKeyPressed(key))
