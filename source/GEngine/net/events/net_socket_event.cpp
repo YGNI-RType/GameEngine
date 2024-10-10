@@ -7,27 +7,30 @@
 
 #include "GEngine/net/events/socket_event.hpp"
 
+#ifdef HAS_NOT_EVENTD
 #include <cstring>
 #include <stdexcept>
+#ifdef __APPLE__
+#define closesocket close
+#endif
+#endif
 
 namespace Network::Event {
 
 SocketEvent::SocketEvent() {
 #ifdef HAS_NOT_EVENTFD
     m_sockConnect = socket(AF_INET, SOCK_STREAM, 0);
-    if (m_sockConnect == INVALID_SOCKET) {
-        WSACleanup();
+    if (m_sockConnect == INVALID_SOCKET)
         throw std::runtime_error("Failed to create socket");
-    }
 
     auto listenSock = socket(AF_INET, SOCK_STREAM, 0);
-    if (listenSock == INVALID_SOCKET) {
-        WSACleanup();
+    if (listenSock == INVALID_SOCKET)
         throw std::runtime_error("Failed to create socket");
-    }
 
+#ifdef _WIN32
     unsigned int opt = 1;
     setsockopt(listenSock, SOL_SOCKET, SO_EXCLUSIVEADDRUSE, (char *)&opt, (socklen_t)sizeof(opt));
+#endif
 
     struct sockaddr_in addr;
     std::memset(&addr, 0, sizeof(addr));
@@ -35,28 +38,26 @@ SocketEvent::SocketEvent() {
     addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
     addr.sin_port = 0;
 
-    if (bind(listenSock, (struct sockaddr *)&addr, sizeof(addr)) == SOCKET_ERROR) {
+    if (bind(listenSock, (struct sockaddr *)&addr, sizeof(addr)) == -1) {
         closesocket(listenSock);
-        WSACleanup();
         throw std::runtime_error("Failed to bind socket");
     }
 
+#ifdef _WIN32
     int len = sizeof(addr);
-    if (getsockname(listenSock, (struct sockaddr *)&addr, &len) == SOCKET_ERROR) {
+    if (getsockname(listenSock, (struct sockaddr *)&addr, &len) == -1) {
         closesocket(listenSock);
-        WSACleanup();
         throw std::runtime_error("Failed to bind socket");
     }
+#endif
 
     if (listen(listenSock, 1) == -1) {
         closesocket(listenSock);
-        WSACleanup();
         throw std::runtime_error("Failed to bind socket");
     }
 
-    if (connect(m_sockConnect, (struct sockaddr *)&addr, sizeof(addr)) == SOCKET_ERROR) {
+    if (connect(m_sockConnect, (struct sockaddr *)&addr, sizeof(addr)) == -1) {
         closesocket(m_sockConnect);
-        WSACleanup();
         throw std::runtime_error("Failed to connect to socket");
     }
 
@@ -65,9 +66,8 @@ SocketEvent::SocketEvent() {
      */
 
     m_sock = accept(listenSock, nullptr, nullptr);
-    if (m_sock == SOCKET_ERROR) {
+    if (m_sock == -1) {
         closesocket(m_sock);
-        WSACleanup();
         throw std::runtime_error("Failed to connect to socket");
     }
 
