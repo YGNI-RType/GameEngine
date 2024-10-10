@@ -91,7 +91,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: fedora:40
-      options: --workdir /github/workspace
     steps:
       - uses: actions/checkout@v4
 
@@ -101,5 +100,5 @@ jobs:
       - name: Check clang-format compliance
         run: |
           clang-format --version
-          files=$(find /github/workspace -name "*.hpp" -o -name "*.cpp" -o -name "*.inl")
+          files=$(find . -name "*.hpp" -o -name "*.cpp" -o -name "*.inl")
           clang-format -Werror -dry-run $files
