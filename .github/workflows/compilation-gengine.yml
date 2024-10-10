@@ -94,7 +94,7 @@ jobs:
 
       - name: Install clang-format
         run: |
-          sudo apt-show-versions clang-format
+          sudo apt list -a clang-format
           sudo apt-get install clang-format
 
       - name: Check clang-format compliance
