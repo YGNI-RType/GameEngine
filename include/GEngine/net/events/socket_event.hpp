@@ -41,7 +41,7 @@ public:
     void signal();
     void wait();
 
-#ifdef _WIN32
+#ifdef HAS_NOT_EVENTFD
 private:
     SOCKET m_sockConnect = -1;
     std::atomic_bool m_hasRead = false;

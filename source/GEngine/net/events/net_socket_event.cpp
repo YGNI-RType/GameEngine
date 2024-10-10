@@ -7,8 +7,8 @@
 
 #include "GEngine/net/events/socket_event.hpp"
 
-#include <stdexcept>
 #include <cstring>
+#include <stdexcept>
 
 namespace Network::Event {
 
