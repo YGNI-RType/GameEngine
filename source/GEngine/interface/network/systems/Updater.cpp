@@ -23,11 +23,11 @@ void Updater::init(void) {
 
 void Updater::onMainLoop(gengine::system::event::MainLoop &e) {
     Network::UDPMessage msg(true, Network::SV_SNAPSHOT);
-    size_t size = 0;//cl.getSizeIncommingData();
+    size_t size = 0; // cl.getSizeIncommingData();
     for (size_t i = 0; i < size; i++) {
         Network::UDPMessage msg(false, 0);
         size_t readCount;
-        if (1) //!cl.popIncommingData(msg, readCount))
+        if (1) //! cl.popIncommingData(msg, readCount))
             continue;
         handleSnapshotMsg(msg, readCount);
     }

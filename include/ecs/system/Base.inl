@@ -59,7 +59,7 @@ void Base<Derived, DependTypes...>::unsetComponent(entity::Entity entity) {
 }
 
 template <class Derived, class... DependTypes>
-void Base<Derived, DependTypes...>::unsetComponent(entity::Entity entity, const std::type_index &type){
+void Base<Derived, DependTypes...>::unsetComponent(entity::Entity entity, const std::type_index &type) {
     m_ecs->get().unsetComponent(entity, type);
 }
 

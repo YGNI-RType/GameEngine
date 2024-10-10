@@ -26,7 +26,7 @@ public:
     CLNetClient(SocketUDP &socketUdp, AddressType type)
         : m_socketUdp(socketUdp)
         , m_addrType(type)
-        , m_netChannel(NetChannel(false, nullptr, SocketTCP())){};
+        , m_netChannel(NetChannel(false, nullptr, SocketTCP())) {};
     ~CLNetClient() = default;
 
     void init(void);
