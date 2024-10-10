@@ -55,7 +55,12 @@ template <class Derived, class... DependTypes>
 template <class T>
 void Base<Derived, DependTypes...>::unsetComponent(entity::Entity entity) {
     static_assert(is_one_of<T, DependTypes...>::value, "ComponentType is not in the list of allowed types");
-    m_ecs->get().template destroyComponent<T>(entity);
+    m_ecs->get().template unsetComponent<T>(entity);
+}
+
+template <class Derived, class... DependTypes>
+void Base<Derived, DependTypes...>::unsetComponent(entity::Entity entity, const std::type_index &type){
+    m_ecs->get().unsetComponent(entity, type);
 }
 
 template <class Derived, class... DependTypes>

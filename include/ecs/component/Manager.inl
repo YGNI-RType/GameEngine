@@ -11,7 +11,7 @@ namespace ecs::component {
 template <class T>
 ComponentTools Manager::registerTools(void) {
     return ComponentTools(
-        m_componentMap.size() - 1, sizeof(T), [this](entity::Entity entity) { destroyComponent<T>(entity); },
+        m_componentMap.size() - 1, sizeof(T), [this](entity::Entity entity) { unsetComponent<T>(entity); },
         [this](entity::Entity entity, const std::any &any) { setComponent<T>(entity, std::any_cast<const T &>(any)); },
         [this](const std::any any1, const std::any &any2) {
             return deltaDiffSparse<T>(std::any_cast<const SparseArray<T>>(any1),
@@ -40,7 +40,7 @@ void Manager::setComponent(entity::Entity entity, Params &&...p) {
 }
 
 template <class T>
-void Manager::destroyComponent(entity::Entity entity) {
+void Manager::unsetComponent(entity::Entity entity) {
     getComponents<T>().erase(entity);
 }
 
@@ -69,7 +69,12 @@ std::vector<component_info_t> Manager::deltaDiffSparse(const SparseArray<Compone
     for (auto it = sparse1.cbegin(), end = sparse1.cend(); it != end; it++) {
         auto &[entity, component] = *it;
         if (!sparse2.contains(entity) || component != sparse2.get(entity))
-            diff.emplace_back(entity, type, component);
+            diff.emplace_back(entity, type, true, component);
+    }
+    for (auto it = sparse2.cbegin(), end = sparse2.cend(); it != end; it++) {
+        auto &[entity, component] = *it;
+        if (!sparse1.contains(entity))
+            diff.emplace_back(entity, type, false, std::any());
     }
     return diff;
 }

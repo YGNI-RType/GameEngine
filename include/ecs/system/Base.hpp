@@ -51,6 +51,7 @@ public:
 
     template <typename T>
     void unsetComponent(entity::Entity entity);
+    void unsetComponent(entity::Entity entity, const std::type_index &type);
 
     template <class T, class... Params>
     void registerSystem(Params &&...p);

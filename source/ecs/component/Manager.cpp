@@ -55,15 +55,18 @@ void component::Manager::setComponent(entity::Entity entity, const std::type_ind
     setter(entity, component);
 }
 
-void component::Manager::setComponent(const component_info_t &infos) {
-    auto &[entity, type, component] = infos;
-    setComponent(entity, type, component);
+void component::Manager::unsetComponent(entity::Entity from, const std::type_index &type) {
+    auto it = m_componentToolsMap.find(type);
+    if (it == m_componentToolsMap.end())
+        THROW_ERROR("The component " + std::string(type.name()) + " does not exist in the Manager");
+    auto &destroyer = it->second.destroyer();
+    destroyer(from);
 }
 
-void component::Manager::destroyComponents(entity::Entity entity) {
+void component::Manager::unsetComponents(entity::Entity from) {
     for (auto it : m_componentToolsMap) {
         auto &destroyer = it.second.destroyer();
-        destroyer(entity);
+        destroyer(from);
     }
 }
 
