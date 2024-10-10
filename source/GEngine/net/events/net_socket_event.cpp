@@ -7,11 +7,12 @@
 
 #include "GEngine/net/events/socket_event.hpp"
 
-#ifdef HAS_NOT_EVENTD
+#ifdef HAS_NOT_EVENTFD
 #include <cstring>
 #include <stdexcept>
 #ifdef __APPLE__
 #define closesocket close
+#define INVALID_SOCKET -1
 #endif
 #endif
 

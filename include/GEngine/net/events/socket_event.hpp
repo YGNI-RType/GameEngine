@@ -10,7 +10,6 @@
 #include "../net_socket.hpp"
 
 #ifdef _WIN32
-#include <atomic>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
@@ -24,6 +23,7 @@
 #endif
 
 #if defined(_WIN32) || defined(__APPLE__)
+#include <atomic>
 #define HAS_NOT_EVENTFD = 1
 #endif
 
