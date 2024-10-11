@@ -32,6 +32,21 @@ namespace Network {
 #else
 typedef unsigned short sa_family_t;
 #endif
+#define socketError WSAGetLastError()
+#else /* unix */
+#define WSAEINVAL EINVAL
+#define WSAEALREADY EALREADY
+#define WSAEWOULDBLOCK EWOULDBLOCK
+#define WSATRY_AGAIN EAGAIN
+#define WSAEMSGSIZE EMSGSIZE
+#define WSAEINTR EINTR
+#define WSAEINPROGRESS EINPROGRESS
+#define WSAEADDRINUSE EADDRINUSE
+#define WSAENOTSOCK EBADF
+#define WSAECONNRESET 0
+#define INVALID_SOCKET (SOCKET)(~0)
+#define SOCKET_ERROR -1
+#define socketError errno
 #endif
 
 #define PORT_ANY -1

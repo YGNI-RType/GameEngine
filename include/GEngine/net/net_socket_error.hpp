@@ -17,9 +17,13 @@ public:
         : m_msg(msg)
         , m_shouldRetry(shouldRetry) {
     }
+    SocketException(int nb, bool shouldRetry = true)
+        : m_msg(std::to_string(nb))
+        , m_shouldRetry(shouldRetry) {
+    }
 
     const char *what() const noexcept override {
-        return m_msg;
+        return m_msg.c_str();
     }
 
     bool shouldRetry() const {
@@ -27,7 +31,7 @@ public:
     }
 
 private:
-    const char *m_msg;
+    std::string m_msg;
     bool m_shouldRetry;
 };
 
