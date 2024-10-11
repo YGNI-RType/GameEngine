@@ -41,12 +41,12 @@ void Snapshot::onStartEngine(gengine::system::event::StartEngine &e) {
 
             registerClient(client);
         });
-    eventManager.registerCallback<std::shared_ptr<Network::NetClient>>(
-        Network::Event::CT_OnClientDisconnect, [this](std::shared_ptr<Network::NetClient> client) {
+    eventManager.registerCallback<Network::NetClient*>(
+        Network::Event::CT_OnClientDisconnect, [this](Network::NetClient* client) {
             std::lock_guard<std::mutex> lock(m_netMutex);
 
             auto it = std::find_if(m_clientSnapshots.begin(), m_clientSnapshots.end(),
-                                   [client](const auto &pair) { return pair.first.getNet().get() == client.get(); });
+                                   [client](const auto &pair) { return pair.first.getNet().get() == client; });
             if (it == m_clientSnapshots.end())
                 return;
             it->first.setShouldDelete(true);

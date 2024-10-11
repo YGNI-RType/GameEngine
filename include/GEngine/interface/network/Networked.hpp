@@ -67,6 +67,9 @@ public:
                 m_msg.clear();
                 m_msg.appendData<std::size_t>(0);
                 m_eventCount = 0;
+
+                // temp
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
             }
         );
 #endif

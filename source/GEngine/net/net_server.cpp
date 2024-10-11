@@ -152,7 +152,7 @@ bool NetServer::handleTCPEvent(fd_set &readSet) {
                                                    return cl.get() == client.get();
                                                }),
                                 m_clients.end());
-                NET::getEventManager().invokeCallbacks(Event::CT_OnClientDisconnect, client);
+                NET::getEventManager().invokeCallbacks(Event::CT_OnClientDisconnect, client.get());
             }
             return true;
         }
