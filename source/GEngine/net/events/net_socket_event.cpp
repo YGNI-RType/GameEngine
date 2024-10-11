@@ -49,11 +49,13 @@ SocketEvent::SocketEvent() {
 
 #ifdef _WIN32
     int len = sizeof(addr);
+#elif __APPLE__
+    socklen_t len = sizeof(addr);
+#endif
     if (getsockname(listenSock, (struct sockaddr *)&addr, &len) == -1) {
         closesocket(listenSock);
         throw std::runtime_error("Failed to bind socket");
     }
-#endif
 
     if (listen(listenSock, 1) == -1) {
         closesocket(listenSock);

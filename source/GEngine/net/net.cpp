@@ -130,13 +130,17 @@ bool NET::initClient(void) {
 }
 
 void NET::stop(void) {
-    NET::mg_server.stop();
-
-    g_localIPs.clear();
     mg_aEnable = false;
 
-    /* end of thread */
+    auto &eventManager = NET::getEventManager();
+    eventManager.getSocketEvent().signal();
     mg_networkThread.join();
+    /* end of network thread */
+
+    NET::mg_server.stop();
+    NET::mg_client.stop();
+
+    g_localIPs.clear();
 }
 
 void NET::getLocalAddress(void) {
@@ -261,9 +265,9 @@ bool NET::sleep(uint32_t ms) {
 
     /* The usage of select : both on windows and unix systems */
     int res = select(highest + 1, &readSet, nullptr, nullptr, &timeout);
-    if (res == -1) {
+    if (res == -1)
         throw SocketException(socketError);
-    }
+
     else if (res == 0)
         return false;
 
