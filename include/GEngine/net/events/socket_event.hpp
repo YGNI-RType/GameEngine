@@ -44,7 +44,7 @@ public:
 #ifdef HAS_NOT_EVENTFD
 private:
     SOCKET m_sockConnect = -1;
-    std::atomic_bool m_hasRead = false;
+    std::atomic_bool m_hasRead = true;
 #endif
 };
 } // namespace Network::Event

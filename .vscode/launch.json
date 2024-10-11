@@ -58,5 +58,30 @@
                 }
             ]
         },
+        {
+            "name": "(WINDOWS) Client RType",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/r-type/build/Debug/r-type_clientd.exe",
+            "args": [
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "symbolSearchPath": "${workspaceFolder}/r-type/build/Debug"
+        },
+        {
+            "name": "(WINDOWS) Server RType",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/r-type/build/Debug/r-type_serverd.exe",
+            "args": [
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "symbolSearchPath": "${workspaceFolder}/r-type/build/Debug"
+
+        },
     ]
 }

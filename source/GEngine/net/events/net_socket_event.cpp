@@ -20,6 +20,9 @@ namespace Network::Event {
 
 SocketEvent::SocketEvent() {
 #ifdef HAS_NOT_EVENTFD
+#ifdef _WIN32
+    ASocket::initLibs();
+#endif
     m_sockConnect = socket(AF_INET, SOCK_STREAM, 0);
     if (m_sockConnect == INVALID_SOCKET)
         throw std::runtime_error("Failed to create socket");

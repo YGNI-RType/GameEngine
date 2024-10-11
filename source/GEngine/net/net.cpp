@@ -38,7 +38,6 @@
 typedef int socklen_t;
 typedef u_long ioctlarg_t;
 
-#define socketError WSAGetLastError()
 #undef interface
 
 #undef interface
@@ -56,8 +55,6 @@ typedef u_long ioctlarg_t;
 #if !defined(__sun) && !defined(__sgi)
 #include <ifaddrs.h>
 #endif
-
-#define socketError errno
 
 #endif
 
@@ -264,8 +261,9 @@ bool NET::sleep(uint32_t ms) {
 
     /* The usage of select : both on windows and unix systems */
     int res = select(highest + 1, &readSet, nullptr, nullptr, &timeout);
-    if (res == -1)
-        throw SocketException(strerror(socketError));
+    if (res == -1) {
+        throw SocketException(socketError);
+    }
     else if (res == 0)
         return false;
 

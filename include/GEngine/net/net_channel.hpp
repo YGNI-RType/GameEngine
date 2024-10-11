@@ -138,7 +138,7 @@ public:
         m_challenge = challenge;
     }
     bool canCommunicate(void) {
-        return m_enabled && m_tcpSocket.getSocket() != -1 && m_challenge != -1;
+        return m_enabled && m_tcpSocket.getSocket() != -1;
     }
 
     void createUdpAddress(uint16_t udpport);

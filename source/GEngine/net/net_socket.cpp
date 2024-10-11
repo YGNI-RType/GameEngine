@@ -10,7 +10,6 @@
 #include "GEngine/net/net_socket_error.hpp"
 
 #include <algorithm>
-#include <cerrno>
 #include <cstring>
 #include <stdexcept>
 #include <string>
@@ -27,6 +26,7 @@
 #undef interface
 
 #else
+#include <cerrno>
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <netdb.h>
@@ -63,15 +63,14 @@ ASocket &ASocket::operator=(ASocket &&other) {
 //////////////////////////////////////
 
 void ASocket::initLibs(void) {
-#ifdef _WIN32
-    if (WSAStartup(MAKEWORD(1, 1), &winsockdata)) {
-        // Com_Printf( "WARNING: Winsock initialization failed, returned %d\n",
-        // r );
+    static bool initialized = false;
+    if (initialized)
         return;
-    }
-
-    // Com_Printf( "Winsock Initialized\n" );
+#ifdef _WIN32
+    if (WSAStartup(MAKEWORD(1, 1), &winsockdata))
+        return;
 #endif
+    initialized = true;
     FD_ZERO(&m_fdSet);
 }
 
@@ -250,12 +249,13 @@ SocketTCP::SocketTCP(const AddressV4 &addr, uint16_t tcpPort, bool block) {
     address.sin_port = htons(m_port);
 
     if (connect(m_sock, (sockaddr *)&address, sizeof(address)) < 0) {
-        if (errno == EINPROGRESS) {
+        int e = socketError;
+        if (e == WSAEINPROGRESS || e == WSAEWOULDBLOCK) {
             addSocketPool(m_sock);
             return;
         }
         socketClose();
-        throw SocketException(strerror(errno));
+        throw SocketException("can't connect tcp");
     }
 
     m_notReady = false;
@@ -277,12 +277,13 @@ SocketTCP::SocketTCP(const AddressV6 &addr, uint16_t tcpPort, bool block) {
     address.sin6_port = htons(m_port);
 
     if (connect(m_sock, (sockaddr *)&address, sizeof(address)) < 0) {
-        if (errno == EINPROGRESS) {
+        int e = socketError;
+        if (e == WSAEINPROGRESS || e == WSAEWOULDBLOCK) {
             addSocketPool(m_sock);
             return;
         }
         socketClose();
-        throw SocketException(strerror(errno));
+        throw SocketException("can't connect tcp");
     }
 
     m_notReady = false;
@@ -326,10 +327,10 @@ size_t SocketTCP::receiveReliant(TCPSerializedMessage *buffer, size_t size) cons
 
     while (receivedTotal < size) {
         auto received = ::recv(m_sock, reinterpret_cast<char *>(buffer + receivedTotal), size - receivedTotal, 0);
-        if (received < 0)
-            throw SocketException(strerror(errno));
-        if (received == 0)
+        if (received == 0 || socketError == WSAECONNRESET)
             throw SocketDisconnected();
+        if (received < 0)
+            throw SocketException(socketError);
         receivedTotal += received;
     }
     return receivedTotal;
@@ -343,11 +344,12 @@ size_t SocketTCP::sendReliant(const TCPSerializedMessage *msg, size_t msgDataSiz
     while (sentTotal < msgDataSize) {
         auto sent = ::send(m_sock, reinterpret_cast<const char *>(msg + sentTotal), msgDataSize - sentTotal, 0);
         if (sent < 0) {
-            if (errno == EWOULDBLOCK || errno == EAGAIN)
+            int e = socketError;
+            if (e == WSAEWOULDBLOCK || e == WSATRY_AGAIN)
                 return sentTotal;
-            throw SocketException("Failed to send message");
+            throw SocketException(e);
         }
-        if (sent == 0)
+        if (sent == 0 || socketError == WSAECONNRESET)
             throw SocketDisconnected();
         sentTotal += sent;
     }
@@ -398,7 +400,7 @@ SocketUDP::SocketUDP(uint16_t port, bool ipv6, bool block) {
     translateAutomaticAddressing(address, port, ipv6);
 
     if (bind(m_sock, (sockaddr *)&address, ipv6 ? sizeof(sockaddr_in6) : sizeof(sockaddr_in)) < 0)
-        throw SocketException(strerror(errno));
+        throw SocketException("(UDP) can't bind udp (only port)");
 
     addSocketPool(m_sock);
 }
@@ -434,7 +436,8 @@ size_t SocketUDP::send(const UDPMessage &msg, const Address &addr) const {
         sendto(m_sock, reinterpret_cast<const char *>(&sMsg), size + sizeof(UDPSerializedMessage) - MAX_UDP_MSGLEN, 0,
                (struct sockaddr *)&sockaddr, sizeof(struct sockaddr));
     if (sent < 0) {
-        if (errno == EWOULDBLOCK || errno == EAGAIN)
+        int e = socketError;
+        if (e == WSAEWOULDBLOCK || e == WSATRY_AGAIN)
             return 0;
         throw SocketException("Failed to send message (invalid address)");
     }
@@ -453,9 +456,11 @@ bool SocketUDP::receive(struct sockaddr *addr, UDPSerializedMessage &data, sockl
 
     // checking wouldblock etc... select told us to read so it's not possible
     if (recvStatus < 0) {
-        if (errno == EWOULDBLOCK || errno == EAGAIN)
+        int e = socketError;
+        if (e == WSAEWOULDBLOCK || e == WSATRY_AGAIN || e == WSAECONNRESET)
             return false;
-        throw SocketException("Failed to receive message");
+
+        throw SocketException(e);
     }
 
     if (recv < sizeof(UDPSerializedMessage) - MAX_UDP_MSGLEN)

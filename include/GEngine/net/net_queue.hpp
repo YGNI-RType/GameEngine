@@ -165,7 +165,7 @@ private:
 private:
     // std::queue<T> m_data;
     std::array<byte_t, NB_PACKETS * MAX_PACKET_SIZE> m_data;
-    std::array<bool, NB_PACKETS> m_isUsed;
+    std::array<bool, NB_PACKETS> m_isUsed = {0};
     std::atomic_size_t m_nbUsed = 0;
     std::unordered_map<uint8_t, std::queue<Segment>> m_msgs;
 

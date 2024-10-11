@@ -67,7 +67,7 @@ void CLNetClient::disconnectFromServer(void) {
 }
 
 void CLNetClient::createSets(fd_set &readSet) {
-    if (!m_enabled || !m_netChannel.isEnabled())
+    if (!m_enabled || !m_netChannel.canCommunicate())
         return;
 
     m_netChannel.getTcpSocket().setFdSet(readSet);
