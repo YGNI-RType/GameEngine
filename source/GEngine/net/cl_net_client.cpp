@@ -123,7 +123,6 @@ bool CLNetClient::handleTCPEvents(fd_set &readSet) {
 
     auto &sock = m_netChannel.getTcpSocket();
     if (sock.isFdSet(readSet)) {
-        sock.removeFdSet(readSet);
         TCPMessage msg(0);
         if (!m_netChannel.readStream(msg))
             return false;

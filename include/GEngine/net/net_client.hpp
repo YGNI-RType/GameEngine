@@ -69,8 +69,6 @@ public:
         return m_channel.isDisconnected();
     }
 
-    void recvDatagram(UDPMessage &msg);
-
     bool handleTCPEvents(fd_set &readSet);
     bool handleClientStream(void);
     bool handleClientDatagram(UDPMessage &msg);

@@ -36,14 +36,6 @@ bool NetClient::sendDatagram(UDPMessage &msg) {
     return m_channel.sendDatagram(m_socketUdp, msg);
 }
 
-void NetClient::recvDatagram(UDPMessage &msg) {
-    size_t readOffset = 0;
-
-    m_channel.readDatagram(msg, readOffset);
-
-    std::cout << "SV: client just sent UDP specific message" << std::endl;
-}
-
 bool NetClient::handleClientStream(void) {
     TCPMessage msg(0);
 
@@ -87,7 +79,6 @@ bool NetClient::handleTCPEvents(fd_set &readSet) {
     if (!socket.isFdSet(readSet))
         return false;
 
-    socket.removeFdSet(readSet);
     return handleClientStream();
 }
 
