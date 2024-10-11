@@ -31,6 +31,11 @@ public:
         return m_ecs.getComponentMap();
     } // TODO keep ?
 
+    template <typename Type>
+    void subscribeCallback(std::function<void(Type &)> callback) {
+        m_ecs.subscribeCallback(callback);
+    }
+
 private:
     ecs::ECS m_ecs;
 };

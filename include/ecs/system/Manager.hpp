@@ -47,6 +47,11 @@ public:
 
     bool hasEvent(void);
 
+    template <typename Type>
+    void subscribeCallback(std::function<void(Type &)> callback) {
+        m_eventBus.subscribe<Type>(callback);
+    }
+
 private:
     std::unordered_map<std::type_index, std::unique_ptr<IsSystem>> m_systemTable;
     event::Bus m_eventBus;

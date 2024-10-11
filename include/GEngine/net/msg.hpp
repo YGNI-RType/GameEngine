@@ -182,6 +182,8 @@ public:
         m_flags |= flag;
     }
 
+    void clear(void);
+
     void setCompressed(bool compressed);
     void setHeader(bool header);
     void setFragmented(bool fragmented);

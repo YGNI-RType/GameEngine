@@ -83,5 +83,29 @@
             "symbolSearchPath": "${workspaceFolder}/r-type/build/Debug"
 
         },
+        {
+            "name": "(lldb) Lancer (macos)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/r-type/build/r-type_serverd",
+            "args": ["-i", "scenes/multiple_earths.cfg"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb"
+        },
+        {
+            "name": "(lldb) Lancer (macos) client",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/r-type/build/r-type_clientd",
+            "args": ["-i", "scenes/multiple_earths.cfg"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb"
+        }
     ]
 }
