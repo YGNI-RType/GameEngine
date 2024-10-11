@@ -8,7 +8,6 @@
 #pragma once
 
 #include <any>
-#include <limits>
 #include <typeindex>
 #include <vector>
 
@@ -24,9 +23,10 @@ namespace ecs::component {
  * @typedef component_info_t
  * @param entity::Entity The entity to which the component belongs.
  * @param std::type_index A reference to the type information of the component.
- * @param std::any A generic container that holds the component data.
+ * @param bool Boolean indicating if the component has been set or unset.
+ * @param std::any A generic container that holds the component data if set.
  */
-using component_info_t = std::tuple<entity::Entity, const std::type_index &, const std::any &>;
+using component_info_t = std::tuple<entity::Entity, const std::type_index &, bool, const std::any>;
 
 /**
  * @brief A sparse array structure for managing components in an ECS system.
@@ -170,7 +170,7 @@ private:
      *
      * Used to indicate that an entity does not have an associated component.
      */
-    static constexpr std::size_t invalid_index = std::numeric_limits<std::size_t>::max();
+    static constexpr std::size_t invalid_index = std::size_t(-1);
 
     /**
      * @brief Sparse array for fast lookups by entity.

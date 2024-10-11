@@ -20,7 +20,7 @@ class NetServer {
 public:
     NetServer(SocketUDP &socketUdpV4, SocketUDP &socketUdpV6)
         : m_socketUdpV4(socketUdpV4)
-        , m_socketUdpV6(socketUdpV6){};
+        , m_socketUdpV6(socketUdpV6) {};
     /* todo : add to support loopback client for listen servers */
     ~NetServer() = default;
 

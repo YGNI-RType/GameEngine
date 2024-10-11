@@ -32,9 +32,35 @@ component::SparseArray<T> &Base<Derived, DependTypes...>::getComponents(void) {
 }
 
 template <class Derived, class... DependTypes>
+template <class T>
+void Base<Derived, DependTypes...>::setComponent(entity::Entity entity, const T &component) {
+    static_assert(is_one_of<T, DependTypes...>::value, "ComponentType is not in the list of allowed types");
+    m_ecs->get().template setComponent<T>(entity, component);
+}
+
+template <class Derived, class... DependTypes>
+template <class T, class... Params>
+void Base<Derived, DependTypes...>::setComponent(entity::Entity entity, Params &&...p) {
+    static_assert(is_one_of<T, DependTypes...>::value, "ComponentType is not in the list of allowed types");
+    m_ecs->get().template setComponent<T>(entity, std::forward<Params>(p)...);
+}
+
+template <class Derived, class... DependTypes>
 void Base<Derived, DependTypes...>::setComponent(entity::Entity entity, const std::type_index &type,
                                                  const std::any &component) {
     m_ecs->get().setComponent(entity, type, component);
+}
+
+template <class Derived, class... DependTypes>
+template <class T>
+void Base<Derived, DependTypes...>::unsetComponent(entity::Entity entity) {
+    static_assert(is_one_of<T, DependTypes...>::value, "ComponentType is not in the list of allowed types");
+    m_ecs->get().template unsetComponent<T>(entity);
+}
+
+template <class Derived, class... DependTypes>
+void Base<Derived, DependTypes...>::unsetComponent(entity::Entity entity, const std::type_index &type) {
+    m_ecs->get().unsetComponent(entity, type);
 }
 
 template <class Derived, class... DependTypes>
@@ -74,11 +100,45 @@ void Base<Derived, DependTypes...>::publishEvent(T &&event) {
 
 template <class Derived, class... DependTypes>
 void Base<Derived, DependTypes...>::pause(void) {
-    m_isRunning = true;
+    m_isRunning = false;
 }
 
 template <class Derived, class... DependTypes>
 void Base<Derived, DependTypes...>::resume(void) {
     m_isRunning = true;
+}
+
+template <class Derived, class... DependTypes>
+ecs::component::ComponentTools::component_id_t
+Base<Derived, DependTypes...>::getComponentId(const std::type_index &type) const {
+    return m_ecs->get().getComponentId(type);
+}
+
+template <class Derived, class... DependTypes>
+const std::type_index &
+Base<Derived, DependTypes...>::getTypeindex(ecs::component::ComponentTools::component_id_t id) const {
+    return m_ecs->get().getTypeindex(id);
+}
+
+template <class Derived, class... DependTypes>
+ecs::component::ComponentTools::component_size_t
+Base<Derived, DependTypes...>::getComponentSize(const std::type_index &type) const {
+    return m_ecs->get().getComponentSize(type);
+}
+template <class Derived, class... DependTypes>
+std::vector<ecs::component::component_info_t>
+Base<Derived, DependTypes...>::compareComponents(const std::type_index &type, const std::any &any1,
+                                                 const std::any &any2) const {
+    return m_ecs->get().compareComponents(type, any1, any2);
+}
+
+template <class Derived, class... DependTypes>
+const void *Base<Derived, DependTypes...>::toVoid(const std::type_index &type, const std::any &any) const {
+    return m_ecs->get().toVoid(type, any);
+}
+
+template <class Derived, class... DependTypes>
+const std::any Base<Derived, DependTypes...>::toAny(const std::type_index &type, const void *component) const {
+    return m_ecs->get().toAny(type, component);
 }
 } // namespace ecs::system
