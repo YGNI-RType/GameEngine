@@ -82,26 +82,6 @@ void Snapshot::createSnapshots(void) {
                 m_clientSnapshots.end());
             continue;
         }
-
-        auto &cl = *client.getNet();
-        int64_t i = 0;
-        int64_t size = cl.getSizeIncommingData();
-        /* le type 3 est un example, c'est usercmd par contre */
-        for (; i < size - 1; i++) {
-            size_t readCount;
-            Network::UDPMessage msg(false, 3);
-            if (!cl.popIncommingData(msg, readCount))
-                continue; /* impossible */
-            /* todo : read the data and apply it to the world (another component) */
-        }
-        if (size > 0) {
-            // temp
-            size_t readCount;
-            Network::UDPMessage msg(false, 3);
-            cl.popIncommingData(msg, readCount);
-            client.setLastAck(msg.getAckNumber());
-        }
-
         snap[m_currentSnapshotId % MAX_SNAPSHOT] = m_currentWorld;
     }
 }
@@ -112,7 +92,7 @@ void Snapshot::getAndSendDeltaDiff(void) {
     for (auto &[client, snapshots] : m_clientSnapshots) {
         /* get that info via callback OnAckUpdate */
         auto lastReceived = client.getLastAck();
-        auto lastId = client.getLastAck() + lastReceived;
+        auto lastId = client.getSnapshotId() + lastReceived;
         auto diff = m_currentSnapshotId - lastId;
         std::cout << "diff: " << diff << " | m_currentSnapshotId: " << m_currentSnapshotId << " last id: " << lastId
                   << " UDP Last ACK: " << lastReceived << std::endl;
@@ -130,7 +110,7 @@ void Snapshot::getAndSendDeltaDiff(void) {
             NetworkComponent c(entity, getComponentId(type), size);
             msg.appendData(c);
             if (set)
-                msg.writeData(toVoid(type, any), c.size);
+                msg.appendData(toVoid(type, any), c.size);
         }
 
         if (!server.isRunning())

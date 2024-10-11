@@ -23,7 +23,7 @@ void Updater::init(void) {
 
 void Updater::onMainLoop(gengine::system::event::MainLoop &e) {
     Network::CLNetClient &cl = Network::NET::getClient();
-    ;
+
     size_t size = cl.getSizeIncommingData(Network::SV_SNAPSHOT, true);
     for (size_t i = 0; i < size; i++) {
         Network::UDPMessage msg(true, Network::SV_SNAPSHOT);
@@ -40,9 +40,9 @@ void Updater::handleSnapshotMsg(Network::UDPMessage &msg, size_t readCount) {
     for (int i = 0; i < nb; i++) {
         NetworkComponent c;
         msg.readContinuousData(c, readCount);
-        std::cout << c.entity << " -> name: [" << c.typeId << "] size: " << c.size << std::endl;
         std::vector<Network::byte_t> component(c.size);
         msg.readData(component.data(), readCount, c.size);
+        readCount += c.size;
         auto &type = getTypeindex(c.typeId); // TODO array for opti
         if (c.size)
             setComponent(c.entity, type, toAny(type, component.data()));
