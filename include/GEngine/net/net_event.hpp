@@ -70,7 +70,7 @@ public:
 
     // Function to invoke callbacks with any argument type
     template <typename T>
-    void invokeCallbacks(const CallbackType &type, T arg) {
+    void invokeCallbacks(const CallbackType &type, const T &arg) {
         std::lock_guard<std::mutex> lock(m_mutex);
 
         if (m_callbacks.find(type) == m_callbacks.end())

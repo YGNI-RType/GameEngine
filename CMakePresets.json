@@ -12,7 +12,8 @@
       "generator": "",
       "binaryDir": "${sourceDir}/build",
       "cacheVariables": {
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "YES"
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "YES",
+        "VCPKG_MANIFEST_INSTALL": "OFF"
       }
     },
     {
