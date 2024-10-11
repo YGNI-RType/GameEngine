@@ -26,8 +26,8 @@
 #undef interface
 
 #else
-#include <cerrno>
 #include <arpa/inet.h>
+#include <cerrno>
 #include <fcntl.h>
 #include <netdb.h>
 #include <sys/socket.h>
@@ -327,10 +327,13 @@ size_t SocketTCP::receiveReliant(TCPSerializedMessage *buffer, size_t size) cons
 
     while (receivedTotal < size) {
         auto received = ::recv(m_sock, reinterpret_cast<char *>(buffer + receivedTotal), size - receivedTotal, 0);
-        if (received == 0 || socketError == WSAECONNRESET)
+        if (received == 0)
             throw SocketDisconnected();
-        if (received < 0)
+        if (received < 0) {
+            if (socketError == WSAECONNRESET)
+                throw SocketDisconnected();
             throw SocketException(socketError);
+        }
         receivedTotal += received;
     }
     return receivedTotal;
@@ -345,11 +348,13 @@ size_t SocketTCP::sendReliant(const TCPSerializedMessage *msg, size_t msgDataSiz
         auto sent = ::send(m_sock, reinterpret_cast<const char *>(msg + sentTotal), msgDataSize - sentTotal, 0);
         if (sent < 0) {
             int e = socketError;
+            if (e == WSAECONNRESET)
+                throw SocketDisconnected();
             if (e == WSAEWOULDBLOCK || e == WSATRY_AGAIN)
                 return sentTotal;
             throw SocketException(e);
         }
-        if (sent == 0 || socketError == WSAECONNRESET)
+        if (sent == 0)
             throw SocketDisconnected();
         sentTotal += sent;
     }

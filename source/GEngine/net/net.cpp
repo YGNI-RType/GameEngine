@@ -262,9 +262,9 @@ bool NET::sleep(uint32_t ms) {
 
     /* The usage of select : both on windows and unix systems */
     int res = select(highest + 1, &readSet, nullptr, nullptr, &timeout);
-    if (res == -1) {
+    if (res == -1)
         throw SocketException(socketError);
-    }
+
     else if (res == 0)
         return false;
 
