@@ -36,7 +36,6 @@ void AutoMainLoop::onMainLoop(gengine::system::event::MainLoop &e) {
     if (!m_isRunning)
         return;
     auto delta = getElapsedTime();
-    std::cout << (delta).count() << std::endl;
     std::this_thread::sleep_for(m_timePerLoop - delta);
     publishEvent(gengine::system::event::MainLoop((delta > m_timePerLoop ? delta : m_timePerLoop).count()));
     m_lastTime = std::chrono::high_resolution_clock::now();
