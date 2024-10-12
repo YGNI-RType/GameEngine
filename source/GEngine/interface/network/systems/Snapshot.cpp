@@ -59,11 +59,8 @@ void Snapshot::onMainLoop(gengine::system::event::MainLoop &e) {
 
         m_currentSnapshotId++;
         createSnapshots();
-        getAndSendDeltaDiff();
     }
-
-    /* make something like this based on ticks */
-    std::this_thread::sleep_for(std::chrono::milliseconds(300));
+    getAndSendDeltaDiff();
 }
 
 /* todo warning : mutex please */
