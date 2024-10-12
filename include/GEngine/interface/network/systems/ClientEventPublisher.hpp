@@ -38,13 +38,6 @@ public:
     }
 
     void onStartEngine(gengine::system::event::StartEngine &e) {
-        // Network::NET::start();
-
-        // eventManager.registerCallback<std::shared_ptr<Network::NetClient>>(
-        //     Network::Event::CT_OnClientConnect, [this] (std::shared_ptr<Network::NetClient> client) {
-        //         // std::cout << "new client !" << std::endl;
-        //     }
-        // );
         m_msg.setAck(true);
         m_msg.appendData<std::uint64_t>(0);
         m_eventCount = 0;
@@ -61,7 +54,7 @@ public:
 
         // Thomas : ça va toujours crash tant que la main loop n'aura pas confirmation du "Server Ready", d'où la wait
         // de 2 secondes
-        m_msg.appendData<std::uint64_t>(42);
+        m_msg.appendData<std::uint64_t>(0);
         m_eventCount = 0;
     }
 
