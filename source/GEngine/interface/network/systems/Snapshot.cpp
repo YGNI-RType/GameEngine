@@ -35,20 +35,31 @@ void Snapshot::onStartEngine(gengine::system::event::StartEngine &e) {
     /* TODO : make something other than this to register clients */
     auto &eventManager = Network::NET::getEventManager();
 
+    /* Imagine for some reason (most likely impossible) we receive the event of deleting before creating. that's
+     * embarrassing */
+    static std::vector<Network::NetClient *> unwantedClients = {};
+
     eventManager.registerCallback<std::shared_ptr<Network::NetClient>>(
         Network::Event::CT_OnClientConnect, [this](std::shared_ptr<Network::NetClient> client) {
             std::lock_guard<std::mutex> lock(m_netMutex);
 
+            if (std::find(unwantedClients.begin(), unwantedClients.end(), client.get()) != unwantedClients.end()) {
+                unwantedClients.erase(std::remove(unwantedClients.begin(), unwantedClients.end(), client.get()),
+                                      unwantedClients.end());
+                return;
+            }
             registerClient(client);
         });
-    eventManager.registerCallback<std::shared_ptr<Network::NetClient>>(
-        Network::Event::CT_OnClientDisconnect, [this](std::shared_ptr<Network::NetClient> client) {
+    eventManager.registerCallback<Network::NetClient *>(
+        Network::Event::CT_OnClientDisconnect, [this](Network::NetClient *client) {
             std::lock_guard<std::mutex> lock(m_netMutex);
 
             auto it = std::find_if(m_clientSnapshots.begin(), m_clientSnapshots.end(),
-                                   [client](const auto &pair) { return pair.first.getNet().get() == client.get(); });
-            if (it == m_clientSnapshots.end())
+                                   [client](const auto &pair) { return pair.first.getNet().get() == client; });
+            if (it == m_clientSnapshots.end()) {
+                unwantedClients.push_back(client);
                 return;
+            }
             it->first.setShouldDelete(true);
         });
 }
@@ -91,8 +102,8 @@ void Snapshot::getAndSendDeltaDiff(void) {
         auto lastReceived = client.getLastAck();
         auto lastId = client.getSnapshotId() + lastReceived;
         auto diff = m_currentSnapshotId - lastId;
-        std::cout << "diff: " << diff << " | m_currentSnapshotId: " << m_currentSnapshotId << " last id: " << lastId
-                  << " UDP Last ACK: " << lastReceived << std::endl;
+        // std::cout << "diff: " << diff << " | m_currentSnapshotId: " << m_currentSnapshotId << " last id: " << lastId
+        // << " UDP Last ACK: " << lastReceived << std::endl;
 
         auto &current = snapshots[m_currentSnapshotId % MAX_SNAPSHOT];
         auto &last = diff > MAX_SNAPSHOT ? m_dummySnapshot : snapshots[lastId % MAX_SNAPSHOT];

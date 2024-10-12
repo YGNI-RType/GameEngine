@@ -68,8 +68,6 @@ void NetServer::handleNewClient(SocketTCPMaster &socket) {
     UnknownAddress unkwAddr;
     SocketTCP newSocket = socket.accept(unkwAddr);
 
-    std::cout << "SV: new client" << std::endl;
-
     if (getNumClients() >= getMaxClients()) {
         newSocket.socketClose();
         return;
@@ -87,7 +85,7 @@ void NetServer::handleNewClient(SocketTCPMaster &socket) {
     else
         return; /* impossible */
 
-    std::cout << "SV: New client connected" << std::endl;
+    // // std::cout << "SV: New client connected" << std::endl;
     m_clients.push_back(cl);
 
     auto msg = TCPMessage(SV_INIT_CONNECTON);
@@ -97,7 +95,7 @@ void NetServer::handleNewClient(SocketTCPMaster &socket) {
         {.challenge = channel.getChallenge(),
          .udpPort = clientAddrType == AT_IPV6 ? m_socketUdpV6.getPort() : m_socketUdpV4.getPort()});
 
-    std::cout << "SV: Client challange: " << channel.getChallenge() << std::endl;
+    // // std::cout << "SV: Client challange: " << channel.getChallenge() << std::endl;
 
     NET::getEventManager().invokeCallbacks(Event::CT_OnClientConnect, cl);
     channel.sendStream(msg);
@@ -133,13 +131,11 @@ bool NetServer::handleTCPEvent(fd_set &readSet) {
         return false;
 
     if (m_socketv4.isFdSet(readSet)) {
-        m_socketv4.removeFdSet(readSet);
         handleNewClient(m_socketv4);
         return true;
     }
 
     if (CVar::net_ipv6.getIntValue() && m_socketv6.isFdSet(readSet)) {
-        m_socketv6.removeFdSet(readSet);
         handleNewClient(m_socketv6);
         return true;
     }
@@ -147,12 +143,12 @@ bool NetServer::handleTCPEvent(fd_set &readSet) {
     for (const auto &client : m_clients)
         if (client->handleTCPEvents(readSet)) {
             if (client->isDisconnected()) {
+                NET::getEventManager().invokeCallbacks(Event::CT_OnClientDisconnect, client.get());
                 m_clients.erase(std::remove_if(m_clients.begin(), m_clients.end(),
                                                [&client](const std::shared_ptr<NetClient> &cl) {
                                                    return cl.get() == client.get();
                                                }),
                                 m_clients.end());
-                NET::getEventManager().invokeCallbacks(Event::CT_OnClientDisconnect, client);
             }
             return true;
         }

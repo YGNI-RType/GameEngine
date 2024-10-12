@@ -44,7 +44,7 @@ typedef unsigned short sa_family_t;
 #define WSAEINPROGRESS EINPROGRESS
 #define WSAEADDRINUSE EADDRINUSE
 #define WSAENOTSOCK EBADF
-#define WSAECONNRESET 0
+#define WSAECONNRESET ECONNRESET
 #define INVALID_SOCKET (SOCKET)(~0)
 #define SOCKET_ERROR -1
 #define socketError errno

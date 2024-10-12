@@ -28,7 +28,8 @@ class Manager {
 public:
     Manager(ECS &ecs)
         : m_ecs(ecs)
-        , m_eventBus() {
+        , m_eventBus()
+        , m_systemTable() {
     }
 
     template <class T, class... Params>
@@ -47,10 +48,15 @@ public:
 
     bool hasEvent(void);
 
+    template <typename Type>
+    void subscribeCallback(std::function<void(Type &)> callback) {
+        m_eventBus.subscribe<Type>(callback);
+    }
+
 private:
-    std::unordered_map<std::type_index, std::unique_ptr<IsSystem>> m_systemTable;
-    event::Bus m_eventBus;
     ECS &m_ecs;
+    event::Bus m_eventBus;
+    std::unordered_map<std::type_index, std::unique_ptr<IsSystem>> m_systemTable = {};
 };
 } // namespace ecs::system
 

@@ -18,6 +18,12 @@ void Base<Derived, DependTypes...>::subscribeToEvent(void (Derived::*callbackMet
 }
 
 template <class Derived, class... DependTypes>
+template <typename EventType>
+void Base<Derived, DependTypes...>::subscribeToEvent(std::function<void(EventType &)> callback) {
+    m_eventBus->get().template subscribe<EventType>(callback);
+}
+
+template <class Derived, class... DependTypes>
 template <typename T>
 T &Base<Derived, DependTypes...>::getSystem(void) {
     static_assert(is_one_of<T, DependTypes...>::value, "SystemType is not in the list of allowed types");

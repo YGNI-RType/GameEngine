@@ -48,12 +48,12 @@ public:
 
 private:
     static std::unordered_map<std::string, ConVar *> &getAllCommands() {
-        static std::unordered_map<std::string, ConVar *> instance;
+        static std::unordered_map<std::string, ConVar *> instance = {};
         return instance;
     }
 
     static std::unordered_map<std::string, ConVar *> &getPublicCommands() {
-        static std::unordered_map<std::string, ConVar *> instance;
+        static std::unordered_map<std::string, ConVar *> instance = {};
         return instance;
     }
 

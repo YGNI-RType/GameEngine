@@ -20,7 +20,14 @@
 namespace Network::Event {
 enum Type { CONNECT, DISCONNECT, SEND_QUEUED_PACKET, PING };
 
-enum CallbackType { CT_OnClientConnect, CT_OnClientDisconnect, CT_OnServerConnect, CT_OnServerDisconnect };
+enum CallbackType {
+    CT_OnClientConnect,
+    CT_OnClientDisconnect,
+    CT_OnServerConnect,
+    CT_OnServerDisconnect,
+    CT_OnClientReady,
+    CT_OnServerReady
+};
 
 struct InfoHeader {
     Type type;
@@ -70,7 +77,7 @@ public:
 
     // Function to invoke callbacks with any argument type
     template <typename T>
-    void invokeCallbacks(const CallbackType &type, T arg) {
+    void invokeCallbacks(const CallbackType &type, const T &arg) {
         std::lock_guard<std::mutex> lock(m_mutex);
 
         if (m_callbacks.find(type) == m_callbacks.end())

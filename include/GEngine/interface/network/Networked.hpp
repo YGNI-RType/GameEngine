@@ -1,39 +1,78 @@
-/*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** Networked.hpp
-*/
-
 #pragma once
 
 #include "GEngine/driver/Engine.hpp"
 #include "GEngine/game/Engine.hpp"
 #include "GEngine/interface/Base.hpp"
 #include "GEngine/interface/network/systems/Snapshot.hpp"
-#include "GEngine/interface/network/systems/Updater.hpp"
+#include "GEngine/libdev/systems/MainLoop.hpp"
+#include "GEngine/libdev/systems/events/MainLoop.hpp"
+
+#include "GEngine/net/events/connection.hpp"
+#include "GEngine/net/msg.hpp"
+#include "GEngine/net/net.hpp"
+#include "GEngine/net/structs/msg_udp_structs.hpp"
+
+#include <functional>
+#include <iostream>
+#include <memory>
+#include <type_traits>
+#include <typeindex>
+#include <unordered_map>
 
 namespace gengine::interface::network {
+
 class Networked : public Base {
 public:
-    Networked(game::Engine &gameEngine, driver::Engine &driverEngine)
+    Networked(driver::Engine &driverEngine, game::Engine &gameEngine, const std::string &ip = "", uint16_t port = 0,
+              bool block = false)
         : m_gameEngine(gameEngine)
-        , m_driverEngine(driverEngine) {
+        , m_driverEngine(driverEngine)
+        , m_ip(ip)
+        , m_port(port)
+        , m_block(block) {
+
+        Network::NET::init();
+        Network::Event::Manager &em = Network::NET::getEventManager();
+#ifdef Server
+        Network::NET::initServer();
         m_gameEngine.registerSystem<system::Snapshot>(gameEngine.getWorld());
-        m_gameEngine.registerSystem<system::Updater>();
+#elif Client
+        Network::NET::initClient();
+        em.addEvent<Network::Event::ConnectInfo>(Network::Event::CONNECT, Network::Event::ConnectInfo(ip, port));
+#endif
+        Network::NET::start();
+        m_driverEngine.registerSystem<gengine::system::AutoMainLoop>();
+        m_gameEngine.registerSystem<gengine::system::AutoMainLoop>();
     }
 
-    void run(void) override {
+    ~Networked() {
+        Network::NET::stop();
+        Network::NET::getClient().disconnectFromServer();
+    }
+
+#ifdef Server
+    void run() override {
         m_gameEngine.start();
-        m_driverEngine.start();
         m_gameEngine.compute();
+    }
+#else
+    void run() override {
+        m_driverEngine.start();
         m_driverEngine.compute();
+    }
+#endif
+    template <typename T>
+    void registerComponent(void) {
+        m_gameEngine.registerComponent<T>();
+        m_driverEngine.registerComponent<T>();
     }
 
 private:
     game::Engine &m_gameEngine;
     driver::Engine &m_driverEngine;
-
-    // SnapshotManager m_snapshotMan;
+    const std::string m_ip;
+    uint16_t m_port;
+    bool m_block;
 };
+
 } // namespace gengine::interface::network

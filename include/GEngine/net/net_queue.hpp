@@ -32,8 +32,14 @@ public:
     NetQueue(Event::SocketEvent &socketEvent)
         : m_socketEvent(socketEvent) {};
 
+    ~NetQueue() = default;
+    NetQueue(const NetQueue &) = delete;
+    NetQueue &operator=(const NetQueue &) = delete;
+    NetQueue(NetQueue &&) = delete;
+    NetQueue &operator=(NetQueue &&) = delete;
+
     bool push(const UDPMessage &msg, size_t readcount) {
-        std::unique_lock<std::mutex> lock(m_mutex);
+        std::lock_guard<std::mutex> lock(m_mutex);
 
         if (msg.getSize() > MAX_PACKET_SIZE)
             return false;
@@ -58,6 +64,8 @@ public:
 
     /* This is called when we know it's full, removes the front, same segment */
     bool fullpush(UDPMessage &msg, size_t readcount) {
+        std::lock_guard<std::mutex> lock(m_mutex);
+
         auto it = m_msgs.find(msg.getType());
         if (it == m_msgs.end())
             return false;
@@ -79,13 +87,15 @@ public:
 
     /* UDPMessage(false, <type you chose here> )*/
     bool pop(UDPMessage &msg, size_t &readCount, uint8_t type) {
-        std::unique_lock<std::mutex> lock(m_mutex);
+        std::lock_guard<std::mutex> lock(m_mutex);
 
         auto it = m_msgs.find(type);
         if (it == m_msgs.end())
             return false;
 
         auto &[_, queueSegment] = *it;
+        if (queueSegment.empty())
+            return false;
 
         auto segment = queueSegment.front();
         queueSegment.pop();
@@ -97,7 +107,7 @@ public:
     }
 
     bool pop(UDPMessage &msg, size_t &readCount) {
-        std::unique_lock<std::mutex> lock(m_mutex);
+        std::lock_guard<std::mutex> lock(m_mutex);
 
         for (auto &[type, queueSegment] : m_msgs) {
             if (queueSegment.empty())
@@ -130,6 +140,7 @@ public:
 
     size_t size(uint8_t type) const {
         std::lock_guard<std::mutex> lock(m_mutex);
+
         return m_msgs.find(type) == m_msgs.end() ? 0 : m_msgs.at(type).size();
     }
 
