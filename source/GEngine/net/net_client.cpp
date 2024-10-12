@@ -74,10 +74,10 @@ bool NetClient::handleClientDatagram(UDPMessage &msg) {
 
     if (msg.shouldAck())
         // std::cout << "SV: client just sent UDP specific message" << std::endl;
-    switch (msg.getType()) {
-    default:
-        return pushIncommingData(msg, readOffset);
-    }
+        switch (msg.getType()) {
+        default:
+            return pushIncommingData(msg, readOffset);
+        }
 }
 
 bool NetClient::handleTCPEvents(fd_set &readSet) {
