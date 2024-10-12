@@ -876,7 +876,6 @@ CMakeFiles/r-type_server.dir/sources/main.cpp.o: \
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/r-type/../include/GEngine/libdev/systems/events/Native.hpp \
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/r-type/../include/GEngine/interface/network/systems/NetworkComponent.hpp \
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/r-type/../include/GEngine/libdev/systems/MainLoop.hpp \
-  /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/r-type/../include/GEngine/interface/network/systems/ServerEvent.hpp \
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/r-type/../include/GEngine/libdev/components/HitBoxs.hpp \
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/r-type/../include/GEngine/libdev/Component.hpp \
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/r-type/../include/GEngine/libdev/systems/Collisions.hpp \
@@ -928,4 +927,7 @@ CMakeFiles/r-type_server.dir/sources/main.cpp.o: \
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/r-type/../include/GEngine/libdev/systems/events/RenderLoop.hpp \
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/r-type/../include/GEngine/libdev/systems/events/driver/output/Draw.hpp \
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/r-type/../include/GEngine/libdev/systems/driver/output/RenderWindow.hpp \
+  /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/r-type/../include/GEngine/interface/network/systems/ClientEventPublisher.hpp \
+  /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/r-type/../include/GEngine/interface/network/systems/ServerEventReceiver.hpp \
+  /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/r-type/../include/GEngine/interface/network/events/ClientEvent.hpp \
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/r-type/sources/Start.hpp

@@ -1759,8 +1759,10 @@ CMakeFiles/r-type_server.dir/sources/main.cpp.o: /Users/basilefouquet/Dev/epitec
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/game/Engine.hpp \
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/interface/Base.hpp \
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/interface/network/Networked.hpp \
+  /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/interface/network/events/ClientEvent.hpp \
+  /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/interface/network/systems/ClientEventPublisher.hpp \
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/interface/network/systems/NetworkComponent.hpp \
-  /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/interface/network/systems/ServerEvent.hpp \
+  /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/interface/network/systems/ServerEventReceiver.hpp \
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/interface/network/systems/Snapshot.hpp \
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/libdev/Component.hpp \
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/libdev/Entity.hpp \
@@ -1884,7 +1886,9 @@ CMakeFiles/r-type_server.dir/sources/main.cpp.o: /Users/basilefouquet/Dev/epitec
 
 /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/libdev/Entity.hpp:
 
-/Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/interface/network/systems/ServerEvent.hpp:
+/Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/interface/network/systems/ServerEventReceiver.hpp:
+
+/Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/interface/network/events/ClientEvent.hpp:
 
 /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/interface/Base.hpp:
 
@@ -3317,6 +3321,8 @@ CMakeFiles/r-type_server.dir/sources/main.cpp.o: /Users/basilefouquet/Dev/epitec
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk/usr/include/c++/v1/__random/log2.h:
 
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk/usr/include/c++/v1/__algorithm/unique.h:
+
+/Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/interface/network/systems/ClientEventPublisher.hpp:
 
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk/usr/include/c++/v1/__algorithm/ranges_max_element.h:
 

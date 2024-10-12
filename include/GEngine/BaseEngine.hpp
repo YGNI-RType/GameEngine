@@ -36,6 +36,11 @@ public:
         m_ecs.subscribeCallback(callback);
     }
 
+    template <typename T>
+    void publishEvent(T &e) {
+        m_ecs.publishEvent<T>(e);
+    }
+
 private:
     ecs::ECS m_ecs;
 };

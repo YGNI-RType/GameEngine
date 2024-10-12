@@ -47,22 +47,26 @@
 #include "GEngine/libdev/components/driver/output/Animation.hpp"
 #include "GEngine/libdev/components/driver/output/Shape.hpp"
 
+#include "GEngine/interface/network/systems/ClientEventPublisher.hpp"
+#include "GEngine/interface/network/systems/ServerEventReceiver.hpp"
+
 #include "Start.hpp"
 
 struct TestEvent: public gengine::Event {
-    std::string message;
-    TestEvent(const std::string &msg): message(msg) {}
+    int message;
+    TestEvent(int msg): message(msg) {}
 };
 
-struct Game: public gengine::OnEventSystem<Game, TestEvent> {
-    void onEvent(TestEvent &e) override {
-        std::cout << "message: " << e.message << std::endl;
+struct Game: public gengine::OnEventSystem<Game, gengine::interface::network::event::ClientEvent<TestEvent>> {
+    void onEvent(gengine::interface::network::event::ClientEvent<TestEvent> &e) override {
+        std::cout << "message: " << e->message << std::endl;
     }
 };
 
 struct Driver: public gengine::OnEventSystem<Driver, gengine::system::event::MainLoop> {
     void onEvent(gengine::system::event::MainLoop &e) override {
-        publishEvent(TestEvent("hey !"));
+        std::this_thread::sleep_for(std::chrono::milliseconds(15));
+        publishEvent(TestEvent(42));
     }
 };
 
@@ -71,10 +75,16 @@ int main(void) {
     gengine::game::Engine GameEngine;
 
     DriverEngine.registerSystem<Driver>();
+    DriverEngine.registerSystem<gengine::interface::network::system::ClientEventPublisher<
+    TestEvent
+    >>();
+    GameEngine.registerSystem<gengine::interface::network::system::ServerEventReceiver<
+    TestEvent
+    >>();
     GameEngine.registerSystem<Game>();
 
     gengine::interface::network::Networked interface(DriverEngine, GameEngine, "127.0.0.1", 4243, true);
-
     interface.run();
+
     return 0;
 }

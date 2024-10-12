@@ -37,6 +37,9 @@ public:
     template <typename EventType>
     void subscribeToEvent(void (Derived::*callbackMethod)(EventType &));
 
+    template <typename EventType>
+    void subscribeToEvent(std::function<void(EventType &)> callback);
+
     template <typename T>
     T &getSystem(void);
 

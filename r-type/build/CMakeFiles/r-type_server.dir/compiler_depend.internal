@@ -1761,8 +1761,10 @@ CMakeFiles/r-type_server.dir/sources/main.cpp.o
  /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/game/Engine.hpp
  /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/interface/Base.hpp
  /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/interface/network/Networked.hpp
+ /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/interface/network/events/ClientEvent.hpp
+ /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/interface/network/systems/ClientEventPublisher.hpp
  /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/interface/network/systems/NetworkComponent.hpp
- /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/interface/network/systems/ServerEvent.hpp
+ /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/interface/network/systems/ServerEventReceiver.hpp
  /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/interface/network/systems/Snapshot.hpp
  /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/libdev/Component.hpp
  /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/libdev/Entity.hpp
