@@ -44,7 +44,7 @@ public:
     }
 
     void onMainLoop(gengine::system::event::MainLoop &e) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(700));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(700));
         if (!m_ready)
             return;
         m_msg.writeData(m_eventCount, sizeof(Network::UDPG_NetChannelHeader), 0, false);
