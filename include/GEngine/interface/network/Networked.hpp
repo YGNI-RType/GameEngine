@@ -9,6 +9,7 @@
 
 #include "GEngine/net/msg.hpp"
 #include "GEngine/net/net.hpp"
+#include "GEngine/net/events/connection.hpp"
 #include "GEngine/net/structs/msg_udp_structs.hpp"
 
 #include <functional>
@@ -35,7 +36,9 @@ public:
     Network::NET::init();
     Network::NET::initClient();
     Network::NET::start();
-    Network::NET::getClient().connectToServer(ip, port, block);
+
+    Network::Event::Manager &em = Network::NET::getEventManager();
+    em.addEvent<Network::Event::ConnectInfo>(Network::Event::CONNECT, Network::Event::ConnectInfo(ip, port));
 #endif
         m_gameEngine.registerSystem<system::Snapshot>(gameEngine.getWorld());
 

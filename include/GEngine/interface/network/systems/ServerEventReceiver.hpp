@@ -86,6 +86,7 @@ namespace gengine::interface::network::system {
                 std::uint64_t nb;
                 msg.readContinuousData(nb, readCount);
                 std::cout << "nb: " << nb << std::endl;
+
                 for (int i = 0; i < nb; i++) {
                     std::uint64_t type;
                     msg.readContinuousData(type, readCount);

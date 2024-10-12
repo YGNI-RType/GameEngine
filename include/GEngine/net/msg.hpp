@@ -69,10 +69,10 @@ public:
     }
 
     template <typename T>
-    void writeData(const T &data, size_t offset = 0, bool updateSize = true) {
+    void writeData(const T &data, size_t msgDataOffset = 0, size_t dataOffset = 0, bool updateSize = true) {
         byte_t *myData = getDataMember();
 
-        std::memcpy(myData, &data, sizeof(T));
+        std::memcpy(myData + msgDataOffset, &data + dataOffset, sizeof(T));
         if (updateSize)
             m_curSize = sizeof(T);
     }
@@ -182,7 +182,7 @@ public:
         m_flags |= flag;
     }
 
-    void clear(void);
+    void clear(bool hasHeader);
 
     void setCompressed(bool compressed);
     void setHeader(bool header);

@@ -90,8 +90,10 @@ uint64_t UDPMessage::getAckNumber(void) const {
     return header.ack;
 }
 
-void UDPMessage::clear(void) {
-    memset(m_data + sizeof(UDPG_NetChannelHeader), 0, m_curSize);
-    m_curSize = sizeof(UDPG_NetChannelHeader);
+void UDPMessage::clear(bool hasHeader) {
+    size_t offset = hasHeader ? sizeof(UDPG_NetChannelHeader) : 0;
+
+    memset(m_data + offset, 0, m_curSize - offset);
+    m_curSize = offset;
 }
 } // namespace Network

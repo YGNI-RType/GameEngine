@@ -6,6 +6,7 @@
 */
 
 #include "GEngine/net/cl_net_client.hpp"
+#include "GEngine/net/net.hpp"
 
 #include <iostream> // todo : remove
 
@@ -61,6 +62,8 @@ bool CLNetClient::connectToServer(const std::string &ip, uint16_t port, bool blo
 
 void CLNetClient::disconnectFromServer(void) {
     m_netChannel.setTcpSocket(SocketTCP());
+
+    NET::getEventManager().invokeCallbacks(Event::CT_OnServerDisconnect, 0);
 
     m_state = CS_FREE;
     m_connectionState = CON_DISCONNECTED;
@@ -148,6 +151,8 @@ bool CLNetClient::handleServerTCP(const TCPMessage &msg) {
 
         m_netChannel.createUdpAddress(recvData.udpPort);
 
+        NET::getEventManager().invokeCallbacks(Event::CT_OnServerConnect, 0);
+
         {
             TCPCL_ConnectInformation sendData = {.udpPort = m_socketUdp.getPort()};
             auto sendMsg = TCPMessage(CL_CONNECT_INFORMATION);
@@ -155,6 +160,10 @@ bool CLNetClient::handleServerTCP(const TCPMessage &msg) {
             m_netChannel.sendStream(sendMsg);
         }
 
+        return true;
+    case SV_YOU_ARE_READY:
+        m_connectionState = CON_CONNECTED;
+        NET::getEventManager().invokeCallbacks(Event::CT_OnServerReady, 0);
         return true;
     default:
         return false;

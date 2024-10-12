@@ -94,6 +94,8 @@ public:
             return false;
 
         auto &[_, queueSegment] = *it;
+        if (queueSegment.empty())
+            return false;
 
         auto segment = queueSegment.front();
         queueSegment.pop();

@@ -6,6 +6,7 @@
 */
 
 #include "GEngine/net/net_client.hpp"
+#include "GEngine/net/net.hpp"
 
 #include <algorithm>
 
@@ -45,16 +46,21 @@ bool NetClient::handleClientStream(void) {
     if (m_channel.isDisconnected())
         return true;
 
-    std::cout << "SV: client just sent TCP specific message" << std::endl;
     switch (msg.getType()) {
     case CL_CONNECT_INFORMATION: {
         TCPCL_ConnectInformation recvData;
         msg.readData<TCPCL_ConnectInformation>(recvData);
 
         m_channel.createUdpAddress(recvData.udpPort);
+
+        NET::getEventManager().invokeCallbacks(Event::CT_OnClientReady, this);
+
+        auto msg = TCPMessage(SV_YOU_ARE_READY);
+        m_channel.sendStream(msg);
         return true;
     }
     default:
+        std::cout << "SV: client just sent TCP specific message" << std::endl;
         return false;
     }
     return true;

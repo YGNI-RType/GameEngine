@@ -50,9 +50,13 @@ namespace gengine::interface::network::system {
         }
 
         void onMainLoop(gengine::system::event::MainLoop &e) {
-            m_msg.writeData(m_eventCount, sizeof(Network::UDPG_NetChannelHeader), false);
+            std::this_thread::sleep_for(std::chrono::milliseconds(700));
+            m_msg.writeData(m_eventCount, sizeof(Network::UDPG_NetChannelHeader), 0, false);
+            std::cout << "event count: " << m_eventCount << std::endl;
             m_client.pushData(m_msg);
-            m_msg.clear();
+            m_msg.clear(true);
+
+            // Thomas : ça va toujours crash tant que la main loop n'aura pas confirmation du "Server Ready", d'où la wait de 2 secondes
             m_msg.appendData<std::uint64_t>(42);
             m_eventCount = 0;
         }
@@ -67,10 +71,13 @@ namespace gengine::interface::network::system {
             );
             this->template subscribeToEvent<T>(
                 [this] (T &event) -> void {
-                    std::cout << "event" << std::endl;
+                    // std::cout << "event" << std::endl;
                     m_msg.appendData<std::size_t>(id);
                     m_msg.appendData<T>(event);
                     m_eventCount++;
+
+                    // temp but PLEASE IN THE FUTURE ADD A CLOCK
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
                 }
             );
             id++;
