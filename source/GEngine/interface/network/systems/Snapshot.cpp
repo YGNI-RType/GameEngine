@@ -106,7 +106,7 @@ void Snapshot::getAndSendDeltaDiff(void) {
         auto lastId = client.getSnapshotId() + lastReceived;
         auto diff = m_currentSnapshotId - lastId;
         // std::cout << "diff: " << diff << " | m_currentSnapshotId: " << m_currentSnapshotId << " last id: " << lastId
-        << " UDP Last ACK: " << lastReceived << std::endl;
+        // << " UDP Last ACK: " << lastReceived << std::endl;
 
         auto &current = snapshots[m_currentSnapshotId % MAX_SNAPSHOT];
         auto &last = diff > MAX_SNAPSHOT ? m_dummySnapshot : snapshots[lastId % MAX_SNAPSHOT];
