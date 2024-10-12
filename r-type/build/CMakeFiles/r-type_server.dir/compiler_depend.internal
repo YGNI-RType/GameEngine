@@ -1801,6 +1801,7 @@ CMakeFiles/r-type_server.dir/sources/main.cpp.o
  /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/libdev/tools/Math.hpp
  /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/net/cl_net_client.hpp
  /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/net/net_socket.hpp
+ /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/net/events/connection.hpp
  /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/net/events/socket_event.hpp
  /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/net/msg.hpp
  /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/include/GEngine/net/net.hpp

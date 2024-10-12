@@ -32,7 +32,7 @@ public:
                 auto &velocity = velocities.get(entity);
                 transform.x += velocity.vx * dt;
                 transform.y += velocity.vy * dt;
-                // std::cout << "Entity " << entity << " moved to (" <<
+                // // std::cout << "Entity " << entity << " moved to (" <<
                 // transform.x << ", " << transform.y << ")\n";
             }
         }
@@ -87,12 +87,12 @@ public:
 
             if (transform.y > 600) {
                 toRemove.push(entity);
-                // std::cout << "killing " << entity << std::endl;
+                // // std::cout << "killing " << entity << std::endl;
 
-                // std::cout << "size " << transforms.size() << std::endl;
+                // // std::cout << "size " << transforms.size() << std::endl;
                 // for (auto& [entity, transform] : transforms)
-                //     std::cout << "[" << entity << "]";
-                // std::cout << std::endl;
+                //     // std::cout << "[" << entity << "]";
+                // // std::cout << std::endl;
             }
         }
         while (!toRemove.empty()) {

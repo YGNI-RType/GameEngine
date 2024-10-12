@@ -85,7 +85,7 @@ void NetServer::handleNewClient(SocketTCPMaster &socket) {
     else
         return; /* impossible */
 
-    std::cout << "SV: New client connected" << std::endl;
+    // // std::cout << "SV: New client connected" << std::endl;
     m_clients.push_back(cl);
 
     auto msg = TCPMessage(SV_INIT_CONNECTON);
@@ -95,7 +95,7 @@ void NetServer::handleNewClient(SocketTCPMaster &socket) {
         {.challenge = channel.getChallenge(),
          .udpPort = clientAddrType == AT_IPV6 ? m_socketUdpV6.getPort() : m_socketUdpV4.getPort()});
 
-    std::cout << "SV: Client challange: " << channel.getChallenge() << std::endl;
+    // // std::cout << "SV: Client challange: " << channel.getChallenge() << std::endl;
 
     NET::getEventManager().invokeCallbacks(Event::CT_OnClientConnect, cl);
     channel.sendStream(msg);

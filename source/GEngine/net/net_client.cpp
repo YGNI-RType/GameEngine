@@ -60,7 +60,7 @@ bool NetClient::handleClientStream(void) {
         return true;
     }
     default:
-        std::cout << "SV: client just sent TCP specific message" << std::endl;
+        // std::cout << "SV: client just sent TCP specific message" << std::endl;
         return false;
     }
     return true;
@@ -73,7 +73,7 @@ bool NetClient::handleClientDatagram(UDPMessage &msg) {
         return false;
 
     if (msg.shouldAck())
-        std::cout << "SV: client just sent UDP specific message" << std::endl;
+        // std::cout << "SV: client just sent UDP specific message" << std::endl;
     switch (msg.getType()) {
     default:
         return pushIncommingData(msg, readOffset);

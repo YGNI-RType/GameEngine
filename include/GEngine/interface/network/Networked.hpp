@@ -7,41 +7,40 @@
 #include "GEngine/libdev/systems/MainLoop.hpp"
 #include "GEngine/libdev/systems/events/MainLoop.hpp"
 
+#include "GEngine/net/events/connection.hpp"
 #include "GEngine/net/msg.hpp"
 #include "GEngine/net/net.hpp"
-#include "GEngine/net/events/connection.hpp"
 #include "GEngine/net/structs/msg_udp_structs.hpp"
 
 #include <functional>
-#include <unordered_map>
-#include <type_traits>
-#include <typeindex>
 #include <iostream>
 #include <memory>
+#include <type_traits>
+#include <typeindex>
+#include <unordered_map>
 
 namespace gengine::interface::network {
 
 class Networked : public Base {
 public:
-        Networked(driver::Engine &driverEngine, game::Engine &gameEngine, const std::string &ip = "", uint16_t port = 0,
-                bool block = false)
-            : m_gameEngine(gameEngine)
-            , m_driverEngine(driverEngine)
-            , m_ip(ip)
-            , m_port(port)
-            , m_block(block)
-        {
+    Networked(driver::Engine &driverEngine, game::Engine &gameEngine, const std::string &ip = "", uint16_t port = 0,
+              bool block = false)
+        : m_gameEngine(gameEngine)
+        , m_driverEngine(driverEngine)
+        , m_ip(ip)
+        , m_port(port)
+        , m_block(block) {
 
-#ifndef Server
-    Network::NET::init();
-    Network::NET::initClient();
-    Network::NET::start();
-
-    Network::Event::Manager &em = Network::NET::getEventManager();
-    em.addEvent<Network::Event::ConnectInfo>(Network::Event::CONNECT, Network::Event::ConnectInfo(ip, port));
-#endif
+        Network::NET::init();
+        Network::Event::Manager &em = Network::NET::getEventManager();
+#ifdef Server
+        Network::NET::initServer();
         m_gameEngine.registerSystem<system::Snapshot>(gameEngine.getWorld());
-
+#elif Client
+        Network::NET::initClient();
+        em.addEvent<Network::Event::ConnectInfo>(Network::Event::CONNECT, Network::Event::ConnectInfo(ip, port));
+#endif
+        Network::NET::start();
         m_driverEngine.registerSystem<gengine::system::AutoMainLoop>();
         m_gameEngine.registerSystem<gengine::system::AutoMainLoop>();
     }

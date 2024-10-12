@@ -22,7 +22,7 @@ CMAKE_AR:FILEPATH=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDef
 
 //Choose the type of build, options are: None Debug Release RelWithDebInfo
 // MinSizeRel ...
-CMAKE_BUILD_TYPE:STRING=Debug
+CMAKE_BUILD_TYPE:STRING=
 
 //Enable/Disable color output during build.
 CMAKE_COLOR_MAKEFILE:BOOL=ON
@@ -214,7 +214,7 @@ CMAKE_TAPI:FILEPATH=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeD
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
 //Path to a library.
-GEngine_LIB:FILEPATH=/Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/build/libGEngine-sd.a
+GEngine_LIB:FILEPATH=/Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/build/libGEngine.dylib
 
 //Arguments to supply to pkg-config
 PKG_CONFIG_ARGN:STRING=

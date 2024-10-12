@@ -102,7 +102,7 @@ bool NetChannel::readDatagram(UDPMessage &msg, size_t &readOffset) {
 
     if (header.sequence <= udpInSequence) {
         /*out of order packet, delete it */
-        std::cout << "OOB packet: " << header.sequence << std::endl;
+        // std::cout << "OOB packet: " << header.sequence << std::endl;
         return false;
     }
 

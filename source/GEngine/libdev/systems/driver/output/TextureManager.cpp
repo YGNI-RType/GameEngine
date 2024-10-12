@@ -36,7 +36,7 @@ void TextureManager::onStartEngine(gengine::system::event::StartEngine &e) {
 void TextureManager::onStopEngine(gengine::system::event::StopEngine &e) {
     for (auto &[path, texture] : m_textureTable) {
         UnloadTexture(texture);
-        // std::cout << "Unloaded texture: " << path << std::endl; // TODO log
+        // // std::cout << "Unloaded texture: " << path << std::endl; // TODO log
     }
 }
 

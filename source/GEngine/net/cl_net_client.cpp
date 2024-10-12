@@ -18,7 +18,7 @@ bool CLNetClient::connectToServer(size_t index) {
     if (index >= m_pingedServers.size())
         return false;
 
-    std::cout << "CL: connecting to server" << std::endl;
+    // std::cout << "CL: connecting to server" << std::endl;
 
     auto &[response, addr] = m_pingedServers.at(index);
 
@@ -51,7 +51,7 @@ bool CLNetClient::connectToServer(const std::string &ip, uint16_t port, bool blo
     auto sock = m_addrType == AT_IPV4 ? SocketTCP(static_cast<AddressV4 &>(*addr), port, block)
                                       : SocketTCP(static_cast<AddressV6 &>(*addr), port, block);
 
-    std::cout << "connecting is not ready ?: " << sock.isNotReady() << std::endl;
+    // std::cout << "connecting is not ready ?: " << sock.isNotReady() << std::endl;
     m_netChannel = std::move(NetChannel(false, std::move(addr), std::move(sock)));
     //     /* todo : some error handling just in case ? */
 
@@ -91,7 +91,7 @@ bool CLNetClient::handleUDPEvents(UDPMessage &msg, const Address &addr) {
     switch (msg.getType()) {
     case SV_BROADCAST_PING:
         getPingResponse(msg, addr);
-        std::cout << "CL: got ping response !!" << std::endl;
+        // std::cout << "CL: got ping response !!" << std::endl;
         return true;
     default:
         return handleServerUDP(msg, addr);
@@ -146,7 +146,7 @@ bool CLNetClient::handleServerTCP(const TCPMessage &msg) {
         msg.readData<TCPSV_ClientInit>(recvData);
 
         m_netChannel.setChallenge(recvData.challenge);
-        std::cout << "CL: Client challange: " << recvData.challenge << std::endl;
+        // std::cout << "CL: Client challange: " << recvData.challenge << std::endl;
         m_connectionState = CON_AUTHORIZING;
 
         m_netChannel.createUdpAddress(recvData.udpPort);

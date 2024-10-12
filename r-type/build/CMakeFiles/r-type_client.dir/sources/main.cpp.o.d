@@ -876,6 +876,7 @@ CMakeFiles/r-type_client.dir/sources/main.cpp.o: \
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/r-type/../include/GEngine/libdev/systems/events/Native.hpp \
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/r-type/../include/GEngine/interface/network/systems/NetworkComponent.hpp \
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/r-type/../include/GEngine/libdev/systems/MainLoop.hpp \
+  /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/r-type/../include/GEngine/net/events/connection.hpp \
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/r-type/../include/GEngine/libdev/components/HitBoxs.hpp \
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/r-type/../include/GEngine/libdev/Component.hpp \
   /Users/basilefouquet/Dev/epitech/Tek3/advenced-c++/GameEngine/r-type/../include/GEngine/libdev/systems/Collisions.hpp \

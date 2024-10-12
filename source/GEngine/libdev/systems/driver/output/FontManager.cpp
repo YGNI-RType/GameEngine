@@ -34,7 +34,7 @@ void FontManager::onStartEngine(gengine::system::event::StartEngine &e) {
 void FontManager::onStopEngine(gengine::system::event::StopEngine &e) {
     for (auto &[path, font] : m_fontTable) {
         UnloadFont(font);
-        // std::cout << "Unloaded Font: " << path << std::endl; // TODO log
+        // // std::cout << "Unloaded Font: " << path << std::endl; // TODO log
     }
 }
 

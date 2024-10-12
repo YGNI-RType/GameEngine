@@ -53,7 +53,8 @@ void Start::onStartEngine(gengine::system::event::StartEngine &e) {
     //                 // gengine::component::HitBoxSquare2D(side, side),
     //                 // // gengine::component::driver::output::Color(RED),
     //                 gengine::component::driver::output::Rectangle(side, side, RED),
-    //                 // gengine::component::driver::output::Sprite("r-typesheet3.gif", Rectangle{0, 0, 17, 18}, WHITE),
+    //                 // gengine::component::driver::output::Sprite("r-typesheet3.gif", Rectangle{0, 0, 17, 18},
+    //                 WHITE),
     //                 // gengine::component::driver::output::Animation(12, rand() % 12, 0.1f),
     //                 gengine::component::driver::output::Drawable(10));
     //     // spawnEntity(gengine::component::Transform2D({x, y}, {5, 5}, 0),
