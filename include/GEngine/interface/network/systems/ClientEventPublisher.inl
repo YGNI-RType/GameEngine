@@ -5,8 +5,6 @@
 ** RemoteEventPublisher.cpp
 */
 
-#include "RemoteEventPublisher.hpp"
-
 namespace gengine::interface::network::system {
 
 template <class... Events>
