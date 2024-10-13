@@ -120,7 +120,7 @@ bool NetServer::handleUdpMessageClients(SocketUDP &socket, UDPMessage &msg, cons
         if (channel.getAddressUDP() != addr)
             continue;
 
-        client->handleClientDatagram(msg);
+        client->handleClientDatagram(socket, msg);
         return true;
     }
     return false;

@@ -7,10 +7,13 @@
 
 #include "GEngine/net/net_channel.hpp"
 
+#include <algorithm>
+
 namespace Network {
 bool PacketPoolUdp::addMessage(uint32_t sequence, const UDPMessage &msg) {
-    auto size = msg.getSize() / MAX_UDP_PACKET_LENGTH;
-    auto remsize = msg.getSize() % MAX_UDP_PACKET_LENGTH;
+    size_t msgSize = msg.getSize() - (msg.hasHeader() ? sizeof(UDPG_NetChannelHeader) : 0);
+    auto size = msgSize / MAX_UDP_PACKET_LENGTH;
+    auto remsize = msgSize % MAX_UDP_PACKET_LENGTH;
     if (size > FRAG_SEQUENCE_TABLE_SZ)
         return false;
 
@@ -78,22 +81,25 @@ bool PacketPoolUdp::deleteSequence(uint32_t sequence) {
 /*****************************************************************/
 
 /* tells if it's first time or not */
-bool PacketPoolUdp::recvMessage(uint32_t sequence, const UDPMessage &msg, size_t &readOffset) {
+bool PacketPoolUdp::recvMessage(const UDPMessage &msg, size_t &readOffset, uint32_t &fragSequence) {
     UDPG_FragmentHeaderTo header;
     msg.readContinuousData<UDPG_FragmentHeaderTo>(header, readOffset);
+
+    fragSequence = header.idSequence;
     size_t chunkSize = msg.getSize() - sizeof(UDPG_FragmentHeaderTo) - sizeof(UDPG_NetChannelHeader);
     bool isLast = header.fragId == header.fragIdMax;
     size_t offset;
     bool isNewSequence = false;
 
     /* todo : add checks (mask <= 16, sizes 0 or extreme )*/
-    auto it = m_poolSequences.find(sequence);
+    auto it = m_poolSequences.find(fragSequence);
     if (it == m_poolSequences.end()) {
         auto t = std::make_tuple<>(msg.getType(), msg.getFlags(), header.fragIdMax, isLast ? msg.getSize() : 0, 1 << header.fragId, m_pool.size());
         auto [type, flag, size, last_recv, cur_mask, _offset] = t;
-        m_poolSequences[sequence] = t;
+        m_poolSequences[fragSequence] = t;
         isNewSequence = true;
         offset = _offset;
+        m_pool.resize(offset + size + 1); //resise(size, chunk_t());
     } else {
         auto &[type, flag, size, last_size, cur_mask, _offset] = it->second;
         if (header.fragId > size)
@@ -107,6 +113,14 @@ bool PacketPoolUdp::recvMessage(uint32_t sequence, const UDPMessage &msg, size_t
     m_pool.emplace(m_pool.begin() + offset + header.fragId, chunk_t());
     std::memcpy(m_pool[offset + header.fragId].data(), msg.getData() + readOffset, chunkSize);
     return isNewSequence;
+}
+
+std::pair<uint32_t, uint16_t> PacketPoolUdp::getCurrentSequence(void) {
+    if (m_poolSequences.size() == 0)
+        return std::make_pair<>(-1, 0);
+
+    auto it = m_poolSequences.begin();
+    return std::make_pair<>(it->first, std::get<4>(it->second));
 }
 
 uint16_t PacketPoolUdp::getMask(uint32_t sequence) {
@@ -123,7 +137,6 @@ void PacketPoolUdp::reconstructMessage(uint32_t sequence, UDPMessage &msg) {
 
     auto [type, flags, size, last_size, mask_size, offset] = it->second;
     size_t totalSize = size * CHUNK_SIZE + last_size;
-    msg = UDPMessage(false, type);
     msg.setFlag(flags);
     msg.setFragmented(false);
 
