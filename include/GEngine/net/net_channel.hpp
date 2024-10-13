@@ -58,8 +58,8 @@ class PacketPoolUdp {
         MAX_UDP_PACKET_LENGTH - sizeof(UDPG_FragmentHeaderTo) - sizeof(UDPG_NetChannelHeader);
     typedef std::array<byte_t, CHUNK_SIZE> chunk_t;
 
-    /* type, numbers of chunk, last chunk size | cur mask , pool offset */
-    using poolSequence_t = std::tuple<uint8_t, uint8_t, uint16_t, size_t>;
+    /* type, flag, numbers of chunk, last chunk size, cur mask, pool offset */
+    using poolSequence_t = std::tuple<uint8_t, uint8_t, uint8_t, uint16_t, uint16_t, size_t>;
 
 public:
     PacketPoolUdp() = default;
@@ -83,9 +83,7 @@ public:
     poolSequence_t getMsgSequenceInfo(uint32_t sequence) const {
         return m_poolSequences.at(sequence);
     }
-    bool receivedFullSequence(uint32_t sequence) {
-        return getMask(sequence) == (1 << std::get<1>(m_poolSequences.at(sequence))) - 1;
-    }
+    bool receivedFullSequence(uint32_t sequence);
 
 private:
     std::unordered_map<uint32_t, poolSequence_t> m_poolSequences;

@@ -179,7 +179,7 @@ public:
     }
 
     void setFlag(uint8_t flag) {
-        m_flags |= flag;
+        m_flags = flag;
     }
 
     void clear(bool hasHeader);

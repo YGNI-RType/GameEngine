@@ -51,13 +51,14 @@ bool NetChannel::sendDatagram(SocketUDP &socket, UDPMessage &msg) {
         m_udpPoolSend.addMessage(m_udpMyFragSequence, msg);
 
         auto fragments = m_udpPoolSend.getMissingFragments(m_udpMyFragSequence, 0);
-        auto [msgType, maxSize, lastChunkSz, _] = m_udpPoolSend.getMsgSequenceInfo(m_udpMyFragSequence);
+        auto [msgType, flags, maxSize, lastChunkSz, _mask, _] = m_udpPoolSend.getMsgSequenceInfo(m_udpMyFragSequence);
         uint8_t i = 0;
 
         /* todo : add rate limit and all, only do it once though */
         for (const auto &chunk : fragments) {
-            UDPMessage newMsg(false, msgType);
+            UDPMessage newMsg(true, msgType);
 
+            newMsg.setFlag(flags);
             newMsg.setFragmented(true);
             UDPG_FragmentHeaderTo fragHeader;
             fragHeader.idSequence = m_udpMyFragSequence;
@@ -119,10 +120,11 @@ bool NetChannel::readDatagram(UDPMessage &msg, size_t &readOffset) {
             m_udpFromFragSequence = header.ackFragmentSequence;
 
         if (m_udpPoolRecv.receivedFullSequence(m_udpFromFragSequence)) {
-            msg = UDPMessage(false, msg.getType()); /* recreate */
+            msg = UDPMessage(true, msg.getType()); /* recreate */
 
             m_udpPoolRecv.reconstructMessage(m_udpFromFragSequence, msg);
             m_udpPoolRecv.deleteSequence(m_udpFromFragSequence);
+            msg.writeHeader(header);
             return readDatagram(msg, readOffset);
         }
         return false;
