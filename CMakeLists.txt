@@ -5,7 +5,7 @@ include(GNUInstallDirs)
 
 include(cmake/automate-vcpkg.cmake)
 vcpkg_bootstrap()
-vcpkg_install_packages(raylib)
+vcpkg_install_packages(raylib boost-uuid)
 
 file(GLOB_RECURSE SOURCES source/*.cpp)
 list(FILTER SOURCES EXCLUDE REGEX ".*/deprecated/.*")
@@ -45,10 +45,13 @@ set_target_properties(GEngine_static PROPERTIES
 )
 
 find_package(raylib CONFIG REQUIRED)
-find_package(glfw3 CONFIG REQUIRED)
+find_package(glfw3 CONFIG REQUIRED) #TODO a suppr
+find_package(Boost CONFIG REQUIRED COMPONENTS uuid)
 
-target_link_libraries(GEngine raylib glfw)
-target_link_libraries(GEngine_static raylib glfw)
+include_directories(${Boost_INCLUDE_DIRS})
+
+target_link_libraries(GEngine raylib glfw) #TODO suppr glfw
+target_link_libraries(GEngine_static raylib glfw) #TODO suppr glfw
 
 install(TARGETS GEngine GEngine_static
         EXPORT GEngine_targets
