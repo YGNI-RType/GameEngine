@@ -19,7 +19,6 @@ namespace gengine::interface::event {
 
     struct DeleteRemoteDriver: gengine::Event {
         component::RemoteDriver remote;
-        DeleteRemoteDriver(component::RemoteDriver remote): remote(remote) {}
         DeleteRemoteDriver(component::RemoteDriver &remote): remote(remote) {}
         DeleteRemoteDriver(const component::RemoteDriver &remote): remote(remote) {}
     };

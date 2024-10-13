@@ -47,44 +47,35 @@ void ServerClientsHandler::onStartEngine(gengine::system::event::StartEngine &e)
                 return;
             }
 
-        gengine::interface::component::RemoteDriver newRemoteDriver;
-
-        publishEvent<gengine::interface::event::NewRemoteDriver>(
-            gengine::interface::event::NewRemoteDriver(
-                static_cast<const gengine::interface::component::RemoteDriver &>(newRemoteDriver)
-            ));
-
+            gengine::interface::component::RemoteDriver newRemoteDriver;
+            publishEvent<gengine::interface::event::NewRemoteDriver>(gengine::interface::event::NewRemoteDriver(newRemoteDriver));
         });
     eventManager.registerCallback<Network::NetClient *>(
         Network::Event::CT_OnClientDisconnect, [this](Network::NetClient *client) {
             std::lock_guard<std::mutex> lock(m_netMutex);
 
-            auto it = std::find_if(m_clients.begin(), m_clients.end(), [client](const auto &comp, const auto &cli) {
-                return cli.first.getNet().get() == client;
+            auto it = std::find_if(m_clients.begin(), m_clients.end(), [client](auto &pair) {
+                return pair.second.getClient().get() == client;
             });
             if (it == m_clients.end()) {
                 unwantedClients.push_back(client);
                 return;
             }
             it->second.setShouldDelete(true);
+
             publishEvent<gengine::interface::event::DeleteRemoteDriver>(
-                gengine::interface::event::DeleteRemoteDriver(
-                    static_cast<const gengine::interface::component::RemoteDriver &>(it->first)
-                ));
+                gengine::interface::event::DeleteRemoteDriver(it->first));
         });
 }
 
 void ServerClientsHandler::onMainLoop(gengine::system::event::MainLoop &e) {
     std::lock_guard<std::mutex> lock(m_netMutex);
 
-    for (auto &[comp, client] : m_clients) {
-        ServerClient &cli = client;
-        if (client.shouldDelete()) { /* thread safe way of deleting a client from genengine */
-            m_clients.erase(std::remove_if(m_clients.begin(), m_clients.end(),
-                                           [&cli](auto &other) { return cli.getNet() == other.getNet(); }),
-                            m_clients.end());
-            continue;
-        }
+    for (auto it = m_clients.begin(); it != m_clients.end(); ) {
+        if (it->second.shouldDelete())
+            it = m_clients.erase(it);
+        else
+            ++it;
     }
 }
 } // namespace gengine::interface::network::system

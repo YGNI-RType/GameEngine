@@ -47,6 +47,10 @@ public:
         m_shouldDelete = shouldDelete;
     }
 
+    std::shared_ptr<Network::NetClient> getClient(void) {
+        return m_client;
+    }
+
 private:
     std::shared_ptr<Network::NetClient> m_client;
 
