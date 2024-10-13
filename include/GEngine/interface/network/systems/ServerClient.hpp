@@ -7,37 +7,68 @@
 
 #pragma once
 
-// class ServerClient {
-// public:
-//     ServerClient(std::shared_ptr<Network::NetClient> client, uint64_t firsSnapshotId);
+#include "GEngine/interface/network/events/ClientEvent.hpp"
+#include "GEngine/libdev/System.hpp"
+#include "GEngine/libdev/systems/events/MainLoop.hpp"
+#include "GEngine/libdev/systems/events/Native.hpp"
+#include "GEngine/net/net.hpp"
+#include "GEngine/interface/components/RemoteDriver.hpp"
 
-//     std::shared_ptr<Network::NetClient> getNet(void) const;
+#include <vector>
+#include <memory>
+#include <mutex>
+#include <map>
 
-//     uint64_t getLastAck(void) const {
-//         return m_lastAck;
-//     }
-//     void setLastAck(uint64_t lastAck) {
-//         m_lastAck = lastAck;
-//     }
+namespace gengine::interface::network::system {
+class ServerClient {
+public:
+    ServerClient(std::shared_ptr<Network::NetClient> client);
 
-//     uint64_t getSnapshotId(void) const {
-//         return m_firsSnapshotId;
-//     }
-//     void setSnapshotId(uint64_t id) {
-//         m_firsSnapshotId = id;
-//     }
+    std::shared_ptr<Network::NetClient> getNet(void) const;
 
-//     bool shouldDelete(void) const {
-//         return m_shouldDelete;
-//     }
-//     void setShouldDelete(bool shouldDelete) {
-//         m_shouldDelete = shouldDelete;
-//     }
+    uint64_t getLastAck(void) const {
+        return m_lastAck;
+    }
+    void setLastAck(uint64_t lastAck) {
+        m_lastAck = lastAck;
+    }
 
-// private:
-//     std::shared_ptr<Network::NetClient> m_client;
-//     uint64_t m_firsSnapshotId;
+    // uint64_t getSnapshotId(void) const {
+    //     return m_firsSnapshotId;
+    // }
+    // void setSnapshotId(uint64_t id) {
+    //     m_firsSnapshotId = id;
+    // }
 
-//     uint64_t m_lastAck = 0;
-//     bool m_shouldDelete = false;
-// };
+    bool shouldDelete(void) const {
+        return m_shouldDelete;
+    }
+    void setShouldDelete(bool shouldDelete) {
+        m_shouldDelete = shouldDelete;
+    }
+
+private:
+    std::shared_ptr<Network::NetClient> m_client;
+
+    uint64_t m_lastAck = 0;
+    bool m_shouldDelete = false;
+};
+
+class ServerClientsHandler : public System<ServerClientsHandler> {
+public:
+    ServerClientsHandler();
+
+    void init(void) override;
+    void onStartEngine(gengine::system::event::StartEngine &);
+    void onMainLoop(gengine::system::event::MainLoop &);
+
+    std::map<component::RemoteDriver, ServerClient> &getClients(void) {
+        return m_clients;
+    }
+
+private:
+    std::map<component::RemoteDriver, ServerClient> m_clients;
+
+    mutable std::mutex m_netMutex;
+};
+}
