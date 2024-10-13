@@ -28,7 +28,7 @@ Snapshot::Snapshot(const snapshot_t &currentWorld)
 
 void Snapshot::init(void) {
     subscribeToEvent<gengine::system::event::StartEngine>(&Snapshot::onStartEngine);
-    subscribeToEvent<gengine::system::event::MainLoop>(&Snapshot::onMainLoop);
+    subscribeToEvent<gengine::system::event::GameLoop>(&Snapshot::onGameLoop);
 }
 
 void Snapshot::onStartEngine(gengine::system::event::StartEngine &e) {
@@ -64,7 +64,7 @@ void Snapshot::onStartEngine(gengine::system::event::StartEngine &e) {
         });
 }
 
-void Snapshot::onMainLoop(gengine::system::event::MainLoop &e) {
+void Snapshot::onGameLoop(gengine::system::event::GameLoop &e) {
     {
         std::lock_guard<std::mutex> lock(m_netMutex);
 

@@ -14,6 +14,7 @@
 
 #include "GEngine/libdev/System.hpp"
 #include "GEngine/libdev/systems/events/MainLoop.hpp"
+#include "GEngine/libdev/systems/events/GameLoop.hpp"
 #include "GEngine/libdev/systems/events/Native.hpp"
 
 #include "GEngine/interface/network/systems/NetworkComponent.hpp"
@@ -70,7 +71,7 @@ public:
 
     void init(void) override;
     void onStartEngine(gengine::system::event::StartEngine &);
-    void onMainLoop(gengine::system::event::MainLoop &);
+    void onGameLoop(gengine::system::event::GameLoop &);
 
     void registerClient(std::shared_ptr<Network::NetClient> client);
     void createSnapshots(void);

@@ -9,16 +9,18 @@
 
 namespace gengine::system::driver::output {
 void Animate::init(void) {
-    subscribeToEvent<gengine::system::event::MainLoop>(&Animate::onMainLoop);
+    subscribeToEvent<gengine::system::event::GameLoop>(&Animate::onGameLoop);
 }
 
-void Animate::onMainLoop(gengine::system::event::MainLoop &e) {
+void Animate::onGameLoop(gengine::system::event::GameLoop &e) {
     auto &animations = getComponents<component::driver::output::Animation>();
     auto &sprites = getComponents<component::driver::output::Sprite>();
 
     for (auto [entity, anim, sprite] : Zip(animations, sprites)) {
-        anim.currentTime += e.deltaTime;
+        anim.currentTime += e.deltaTime / 1000.f;
+        std::cout << entity<< " "<< anim.currentTime << std::endl;
         int newFrame = anim.currentTime / anim.frameDuration;
+        std::cout << newFrame << std::endl;
         if (!(newFrame - anim.currentFrame))
             continue;
         if (newFrame >= anim.nbFrames) {
