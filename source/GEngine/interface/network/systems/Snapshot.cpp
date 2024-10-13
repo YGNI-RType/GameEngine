@@ -51,13 +51,11 @@ void Snapshot::destroySnapshot(gengine::interface::event::DeleteRemoteDriver &e)
     m_clientSnapshots.erase(e.remote);
 }
 
-
 void Snapshot::createSnapshots(void) {
     auto &clientsSys = getSystem<gengine::interface::network::system::ServerClientsHandler>();
     for (auto &[remote, client] : clientsSys.getClients()) {
-        if (client.shouldDelete()) {
+        if (client.shouldDelete())
             continue;
-        }
         m_clientSnapshots[remote].second[m_currentSnapshotId % MAX_SNAPSHOT] = m_currentWorld;
     }
 }

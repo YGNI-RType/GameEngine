@@ -47,19 +47,18 @@ void ServerClientsHandler::onStartEngine(gengine::system::event::StartEngine &e)
                 return;
             }
 
-
             gengine::interface::component::RemoteDriver newRemoteDriver;
             m_clients.insert(std::make_pair(newRemoteDriver, client));
-            publishEvent<gengine::interface::event::NewRemoteDriver>(gengine::interface::event::NewRemoteDriver(newRemoteDriver));
+            publishEvent<gengine::interface::event::NewRemoteDriver>(
+                gengine::interface::event::NewRemoteDriver(newRemoteDriver));
         });
 
     eventManager.registerCallback<Network::NetClient *>(
         Network::Event::CT_OnClientDisconnect, [this](Network::NetClient *client) {
             std::lock_guard<std::mutex> lock(m_netMutex);
 
-            auto it = std::find_if(m_clients.begin(), m_clients.end(), [client](auto &pair) {
-                return pair.second.getClient().get() == client;
-            });
+            auto it = std::find_if(m_clients.begin(), m_clients.end(),
+                                   [client](auto &pair) { return pair.second.getClient().get() == client; });
             if (it == m_clients.end()) {
                 unwantedClients.push_back(client);
                 return;
@@ -74,11 +73,10 @@ void ServerClientsHandler::onStartEngine(gengine::system::event::StartEngine &e)
 void ServerClientsHandler::onMainLoop(gengine::system::event::MainLoop &e) {
     std::lock_guard<std::mutex> lock(m_netMutex);
 
-    for (auto it = m_clients.begin(); it != m_clients.end(); ) {
+    for (auto it = m_clients.begin(); it != m_clients.end();)
         if (it->second.shouldDelete())
             it = m_clients.erase(it);
         else
             ++it;
-    }
 }
 } // namespace gengine::interface::network::system
