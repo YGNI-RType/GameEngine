@@ -78,6 +78,7 @@ bool NetClient::handleClientDatagram(UDPMessage &msg) {
         default:
             return pushIncommingData(msg, readOffset);
         }
+    return false;
 }
 
 bool NetClient::handleTCPEvents(fd_set &readSet) {
