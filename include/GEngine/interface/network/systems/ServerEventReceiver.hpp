@@ -126,17 +126,15 @@ public:
 private:
     template <typename T>
     void dynamicPublish(void) {
-        static std::uint64_t id = 0;
-        m_eventsCallbacks.insert(std::make_pair(id, std::make_pair<std::function<void(void *)>, size_t>(
+        m_eventsCallbacks.insert(std::make_pair(m_id, std::make_pair<std::function<void(void *)>, size_t>(
                                                         [this](void *data) -> void {
-                                                            // TestEvent event(*reinterpret_cast<TestEvent *>(data));
-                                                            // // std::cout << event.message << std::endl;
                                                             event::ClientEvent<T> event(*reinterpret_cast<T *>(data));
                                                             this->template publishEvent<event::ClientEvent<T>>(event);
                                                         },
                                                         sizeof(T))));
-        id++;
+        m_id++;
     }
+    std::uint64_t m_id = 0;
     const Network::NetServer &m_server;
     std::unordered_map<std::uint64_t, std::pair<std::function<void(void *)>, size_t>> m_eventsCallbacks;
     std::vector<std::pair<ServerClient, std::uint64_t>> m_clients;

@@ -36,6 +36,7 @@ void Updater::onMainLoop(gengine::system::event::MainLoop &e) {
 
 void Updater::handleSnapshotMsg(Network::UDPMessage &msg, size_t readCount) {
     uint64_t nb;
+    std::cout << "snap" << std::endl;
     msg.readContinuousData(nb, readCount);
     for (int i = 0; i < nb; i++) {
         NetworkComponent c;

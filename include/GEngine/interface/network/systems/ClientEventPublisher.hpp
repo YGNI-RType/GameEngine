@@ -61,21 +61,18 @@ public:
 private:
     template <typename T>
     void dynamicSubscribe(void) {
-        static std::uint64_t id = 0;
-        m_events.insert(std::make_pair(std::type_index(typeid(T)), id));
+        m_events.insert(std::make_pair(std::type_index(typeid(T)), m_id));
         this->template subscribeToEvent<T>([this](T &event) -> void {
-            // // std::cout << "event" << std::endl;
             m_msg.appendData<std::uint64_t>(m_events.find(std::type_index(typeid(T)))->second);
-            // std::cout << "id: " << m_events.find(std::type_index(typeid(T)))->second << std::endl;
             m_msg.appendData<T>(event);
             m_eventCount++;
 
             // temp but PLEASE IN THE FUTURE ADD A CLOCK
             // std::this_thread::sleep_for(std::chrono::milliseconds(100));
         });
-        id++;
+        m_id++;
     }
-
+    std::uint64_t m_id = 0;
     Network::UDPMessage m_msg;
     std::uint64_t m_eventCount = 0;
     Network::CLNetClient &m_client;
