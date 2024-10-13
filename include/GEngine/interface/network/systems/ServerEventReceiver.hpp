@@ -8,25 +8,26 @@
 #pragma once
 
 #include "GEngine/interface/events/RemoteEvent.hpp"
+#include "GEngine/interface/network/systems/ServerClient.hpp"
 #include "GEngine/libdev/System.hpp"
 #include "GEngine/libdev/systems/events/MainLoop.hpp"
 #include "GEngine/libdev/systems/events/Native.hpp"
 #include "GEngine/net/net.hpp"
-#include "GEngine/interface/network/systems/ServerClient.hpp"
 
+#include <algorithm>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <mutex>
 #include <typeindex>
 #include <unordered_map>
 #include <vector>
-#include <algorithm>
-#include <functional>
 
 namespace gengine::interface::network::system {
 
 template <class... Events>
-class ServerEventReceiver : public System<ServerEventReceiver<Events...>, gengine::interface::network::system::ServerClientsHandler> {
+class ServerEventReceiver
+    : public System<ServerEventReceiver<Events...>, gengine::interface::network::system::ServerClientsHandler> {
 public:
     ServerEventReceiver();
 

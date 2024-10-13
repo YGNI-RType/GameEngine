@@ -16,9 +16,9 @@
 #include "GEngine/libdev/systems/events/MainLoop.hpp"
 #include "GEngine/libdev/systems/events/Native.hpp"
 
+#include "GEngine/interface/events/RemoteDriver.hpp"
 #include "GEngine/interface/network/systems/NetworkComponent.hpp"
 #include "GEngine/interface/network/systems/ServerClient.hpp"
-#include "GEngine/interface/events/RemoteDriver.hpp"
 
 #define MAX_SNAPSHOT 60
 

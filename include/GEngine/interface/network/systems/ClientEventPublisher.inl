@@ -9,7 +9,9 @@
 
 template <class... Events>
 gengine::interface::network::system::RemoteEventPublisher<Events...>::RemoteEventPublisher()
-    : m_client(Network::NET::getClient()), m_msg(true, Network::CL_EVENT) {}
+    : m_client(Network::NET::getClient())
+    , m_msg(true, Network::CL_EVENT) {
+}
 
 template <class... Events>
 void gengine::interface::network::system::RemoteEventPublisher<Events...>::init(void) {
@@ -24,14 +26,16 @@ void gengine::interface::network::system::RemoteEventPublisher<Events...>::init(
 }
 
 template <class... Events>
-void gengine::interface::network::system::RemoteEventPublisher<Events...>::onStartEngine(gengine::system::event::StartEngine &e) {
+void gengine::interface::network::system::RemoteEventPublisher<Events...>::onStartEngine(
+    gengine::system::event::StartEngine &e) {
     m_msg.setAck(true);
     m_msg.appendData<std::uint64_t>(0);
     m_eventCount = 0;
 }
 
 template <class... Events>
-void gengine::interface::network::system::RemoteEventPublisher<Events...>::onMainLoop(gengine::system::event::MainLoop &e) {
+void gengine::interface::network::system::RemoteEventPublisher<Events...>::onMainLoop(
+    gengine::system::event::MainLoop &e) {
     if (!m_ready)
         return;
 

@@ -7,7 +7,8 @@
 
 template <class... Events>
 gengine::interface::network::system::ServerEventReceiver<Events...>::ServerEventReceiver()
-    : m_server(Network::NET::getServer()) {}
+    : m_server(Network::NET::getServer()) {
+}
 
 template <class... Events>
 void gengine::interface::network::system::ServerEventReceiver<Events...>::init(void) {
@@ -16,7 +17,8 @@ void gengine::interface::network::system::ServerEventReceiver<Events...>::init(v
 }
 
 template <class... Events>
-void gengine::interface::network::system::ServerEventReceiver<Events...>::onMainLoop(gengine::system::event::MainLoop &e) {
+void gengine::interface::network::system::ServerEventReceiver<Events...>::onMainLoop(
+    gengine::system::event::MainLoop &e) {
     auto &clients = this->template getSystem<gengine::interface::network::system::ServerClientsHandler>();
     Network::UDPMessage msg(true, Network::CL_EVENT);
     size_t readCount = 0;
@@ -51,11 +53,10 @@ template <class... Events>
 template <typename T>
 void gengine::interface::network::system::ServerEventReceiver<Events...>::dynamicPublish(void) {
     m_eventsCallbacks.insert(std::make_pair(m_id, std::make_pair<std::function<void(void *)>, size_t>(
-        [this](void *data) -> void {
-            event::RemoteEvent<T> event(*reinterpret_cast<T *>(data));
-            this->template publishEvent<event::RemoteEvent<T>>(event);
-        },
-        sizeof(T))));
+                                                      [this](void *data) -> void {
+                                                          event::RemoteEvent<T> event(*reinterpret_cast<T *>(data));
+                                                          this->template publishEvent<event::RemoteEvent<T>>(event);
+                                                      },
+                                                      sizeof(T))));
     m_id++;
 }
-
