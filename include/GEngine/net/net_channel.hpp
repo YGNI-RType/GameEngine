@@ -56,10 +56,13 @@ class PacketPoolUdp {
 
     static const size_t CHUNK_SIZE =
         MAX_UDP_PACKET_LENGTH - sizeof(UDPG_FragmentHeaderTo) - sizeof(UDPG_NetChannelHeader);
-    typedef std::array<byte_t, CHUNK_SIZE> chunk_t;
 
-    /* type, numbers of chunk, last chunk size | cur mask , pool offset */
-    using poolSequence_t = std::tuple<uint8_t, uint8_t, uint16_t, size_t>;
+public:
+    typedef std::array<byte_t, CHUNK_SIZE> chunk_t;
+private:
+
+    /* type, flag, numbers of chunk, last chunk size, cur mask, pool offset */
+    using poolSequence_t = std::tuple<uint8_t, uint8_t, uint8_t, uint16_t, uint16_t, size_t>;
 
 public:
     PacketPoolUdp() = default;
@@ -74,7 +77,8 @@ public:
 
     /* recv */
 
-    bool recvMessage(uint32_t sequence, const UDPMessage &msg, size_t &readOffset);
+    bool recvMessage(const UDPMessage &msg, size_t &readOffset, uint32_t &fragSequence);
+    std::pair<uint32_t, uint16_t> getCurrentSequence(void);
     uint16_t getMask(uint32_t sequence);
     void reconstructMessage(uint32_t sequence, UDPMessage &msg);
 
@@ -83,8 +87,9 @@ public:
     poolSequence_t getMsgSequenceInfo(uint32_t sequence) const {
         return m_poolSequences.at(sequence);
     }
-    bool receivedFullSequence(uint32_t sequence) {
-        return getMask(sequence) == (1 << std::get<1>(m_poolSequences.at(sequence))) - 1;
+    bool receivedFullSequence(uint32_t sequence);
+    size_t getPoolSize(void) const {
+        return m_poolSequences.size();
     }
 
 private:
@@ -142,13 +147,17 @@ public:
     }
 
     void createUdpAddress(uint16_t udpport);
-    bool readDatagram(UDPMessage &msg, size_t &readOffset);
+    bool readDatagram(SocketUDP &socket, UDPMessage &msg, size_t &readOffset);
     /* steam if proper to socket, taht's why msg in not const */
     bool readStream(TCPMessage &msg);
 
+public:
     bool sendDatagram(SocketUDP &socket, UDPMessage &msg);
     bool sendStream(const TCPMessage &msg);
 
+private:
+    bool sendDatagrams(SocketUDP &socket, uint32_t sequence, const std::vector<const Network::PacketPoolUdp::chunk_t *> &vec);
+public:
     bool isTimeout(void) const;
 
 private:

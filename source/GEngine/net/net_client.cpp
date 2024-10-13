@@ -66,10 +66,10 @@ bool NetClient::handleClientStream(void) {
     return true;
 }
 
-bool NetClient::handleClientDatagram(UDPMessage &msg) {
+bool NetClient::handleClientDatagram(SocketUDP &socket, UDPMessage &msg) {
     size_t readOffset = 0;
 
-    if (!m_channel.readDatagram(msg, readOffset))
+    if (!m_channel.readDatagram(socket, msg, readOffset))
         return false;
 
     if (msg.shouldAck())

@@ -84,7 +84,7 @@ void CLNetClient::stop(void) {
     m_enabled = false;
 }
 
-bool CLNetClient::handleUDPEvents(UDPMessage &msg, const Address &addr) {
+bool CLNetClient::handleUDPEvents(SocketUDP &socket, UDPMessage &msg, const Address &addr) {
     if (!m_enabled)
         return false;
 
@@ -94,18 +94,18 @@ bool CLNetClient::handleUDPEvents(UDPMessage &msg, const Address &addr) {
         // std::cout << "CL: got ping response !!" << std::endl;
         return true;
     default:
-        return handleServerUDP(msg, addr);
+        return handleServerUDP(socket, msg, addr);
     }
 }
 
-bool CLNetClient::handleServerUDP(UDPMessage &msg, const Address &addr) {
+bool CLNetClient::handleServerUDP(SocketUDP &socket, UDPMessage &msg, const Address &addr) {
     size_t readOffset = 0;
 
     if (!m_netChannel.isEnabled() ||
         addr != m_netChannel.getAddressUDP()) // why sending udp packets to the client ? who are you ?
         return false;
 
-    if (!m_netChannel.readDatagram(msg, readOffset))
+    if (!m_netChannel.readDatagram(socket, msg, readOffset))
         return true;
 
     switch (msg.getType()) {

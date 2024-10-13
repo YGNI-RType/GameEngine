@@ -291,7 +291,7 @@ bool NET::handleUdpEvent(SocketUDP &socket, UDPMessage &msg, const Address &addr
     if (mg_server.handleUDPEvent(socket, msg, addr))
         return true;
 
-    return mg_client.handleUDPEvents(msg, addr);
+    return mg_client.handleUDPEvents(socket, msg, addr);
 }
 
 bool NET::handleEvents(fd_set &readSet) {
