@@ -5,42 +5,23 @@
 ** RemoteEvent.cpp
 */
 
-#include "GEngine/interface/network/systems/ServerEventReceiver.hpp"
-
-namespace gengine::interface::network::system {
-
-ServerClient::ServerClient(std::shared_ptr<Network::NetClient> client)
-    : m_client(std::move(client)), m_shouldDelete(false) {}
-
-std::shared_ptr<Network::NetClient> ServerClient::getNet(void) const {
-    return m_client;
-}
-
-bool ServerClient::shouldDelete(void) const {
-    return m_shouldDelete;
-}
-
-void ServerClient::setShouldDelete(bool shouldDelete) {
-    m_shouldDelete = shouldDelete;
-}
-
 template <class... Events>
-ServerEventReceiver<Events...>::ServerEventReceiver()
+gengine::interface::network::system::ServerEventReceiver<Events...>::ServerEventReceiver()
     : m_server(Network::NET::getServer()) {}
 
 template <class... Events>
-void ServerEventReceiver<Events...>::init(void) {
+void gengine::interface::network::system::ServerEventReceiver<Events...>::init(void) {
     this->template subscribeToEvent<gengine::system::event::MainLoop>(&ServerEventReceiver::onMainLoop);
     (dynamicPublish<Events>(), ...);
 }
 
 template <class... Events>
-void ServerEventReceiver<Events...>::onMainLoop(gengine::system::event::MainLoop &e) {
-    auto &clients = getSystem<gengine::interface::network::system::ServerClientsHandler>();
+void gengine::interface::network::system::ServerEventReceiver<Events...>::onMainLoop(gengine::system::event::MainLoop &e) {
+    auto &clients = this->template getSystem<gengine::interface::network::system::ServerClientsHandler>();
     Network::UDPMessage msg(true, Network::CL_EVENT);
     size_t readCount = 0;
 
-    for (auto &[client, id] : clients.getClients()) {
+    for (auto &[id, client] : clients.getClients()) {
         if (client.shouldDelete())
             continue;
         if (!client.getNet()->popIncommingData(msg, readCount))
@@ -68,7 +49,7 @@ void ServerEventReceiver<Events...>::onMainLoop(gengine::system::event::MainLoop
 
 template <class... Events>
 template <typename T>
-void ServerEventReceiver<Events...>::dynamicPublish(void) {
+void gengine::interface::network::system::ServerEventReceiver<Events...>::dynamicPublish(void) {
     m_eventsCallbacks.insert(std::make_pair(m_id, std::make_pair<std::function<void(void *)>, size_t>(
         [this](void *data) -> void {
             event::RemoteEvent<T> event(*reinterpret_cast<T *>(data));
@@ -78,6 +59,3 @@ void ServerEventReceiver<Events...>::dynamicPublish(void) {
     m_id++;
 }
 
-template class ServerEventReceiver<gengine::system::event::SomeEvent1, gengine::system::event::SomeEvent2>;
-
-} // namespace gengine::interface::network::system

@@ -25,20 +25,6 @@
 
 namespace gengine::interface::network::system {
 
-class ServerClient {
-public:
-    ServerClient(std::shared_ptr<Network::NetClient> client);
-
-    std::shared_ptr<Network::NetClient> getNet(void) const;
-
-    bool shouldDelete(void) const;
-    void setShouldDelete(bool shouldDelete);
-
-private:
-    std::shared_ptr<Network::NetClient> m_client;
-    bool m_shouldDelete = false;
-};
-
 template <class... Events>
 class ServerEventReceiver : public System<ServerEventReceiver<Events...>, gengine::interface::network::system::ServerClientsHandler> {
 public:

@@ -5,14 +5,14 @@
 ** RemoteEventPublisher.cpp
 */
 
-namespace gengine::interface::network::system {
+// #include "GEngine/interface/network/systems/ClientEventPublisher.hpp"
 
 template <class... Events>
-RemoteEventPublisher<Events...>::RemoteEventPublisher()
+gengine::interface::network::system::RemoteEventPublisher<Events...>::RemoteEventPublisher()
     : m_client(Network::NET::getClient()), m_msg(true, Network::CL_EVENT) {}
 
 template <class... Events>
-void RemoteEventPublisher<Events...>::init(void) {
+void gengine::interface::network::system::RemoteEventPublisher<Events...>::init(void) {
     this->template subscribeToEvent<gengine::system::event::StartEngine>(&RemoteEventPublisher::onStartEngine);
     this->template subscribeToEvent<gengine::system::event::MainLoop>(&RemoteEventPublisher::onMainLoop);
     (dynamicSubscribe<Events>(), ...);
@@ -24,14 +24,14 @@ void RemoteEventPublisher<Events...>::init(void) {
 }
 
 template <class... Events>
-void RemoteEventPublisher<Events...>::onStartEngine(gengine::system::event::StartEngine &e) {
+void gengine::interface::network::system::RemoteEventPublisher<Events...>::onStartEngine(gengine::system::event::StartEngine &e) {
     m_msg.setAck(true);
     m_msg.appendData<std::uint64_t>(0);
     m_eventCount = 0;
 }
 
 template <class... Events>
-void RemoteEventPublisher<Events...>::onMainLoop(gengine::system::event::MainLoop &e) {
+void gengine::interface::network::system::RemoteEventPublisher<Events...>::onMainLoop(gengine::system::event::MainLoop &e) {
     if (!m_ready)
         return;
 
@@ -45,7 +45,7 @@ void RemoteEventPublisher<Events...>::onMainLoop(gengine::system::event::MainLoo
 
 template <class... Events>
 template <typename T>
-void RemoteEventPublisher<Events...>::dynamicSubscribe(void) {
+void gengine::interface::network::system::RemoteEventPublisher<Events...>::dynamicSubscribe(void) {
     m_events.insert(std::make_pair(std::type_index(typeid(T)), m_id));
     this->template subscribeToEvent<T>([this](T &event) -> void {
         m_msg.appendData<std::uint64_t>(m_events.find(std::type_index(typeid(T)))->second);
@@ -54,8 +54,3 @@ void RemoteEventPublisher<Events...>::dynamicSubscribe(void) {
     });
     m_id++;
 }
-
-// Explicit instantiation declarations for the supported event types, if necessary
-template class RemoteEventPublisher<gengine::system::event::SomeEvent1, gengine::system::event::SomeEvent2>; // Add your event types
-
-} // namespace gengine::interface::network::system
