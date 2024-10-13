@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "GEngine/interface/network/events/ClientEvent.hpp"
+#include "GEngine/interface/events/RemoteEvent.hpp"
 #include "GEngine/libdev/System.hpp"
 #include "GEngine/libdev/systems/events/MainLoop.hpp"
 #include "GEngine/libdev/systems/events/Native.hpp"
@@ -32,13 +32,6 @@ public:
     void setLastAck(uint64_t lastAck) {
         m_lastAck = lastAck;
     }
-
-    // uint64_t getSnapshotId(void) const {
-    //     return m_firsSnapshotId;
-    // }
-    // void setSnapshotId(uint64_t id) {
-    //     m_firsSnapshotId = id;
-    // }
 
     bool shouldDelete(void) const {
         return m_shouldDelete;

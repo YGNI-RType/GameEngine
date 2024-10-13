@@ -35,10 +35,30 @@ namespace gengine::interface::component {
 
         // Getter for the raw UUID bytes (for network transmission)
         const boost::uuids::uuid& getUUIDBytes() const;
+
+        bool operator<(const RemoteDriver& other) const {
+            return false;
+        }
+
     private:
         boost::uuids::uuid m_uuid;
 
         // Method to generate a random UUID using Boost
         void generateUUID();
+    };
+}
+
+
+namespace std {
+    template <>
+    struct hash<gengine::interface::component::RemoteDriver> {
+        std::size_t operator()(const gengine::interface::component::RemoteDriver& driver) const {
+            const boost::uuids::uuid& uuid = driver.getUUIDBytes();
+            std::size_t hash_value = 0;
+            for (auto byte : uuid) {
+                hash_value ^= std::hash<uint8_t>{}(byte) + 0x9e3779b9 + (hash_value << 6) + (hash_value >> 2);
+            }
+            return hash_value;
+        }
     };
 }

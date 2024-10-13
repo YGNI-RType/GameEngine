@@ -47,9 +47,12 @@ void ServerClientsHandler::onStartEngine(gengine::system::event::StartEngine &e)
                 return;
             }
 
+
             gengine::interface::component::RemoteDriver newRemoteDriver;
+            m_clients.insert(std::make_pair(newRemoteDriver, client));
             publishEvent<gengine::interface::event::NewRemoteDriver>(gengine::interface::event::NewRemoteDriver(newRemoteDriver));
         });
+
     eventManager.registerCallback<Network::NetClient *>(
         Network::Event::CT_OnClientDisconnect, [this](Network::NetClient *client) {
             std::lock_guard<std::mutex> lock(m_netMutex);
