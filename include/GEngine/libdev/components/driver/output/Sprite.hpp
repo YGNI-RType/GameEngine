@@ -10,25 +10,28 @@
 #include <limits>
 #include <raylib.h>
 #include <string>
+#include <cstring>
 
 #include "GEngine/libdev/Component.hpp"
 #include "GEngine/libdev/components/driver/output/RaylibTypes.hpp"
 
 namespace gengine::component::driver::output {
 struct Sprite : public Component<Sprite> {
-    std::string txtPath; // The texture of the sprite
+    char txtPath[32]; // The texture of the sprite
     Rect src;            // The portion of the texture to render (for sprite sheets/atlases)
     Clr tint;
 
-    Sprite(const std::string &txtPath, const Rect &src, const Clr &tint = RAYWHITE)
-        : txtPath(txtPath)
+    Sprite(const std::string &txtPathstr, const Rect &src, const Clr &tint = RAYWHITE)
+        : txtPath()
         , src(src)
         , tint(tint) {
+        std::strncpy(txtPath, txtPathstr.c_str(), 31);
     }
-    Sprite(const std::string &txtPath, const Clr &tint = RAYWHITE)
-        : txtPath(txtPath)
+    Sprite(const std::string &txtPathstr, const Clr &tint = RAYWHITE)
+        : txtPath()
         , src(0.f, 0.f, std::numeric_limits<float>().max(), std::numeric_limits<float>().max())
         , tint(tint) {
+        std::strncpy(txtPath, txtPathstr.c_str(), 31);
     }
 
     bool operator==(const Sprite &) const = default;

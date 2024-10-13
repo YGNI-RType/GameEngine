@@ -27,7 +27,6 @@ void TextureManager::onStartEngine(gengine::system::event::StartEngine &e) {
             Texture texture = LoadTexture(filePath.c_str());
             std::string path = std::filesystem::relative(entry.path(), m_folder).string();
             m_textureTable.emplace(path, texture);
-
             // }
         }
     }
