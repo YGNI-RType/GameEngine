@@ -36,7 +36,7 @@ void Draw2D::onRenderLoop(gengine::system::event::RenderLoop &e) {
 }
 
 void Draw2D::onBeginDraw(gengine::system::event::BeginDraw &e) {
-    //BeginDrawing();
+    // BeginDrawing();
     ClearBackground(e.clear);
 }
 void Draw2D::onEndDraw(gengine::system::event::EndDraw &e) {
