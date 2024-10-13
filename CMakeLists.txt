@@ -46,10 +46,13 @@ set_target_properties(GEngine_static PROPERTIES
 
 find_package(raylib CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED) # TODO a suppr
-find_package(boost_uuid CONFIG REQUIRED)
 
-target_link_libraries(GEngine raylib glfw Boost::uuid) # TODO suppr glfw
-target_link_libraries(GEngine_static raylib glfw Boost::uuid) # TODO suppr glfw
+find_package(Boost CONFIG REQUIRED)
+message(STATUS "Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")
+include_directories(${Boost_INCLUDE_DIRS})
+
+target_link_libraries(GEngine raylib glfw) # TODO suppr glfw
+target_link_libraries(GEngine_static raylib glfw) # TODO suppr glfw
 
 install(TARGETS GEngine GEngine_static
         EXPORT GEngine_targets
