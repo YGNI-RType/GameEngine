@@ -75,7 +75,7 @@ bool NetChannel::sendDatagram(SocketUDP &socket, UDPMessage &msg) {
         if (!m_udpPoolSend.addMessage(m_udpMyFragSequence, msg))
             return false;
 
-        auto d = msg.getData() + 2145 + 7;
+        auto d = msg.getData() + 3181 - 20 + 8;
         std::cout << m_udpMyFragSequence << " send msg len: " << msgLen  << " " << (int)(char)(*d) << std::endl;
         auto fragments = m_udpPoolSend.getMissingFragments(m_udpMyFragSequence, 0);
         bool res = sendDatagrams(socket, m_udpMyFragSequence, fragments);
@@ -147,7 +147,7 @@ bool NetChannel::readDatagram(SocketUDP &socket, UDPMessage &msg, size_t &readOf
 
             m_udpPoolRecv.reconstructMessage(fragSequence, msg);
             msg.writeHeader(header);
-            auto d = msg.getData() + 2145 + 7;
+            auto d = msg.getData() + 3181 - 20 + 8;
             std::cout << fragSequence << " recv msg len: " << msg.getSize() << " " << (int)(char)(*d) << std::endl;
             bool res = readDatagram(socket, msg, readOffset);
             m_udpPoolRecv.deleteSequence(fragSequence);
