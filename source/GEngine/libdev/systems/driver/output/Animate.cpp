@@ -18,9 +18,7 @@ void Animate::onGameLoop(gengine::system::event::GameLoop &e) {
 
     for (auto [entity, anim, sprite] : Zip(animations, sprites)) {
         anim.currentTime += e.deltaTime / 1000.f;
-        std::cout << entity<< " "<< anim.currentTime << std::endl;
         int newFrame = anim.currentTime / anim.frameDuration;
-        std::cout << newFrame << std::endl;
         if (!(newFrame - anim.currentFrame))
             continue;
         if (newFrame >= anim.nbFrames) {
