@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2024
 ** GameEngine
 ** File description:
-** ClientEvent.hpp
+** RemoteEvent.hpp
 */
 
 #pragma once
@@ -12,9 +12,9 @@
 namespace gengine::interface::network::event {
 
 template <class T>
-class ClientEvent : public Event {
+class RemoteEvent : public Event {
 public:
-    explicit ClientEvent(T &event)
+    explicit RemoteEvent(T &event)
         : m_event(event) {
     }
 

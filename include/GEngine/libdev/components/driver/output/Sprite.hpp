@@ -7,10 +7,10 @@
 
 #pragma once
 
+#include <cstring>
 #include <limits>
 #include <raylib.h>
 #include <string>
-#include <cstring>
 
 #include "GEngine/libdev/Component.hpp"
 #include "GEngine/libdev/components/driver/output/RaylibTypes.hpp"
@@ -18,7 +18,7 @@
 namespace gengine::component::driver::output {
 struct Sprite : public Component<Sprite> {
     char txtPath[32]; // The texture of the sprite
-    Rect src;            // The portion of the texture to render (for sprite sheets/atlases)
+    Rect src;         // The portion of the texture to render (for sprite sheets/atlases)
     Clr tint;
 
     Sprite(const std::string &txtPathstr, const Rect &src, const Clr &tint = RAYWHITE)
