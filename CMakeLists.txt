@@ -3,9 +3,10 @@ project(GEngine)
 
 include(GNUInstallDirs)
 
+# Inclure le script automate-vcpkg pour gérer vcpkg
 include(cmake/automate-vcpkg.cmake)
 vcpkg_bootstrap()
-vcpkg_install_packages(raylib)
+vcpkg_install_packages(raylib boost-uuid)
 
 file(GLOB_RECURSE SOURCES source/*.cpp)
 list(FILTER SOURCES EXCLUDE REGEX ".*/deprecated/.*")
@@ -15,6 +16,7 @@ list(FILTER HEADERS EXCLUDE REGEX ".*/deprecated/.*")
 
 include_directories(include)
 
+# Activer des options de compilation supplémentaires si nécessaire
 # if(NOT WIN32)
 #     add_compile_options(-Wall -Wextra)
 # endif()
@@ -46,6 +48,13 @@ set_target_properties(GEngine_static PROPERTIES
 
 find_package(raylib CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
+find_package(Boost REQUIRED COMPONENTS uuid)
+
+if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+    target_link_libraries(GEngine ${Boost_LIBRARIES})
+    target_link_libraries(GEngine_static ${Boost_LIBRARIES})
+endif()
 
 target_link_libraries(GEngine raylib glfw)
 target_link_libraries(GEngine_static raylib glfw)
@@ -65,6 +74,7 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/GEngineConfig.cmake"
 "include(CMakeFindDependencyMacro)\n"
 "find_dependency(raylib CONFIG REQUIRED)\n"
 "find_dependency(glfw3 CONFIG REQUIRED)\n"
+"find_dependency(Boost REQUIRED COMPONENTS uuid)\n"
 "include(\"\${CMAKE_CURRENT_LIST_DIR}/GEngineTargets.cmake\")\n"
 )
 
