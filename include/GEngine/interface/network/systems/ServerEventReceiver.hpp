@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "GEngine/interface/network/events/RemoteEvent.hpp"
+#include "GEngine/interface/events/RemoteEvent.hpp"
 #include "GEngine/libdev/System.hpp"
 #include "GEngine/libdev/systems/events/MainLoop.hpp"
 #include "GEngine/libdev/systems/events/Native.hpp"

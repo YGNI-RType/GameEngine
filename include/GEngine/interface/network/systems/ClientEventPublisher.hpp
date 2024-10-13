@@ -43,7 +43,6 @@ private:
     mutable std::mutex m_netMutex;
 };
 
-#include "RemoteEventPublisher.inl" // Inline implementation if needed
+#include "ClientEventPublisher.inl" // Inline implementation if needed
 
 } // namespace gengine::interface::network::system
-include/GEngine/interface/network/systems/ClientEventPublisher.hpp
