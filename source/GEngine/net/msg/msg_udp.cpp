@@ -12,6 +12,7 @@ namespace Network {
 UDPMessage::UDPMessage(bool hasHeader, uint8_t type)
     : AMessage(type) {
     m_curSize = hasHeader ? sizeof(UDPG_NetChannelHeader) : 0;
+    setHeader(hasHeader);
 }
 
 UDPMessage &UDPMessage::operator=(const UDPMessage &other) {

@@ -71,7 +71,7 @@ public:
 
     bool handleTCPEvents(fd_set &readSet);
     bool handleClientStream(void);
-    bool handleClientDatagram(UDPMessage &msg);
+    bool handleClientDatagram(SocketUDP &socket, UDPMessage &msg);
 
 public:
     bool sendPackets(void);
@@ -103,7 +103,7 @@ private:
     /* todo : change based on average size */
     NetQueue<16, 160> m_packInData;      /* todo : get the size of Usercmd + own voip / */
     NetQueue<32, 1400> m_packOutData;    /* voiceip etc.. */
-    NetQueue<24, 1400> m_packOutDataAck; /* snapshot */
+    NetQueue<24, 10000> m_packOutDataAck; /* snapshot */
 
     // NetClientSnapshot m_snapshots[PACKET_BACKUP];
 

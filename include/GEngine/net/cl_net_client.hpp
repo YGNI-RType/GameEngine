@@ -44,9 +44,9 @@ public:
     void createSets(fd_set &readSet);
 
     bool handleTCPEvents(fd_set &readSet);
-    bool handleUDPEvents(UDPMessage &msg, const Address &addr);
+    bool handleUDPEvents(SocketUDP &socket, UDPMessage &msg, const Address &addr);
 
-    bool handleServerUDP(UDPMessage &msg, const Address &addr);
+    bool handleServerUDP(SocketUDP &socket, UDPMessage &msg, const Address &addr);
     bool handleServerTCP(const TCPMessage &msg);
 
     void setChallenge(int challenge) {
@@ -102,7 +102,7 @@ private:
     /* todo : change based on average size */
     NetQueue<24, 160> m_packOutData;   /* todo : get the size of Usercmd + own voip / */
     NetQueue<32, 1400> m_packInData;   /* voiceip etc.. */
-    NetQueue<4, 1400> m_packInDataAck; /* snapshot */
+    NetQueue<4, 16000> m_packInDataAck; /* snapshot */
 
     SocketUDP &m_socketUdp;
     AddressType m_addrType;
