@@ -59,8 +59,8 @@ class PacketPoolUdp {
 
 public:
     typedef std::array<byte_t, CHUNK_SIZE> chunk_t;
-private:
 
+private:
     /* type, flag, numbers of chunk, last chunk size, cur mask, pool offset */
     using poolSequence_t = std::tuple<uint8_t, uint8_t, uint8_t, uint16_t, uint16_t, size_t>;
 
@@ -156,7 +156,9 @@ public:
     bool sendStream(const TCPMessage &msg);
 
 private:
-    bool sendDatagrams(SocketUDP &socket, uint32_t sequence, const std::vector<const Network::PacketPoolUdp::chunk_t *> &vec);
+    bool sendDatagrams(SocketUDP &socket, uint32_t sequence,
+                       const std::vector<const Network::PacketPoolUdp::chunk_t *> &vec);
+
 public:
     bool isTimeout(void) const;
 
