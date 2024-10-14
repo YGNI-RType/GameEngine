@@ -47,8 +47,6 @@
 #include "systems/PlayerShoot.hpp"
 #include "systems/Start.hpp"
 
-#include "GEngine/interface/components/RemoteDriver.hpp"
-
 namespace rtype {
 void registerComponents(gengine::game::Engine &gameEngine, gengine::driver::Engine &driverEngine) {
     gameEngine.registerComponent<gengine::component::Transform2D>();
@@ -66,8 +64,6 @@ void registerComponents(gengine::game::Engine &gameEngine, gengine::driver::Engi
     gameEngine.registerComponent<component::Background>();
     gameEngine.registerComponent<component::Bullet>();
 
-    gameEngine.registerComponent<gengine::interface::component::RemoteDriver>();
-
     driverEngine.registerComponent<gengine::component::Transform2D>();
     driverEngine.registerComponent<gengine::component::Velocity2D>();
     driverEngine.registerComponent<gengine::component::driver::output::Animation>();
@@ -83,7 +79,6 @@ void registerComponents(gengine::game::Engine &gameEngine, gengine::driver::Engi
     driverEngine.registerComponent<component::Background>();
     driverEngine.registerComponent<component::Bullet>();
     // gameEngine.registerComponent<component::Fire>();
-    driverEngine.registerComponent<gengine::interface::component::RemoteDriver>();
 }
 
 struct Test: public gengine::System<Test> {
@@ -192,9 +187,7 @@ int main(void) {
     rtype::registerComponents(gameEngine, driverEngine);
     rtype::registerSystems(gameEngine, driverEngine);
 
-    driverEngine.registerSystem<gengine::interface::network::system::Updater>();
-    gameEngine.registerSystem<rtype::Test>();
-    gameEngine.registerSystem<gengine::interface::network::system::ServerClientsHandler>();
+    // gameEngine.registerSystem<rtype::Test>();
     gengine::interface::network::Networked interface(driverEngine, gameEngine, "127.0.0.1", 4243, true);
     interface.run();
 }

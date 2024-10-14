@@ -12,6 +12,9 @@
 #include "GEngine/net/net.hpp"
 #include "GEngine/net/structs/msg_udp_structs.hpp"
 
+#include "GEngine/interface/components/RemoteDriver.hpp"
+#include "GEngine/interface/network/systems/Updater.hpp"
+
 #include <functional>
 #include <iostream>
 #include <memory>
@@ -33,16 +36,20 @@ public:
 
         Network::NET::init();
         Network::Event::Manager &em = Network::NET::getEventManager();
+        registerComponent<gengine::interface::component::RemoteDriver>();
 #ifdef Server
         Network::NET::initServer();
         m_gameEngine.registerSystem<system::Snapshot>(gameEngine.getWorld());
+        m_gameEngine.registerSystem<gengine::interface::network::system::ServerClientsHandler>();
 #elif Client
         Network::NET::initClient();
         em.addEvent<Network::Event::ConnectInfo>(Network::Event::CONNECT, Network::Event::ConnectInfo(ip, port));
+        m_driverEngine.registerSystem<gengine::interface::network::system::Updater>();
 #endif
         Network::NET::start();
         m_driverEngine.registerSystem<gengine::system::AutoMainLoop>();
         m_gameEngine.registerSystem<gengine::system::AutoMainLoop>();
+
     }
 
     ~Networked() {

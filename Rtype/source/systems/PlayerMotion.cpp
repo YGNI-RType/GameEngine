@@ -33,7 +33,7 @@ void PlayerMotion::movePlayerLeft(ClientEvent<gengine::system::event::driver::in
 
     for (auto [entity, player, velocity, playerControl, remote] : gengine::Zip(players, velocities, playerControls, remotes)) {
         if (remote != e.remote)
-            return;
+            continue;
         if (e->state == gengine::system::event::driver::input::RELEASE)
             velocity.x += player.speed;
         else if (e->state == gengine::system::event::driver::input::PRESSED)
@@ -49,7 +49,7 @@ void PlayerMotion::movePlayerRight(ClientEvent<gengine::system::event::driver::i
 
     for (auto [entity, player, velocity, playerControl, remote] : gengine::Zip(players, velocities, playerControls, remotes)) {
         if (remote != e.remote)
-            return;
+            continue;
         if (e->state == gengine::system::event::driver::input::RELEASE)
             velocity.x -= player.speed;
         else if (e->state == gengine::system::event::driver::input::PRESSED)
@@ -65,7 +65,7 @@ void PlayerMotion::movePlayerUp(ClientEvent<gengine::system::event::driver::inpu
 
     for (auto [entity, player, velocity, playerControls, remote] : gengine::Zip(players, velocities, playerControls, remotes)) {
         if (remote != e.remote)
-            return;
+            continue;
         if (e->state == gengine::system::event::driver::input::RELEASE)
             velocity.y += player.speed;
         else if (e->state == gengine::system::event::driver::input::PRESSED)
@@ -81,7 +81,7 @@ void PlayerMotion::movePlayerDown(ClientEvent<gengine::system::event::driver::in
 
     for (auto [entity, player, velocity, playerControl, remote] : gengine::Zip(players, velocities, playerControls, remotes)) {
         if (remote != e.remote)
-            return;
+            continue;
         if (e->state == gengine::system::event::driver::input::RELEASE)
             velocity.y -= player.speed;
         else if (e->state == gengine::system::event::driver::input::PRESSED)
@@ -96,7 +96,7 @@ void PlayerMotion::increaseSpeed(ClientEvent<gengine::system::event::driver::inp
 
     for (auto [entity, player, playerControl, remote] : gengine::Zip(players, playerControls, remotes)) {
         if (remote != e.remote)
-            return;
+            continue;
         player.speed += 10;
     }
 }
@@ -108,7 +108,7 @@ void PlayerMotion::decreaseSpeed(ClientEvent<gengine::system::event::driver::inp
 
     for (auto [entity, player, playerControl, remote] : gengine::Zip(players, playerControls, remotes)) {
         if (remote != e.remote)
-            return;
+            continue;;
         player.speed = std::max(player.speed - 10, 20.f);
     }
 }

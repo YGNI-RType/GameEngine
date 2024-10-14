@@ -29,6 +29,7 @@ namespace rtype::system {
 void Start::init(void) {
     subscribeToEvent<gengine::system::event::StartEngine>(&Start::onStartEngine);
     subscribeToEvent<gengine::interface::event::NewRemoteDriver>(&Start::onNewRemoteDriver);
+    subscribeToEvent<gengine::interface::event::DeleteRemoteDriver>(&Start::onDeleteRemoteDriver);
 }
 
 void Start::onStartEngine(gengine::system::event::StartEngine &e) {
@@ -56,11 +57,23 @@ void Start::onStartEngine(gengine::system::event::StartEngine &e) {
 }
 
 void Start::onNewRemoteDriver(gengine::interface::event::NewRemoteDriver &e) {
+    std::cout << "new player" << std::endl;
     spawnEntity(component::Player("Arcod"), component::PlayerControl(),
-            gengine::component::Transform2D({0, static_cast<float>(rand() % 500)}, {3, 3}, 0), gengine::component::Velocity2D(0, 0),
+            gengine::component::Transform2D({0, static_cast<float>(rand() % 720)}, {3, 3}, 0), gengine::component::Velocity2D(0, 0),
             gengine::component::driver::output::Drawable(1),
             gengine::component::driver::output::Sprite("r-typesheet1.gif", Rectangle{167, 0, 33, 17}, WHITE),
             gengine::component::HitBoxSquare2D(33 * 2, 17 * 2),
             gengine::interface::component::RemoteDriver(e.remote));
+}
+
+void Start::onDeleteRemoteDriver(gengine::interface::event::DeleteRemoteDriver &e) {
+    auto &remotes = getComponents<gengine::interface::component::RemoteDriver>();
+
+    for (auto &[entity, remote]: remotes) {
+        if (remote == e.remote) {
+            killEntity(entity);
+            return;
+        }
+    }
 }
 } // namespace rtype

@@ -14,10 +14,12 @@
 #include "GEngine/interface/events/RemoteDriver.hpp"
 
 namespace rtype::system {
-class Start : public gengine::System<Start, gengine::system::driver::output::TextureManager> {
+class Start : public gengine::System<Start, gengine::system::driver::output::TextureManager,
+                    gengine::interface::component::RemoteDriver> {
 public:
     void init(void) override;
     void onStartEngine(gengine::system::event::StartEngine &);
     void onNewRemoteDriver(gengine::interface::event::NewRemoteDriver &e);
+    void onDeleteRemoteDriver(gengine::interface::event::DeleteRemoteDriver &e);
 };
 } // namespace rtype::system
