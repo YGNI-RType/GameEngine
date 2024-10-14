@@ -101,8 +101,8 @@ private:
     connectionState m_connectionState = CON_UNINITIALIZED;
 
     /* todo : change based on average size */
-    NetQueue<16, 160> m_packInData;      /* todo : get the size of Usercmd + own voip / */
-    NetQueue<32, 1400> m_packOutData;    /* voiceip etc.. */
+    NetQueue<16, 160> m_packInData;       /* todo : get the size of Usercmd + own voip / */
+    NetQueue<32, 1400> m_packOutData;     /* voiceip etc.. */
     NetQueue<24, 10000> m_packOutDataAck; /* snapshot */
 
     // NetClientSnapshot m_snapshots[PACKET_BACKUP];

@@ -16,7 +16,7 @@
 namespace gengine::system {
 class AutoMainLoop : public gengine::System<AutoMainLoop> {
 public:
-    AutoMainLoop(int TPS = 66);
+    AutoMainLoop(size_t fps = 60, size_t tps = 60);
 
     void init(void) override;
 
@@ -26,11 +26,14 @@ public:
 
     void onStopMainLoop(gengine::system::event::StopMainLoop &e);
 
-    std::chrono::milliseconds getElapsedTime(void);
+    std::chrono::microseconds getElapsedTime(void);
 
 private:
     bool m_isRunning = true;
     std::chrono::time_point<std::chrono::high_resolution_clock> m_lastTime;
-    const std::chrono::milliseconds m_timePerLoop;
+    std::chrono::microseconds m_driverTime;
+    std::chrono::microseconds m_gameTime;
+    size_t m_fps;
+    size_t m_tps;
 };
 } // namespace gengine::system
