@@ -40,14 +40,14 @@ void Start::onStartEngine(gengine::system::event::StartEngine &e) {
     std::uniform_int_distribution<> transformYFork(0 + 80, 720 - 160);
 
     for (std::size_t i = 0; i < 11; i++) {
-    float x = transformXFork(gen);
-    float y = transformYFork(gen);
+        float x = transformXFork(gen);
+        float y = transformYFork(gen);
 
-    spawnEntity(gengine::component::Transform2D({x, y}, {2, 2}, 0), gengine::component::Velocity2D(0, 0),
-                gengine::component::driver::output::Sprite("r-typesheet3.gif", Rectangle{0, 0, 17, 18}, WHITE),
-                gengine::component::driver::output::Animation(12, rand() % 12, 0.1f),
-                gengine::component::driver::output::Drawable(1), component::Monster("poulet"),
-                gengine::component::HitBoxSquare2D(17, 18));
+        spawnEntity(gengine::component::Transform2D({x, y}, {2, 2}, 0), gengine::component::Velocity2D(0, 0),
+                    gengine::component::driver::output::Sprite("r-typesheet3.gif", Rectangle{0, 0, 17, 18}, WHITE),
+                    gengine::component::driver::output::Animation(12, rand() % 12, 0.1f),
+                    gengine::component::driver::output::Drawable(1), component::Monster("poulet"),
+                    gengine::component::HitBoxSquare2D(17, 18));
     }
     // gengine::component::driver::output::Animation(5, 0, 0.2f, true));
 

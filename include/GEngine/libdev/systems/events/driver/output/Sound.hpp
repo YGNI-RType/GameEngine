@@ -13,13 +13,15 @@
 namespace gengine::system::event::driver::output {
 class Sound : public Event {
 public:
-    Sound(const std::string &path): m_path(path) {
+    Sound(const std::string &path)
+        : m_path(path) {
     }
 
     const std::string &getPath(void) const {
         return m_path;
     }
+
 private:
     const std::string m_path;
 };
-} // namespace gengine::system::event
+} // namespace gengine::system::event::driver::output
