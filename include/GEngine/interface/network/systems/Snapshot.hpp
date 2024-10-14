@@ -13,7 +13,7 @@
 #include "GEngine/BaseEngine.hpp"
 
 #include "GEngine/libdev/System.hpp"
-#include "GEngine/libdev/systems/events/MainLoop.hpp"
+#include "GEngine/libdev/systems/events/GameLoop.hpp"
 #include "GEngine/libdev/systems/events/Native.hpp"
 
 #include "GEngine/interface/events/RemoteDriver.hpp"
@@ -28,41 +28,6 @@ class NetClient;
 
 namespace gengine::interface::network::system {
 
-// class SnapshotClient {
-// public:
-//     SnapshotClient(std::shared_ptr<Network::NetClient> client, uint64_t firsSnapshotId);
-
-//     std::shared_ptr<Network::NetClient> getNet(void) const;
-
-//     uint64_t getLastAck(void) const {
-//         return m_lastAck;
-//     }
-//     void setLastAck(uint64_t lastAck) {
-//         m_lastAck = lastAck;
-//     }
-
-//     uint64_t getSnapshotId(void) const {
-//         return m_firsSnapshotId;
-//     }
-//     void setSnapshotId(uint64_t id) {
-//         m_firsSnapshotId = id;
-//     }
-
-//     bool shouldDelete(void) const {
-//         return m_shouldDelete;
-//     }
-//     void setShouldDelete(bool shouldDelete) {
-//         m_shouldDelete = shouldDelete;
-//     }
-
-// private:
-//     std::shared_ptr<Network::NetClient> m_client;
-//     uint64_t m_firsSnapshotId;
-
-//     uint64_t m_lastAck = 0;
-//     bool m_shouldDelete = false;
-// };
-
 class Snapshot : public System<Snapshot, gengine::interface::network::system::ServerClientsHandler> {
 public:
     using snapshot_t = BaseEngine::world_t;
@@ -71,7 +36,7 @@ public:
     Snapshot(const snapshot_t &currentWorld);
 
     void init(void) override;
-    void onMainLoop(gengine::system::event::MainLoop &);
+    void onGameLoop(gengine::system::event::GameLoop &);
 
     void registerSnapshot(gengine::interface::event::NewRemoteDriver &e);
     void destroySnapshot(gengine::interface::event::DeleteRemoteDriver &e);
