@@ -40,7 +40,6 @@ void ServerClientsHandler::onStartEngine(gengine::system::event::StartEngine &e)
     eventManager.registerCallback<std::shared_ptr<Network::NetClient>>(
         Network::Event::CT_OnClientConnect, [this](std::shared_ptr<Network::NetClient> client) {
             std::lock_guard<std::mutex> lock(m_netMutex);
-
             if (std::find(unwantedClients.begin(), unwantedClients.end(), client.get()) != unwantedClients.end()) {
                 unwantedClients.erase(std::remove(unwantedClients.begin(), unwantedClients.end(), client.get()),
                                       unwantedClients.end());
@@ -48,7 +47,7 @@ void ServerClientsHandler::onStartEngine(gengine::system::event::StartEngine &e)
             }
 
             gengine::interface::component::RemoteDriver newRemoteDriver;
-            m_clients.insert(std::make_pair(newRemoteDriver, client));
+            m_clients.insert({newRemoteDriver, client});
             publishEvent<gengine::interface::event::NewRemoteDriver>(
                 gengine::interface::event::NewRemoteDriver(newRemoteDriver));
         });

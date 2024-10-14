@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2024
 ** GameEngine
 ** File description:
-** RemoteEventPublisher.hpp
+** ClientEventPublisher.hpp
 */
 
 #pragma once
@@ -20,9 +20,9 @@
 namespace gengine::interface::network::system {
 
 template <class... Events>
-class RemoteEventPublisher : public System<RemoteEventPublisher<Events...>> {
+class ClientEventPublisher : public System<ClientEventPublisher<Events...>> {
 public:
-    RemoteEventPublisher();
+    ClientEventPublisher();
 
     void init(void) override;
 

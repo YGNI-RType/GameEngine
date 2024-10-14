@@ -59,12 +59,12 @@ public:
     void onStartEngine(gengine::system::event::StartEngine &);
     void onMainLoop(gengine::system::event::MainLoop &);
 
-    std::map<component::RemoteDriver, ServerClient> &getClients(void) {
+    std::unordered_map<component::RemoteDriver, ServerClient> &getClients(void) {
         return m_clients;
     }
 
 private:
-    std::map<component::RemoteDriver, ServerClient> m_clients;
+    std::unordered_map<component::RemoteDriver, ServerClient> m_clients;
 
     mutable std::mutex m_netMutex;
 };
