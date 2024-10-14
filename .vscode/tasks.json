@@ -13,7 +13,7 @@
                 "&&",
                 "cmake",
                 "--build",
-                "${workspaceFolder}/r-type/build"
+                "${workspaceFolder}/Rtype/build"
             ],
             "windows": {
                 "command": "cmd",
@@ -36,9 +36,9 @@
             "command": "cmake",
             "args": [
                 "-S",
-                "${workspaceFolder}/r-type",
+                "${workspaceFolder}/Rtype",
                 "-B",
-                "${workspaceFolder}/r-type/build",
+                "${workspaceFolder}/Rtype/build",
                 "-DCMAKE_BUILD_TYPE=Debug"
             ],
             "windows": {

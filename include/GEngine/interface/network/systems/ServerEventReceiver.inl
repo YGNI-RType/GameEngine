@@ -20,18 +20,20 @@ template <class... Events>
 void gengine::interface::network::system::ServerEventReceiver<Events...>::onMainLoop(
     gengine::system::event::MainLoop &e) {
     auto &clients = this->template getSystem<gengine::interface::network::system::ServerClientsHandler>();
-    Network::UDPMessage msg(true, Network::CL_EVENT);
     size_t readCount = 0;
 
     for (auto &[remote, client] : clients.getClients()) {
         if (client.shouldDelete())
             continue;
+
+        Network::UDPMessage msg(true, Network::CL_EVENT);
         if (!client.getNet()->popIncommingData(msg, readCount))
             continue;
 
         std::uint64_t nb;
         msg.readContinuousData(nb, readCount);
 
+        client.setLastAck(msg.getAckNumber());
         for (size_t i = 0; i < nb; i++) {
             std::uint64_t type;
             msg.readContinuousData(type, readCount);

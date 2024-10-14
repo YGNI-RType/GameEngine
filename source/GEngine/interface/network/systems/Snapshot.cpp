@@ -80,6 +80,7 @@ void Snapshot::getAndSendDeltaDiff(void) {
         std::vector<ecs::component::component_info_t> deltaDiff = getDeltaDiff(current, last);
 
         Network::UDPMessage msg(true, Network::SV_SNAPSHOT);
+        msg.setAck(true);
         uint64_t nb_component = deltaDiff.size();
         msg.appendData(nb_component);
         for (auto &[entity, type, set, any] : deltaDiff) {

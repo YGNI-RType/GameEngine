@@ -4,11 +4,11 @@
             "name": "Client RType",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/r-type/build/r-type_clientd",
+            "program": "${workspaceFolder}/Rtype/build/r-type_clientd",
             "args": [
             ],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/r-type/build",
+            "cwd": "${workspaceFolder}/Rtype/build",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -33,7 +33,7 @@
             "name": "Server RType",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/r-type/build/r-type_serverd",
+            "program": "${workspaceFolder}/Rtype/build/r-type_serverd",
             "args": [
             ],
             "stopAtEntry": false,
@@ -62,32 +62,32 @@
             "name": "(WINDOWS) Client RType",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/r-type/build/Debug/r-type_clientd.exe",
+            "program": "${workspaceFolder}/Rtype/build/Debug/r-type_clientd.exe",
             "args": [
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "symbolSearchPath": "${workspaceFolder}/r-type/build/Debug"
+            "symbolSearchPath": "${workspaceFolder}/Rtype/build/Debug"
         },
         {
             "name": "(WINDOWS) Server RType",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/r-type/build/Debug/r-type_serverd.exe",
+            "program": "${workspaceFolder}/Rtype/build/Debug/r-type_serverd.exe",
             "args": [
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "symbolSearchPath": "${workspaceFolder}/r-type/build/Debug"
+            "symbolSearchPath": "${workspaceFolder}/Rtype/build/Debug"
 
         },
         {
             "name": "(lldb) Lancer (macos)",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/r-type/build/r-type_serverd",
+            "program": "${workspaceFolder}/Rtype/build/r-type_serverd",
             "args": ["-i", "scenes/multiple_earths.cfg"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -99,7 +99,7 @@
             "name": "(lldb) Lancer (macos) client",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/r-type/build/r-type_clientd",
+            "program": "${workspaceFolder}/Rtype/build/r-type_clientd",
             "args": ["-i", "scenes/multiple_earths.cfg"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
