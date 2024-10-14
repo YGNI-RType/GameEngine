@@ -81,21 +81,33 @@ void registerComponents(gengine::game::Engine &gameEngine, gengine::driver::Engi
     // gameEngine.registerComponent<component::Fire>();
 }
 
-struct Test: public gengine::System<Test> {
+struct Test : public gengine::System<Test> {
     void init(void) override {
-        subscribeToEvent<gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_Left>>(&Test::onKey_Left);
-        subscribeToEvent<gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_Right>>(&Test::onKey_Right);
-        subscribeToEvent<gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_Up>>(&Test::onKey_Up);
-        subscribeToEvent<gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_Down>>(&Test::onKey_Down);
-        subscribeToEvent<gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_P>>(&Test::onKey_P);
-        subscribeToEvent<gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_O>>(&Test::onKey_O);
+        subscribeToEvent<
+            gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_Left>>(
+            &Test::onKey_Left);
+        subscribeToEvent<
+            gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_Right>>(
+            &Test::onKey_Right);
+        subscribeToEvent<
+            gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_Up>>(
+            &Test::onKey_Up);
+        subscribeToEvent<
+            gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_Down>>(
+            &Test::onKey_Down);
+        subscribeToEvent<gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_P>>(
+            &Test::onKey_P);
+        subscribeToEvent<gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_O>>(
+            &Test::onKey_O);
     }
 
-    void onKey_Left(gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_Left> &e) {
+    void
+    onKey_Left(gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_Left> &e) {
         std::cout << "Left" << std::endl;
     }
 
-    void onKey_Right(gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_Right> &e) {
+    void
+    onKey_Right(gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_Right> &e) {
         std::cout << "Right" << std::endl;
     }
 
@@ -103,7 +115,8 @@ struct Test: public gengine::System<Test> {
         std::cout << "Up" << std::endl;
     }
 
-    void onKey_Down(gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_Down> &e) {
+    void
+    onKey_Down(gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_Down> &e) {
         std::cout << "Down" << std::endl;
     }
 
@@ -136,7 +149,6 @@ void registerSystems(gengine::game::Engine &gameEngine, gengine::driver::Engine 
     gameEngine.registerSystem<system::DestroyOnCollision>();
     gameEngine.registerSystem<gengine::system::driver::output::Animate>();
 
-
     driverEngine.registerSystem<gengine::system::driver::output::RenderWindow>(1280, 720, "R-Type");
     driverEngine.registerSystem<gengine::system::driver::output::Draw2D>();
     driverEngine.registerSystem<gengine::system::driver::output::DrawSprite>();
@@ -155,9 +167,9 @@ void registerSystems(gengine::game::Engine &gameEngine, gengine::driver::Engine 
 }
 } // namespace rtype
 
+#include "GEngine/interface/network/Networked.hpp"
 #include "GEngine/interface/network/systems/ClientEventPublisher.hpp"
 #include "GEngine/interface/network/systems/ServerEventReceiver.hpp"
-#include "GEngine/interface/network/Networked.hpp"
 #include "GEngine/interface/network/systems/Updater.hpp"
 // #include "GEngine/interface/network/events/ClientEvent.hpp"
 
@@ -167,27 +179,19 @@ int main(void) {
     // gengine::interface::network::Networked interface(gameEngine, driverEngine);
 
     driverEngine.registerSystem<gengine::interface::network::system::ClientEventPublisher<
-        gengine::system::event::driver::input::Key_Left,
-        gengine::system::event::driver::input::Key_Right,
-        gengine::system::event::driver::input::Key_Up,
-        gengine::system::event::driver::input::Key_Down,
-        gengine::system::event::driver::input::Key_P,
-        gengine::system::event::driver::input::Key_O
-    >>();
+        gengine::system::event::driver::input::Key_Left, gengine::system::event::driver::input::Key_Right,
+        gengine::system::event::driver::input::Key_Up, gengine::system::event::driver::input::Key_Down,
+        gengine::system::event::driver::input::Key_P, gengine::system::event::driver::input::Key_O>>();
 
     gameEngine.registerSystem<gengine::interface::network::system::ServerEventReceiver<
-        gengine::system::event::driver::input::Key_Left,
-        gengine::system::event::driver::input::Key_Right,
-        gengine::system::event::driver::input::Key_Up,
-        gengine::system::event::driver::input::Key_Down,
-        gengine::system::event::driver::input::Key_P,
-        gengine::system::event::driver::input::Key_O
-    >>();
+        gengine::system::event::driver::input::Key_Left, gengine::system::event::driver::input::Key_Right,
+        gengine::system::event::driver::input::Key_Up, gengine::system::event::driver::input::Key_Down,
+        gengine::system::event::driver::input::Key_P, gengine::system::event::driver::input::Key_O>>();
 
     rtype::registerComponents(gameEngine, driverEngine);
     rtype::registerSystems(gameEngine, driverEngine);
 
     // gameEngine.registerSystem<rtype::Test>();
-    gengine::interface::network::Networked interface(driverEngine, gameEngine, "127.0.0.1", 4243, true);
+    gengine::interface::network::Networked interface(driverEngine, gameEngine, "10.109.252.3", 4243, true);
     interface.run();
 }

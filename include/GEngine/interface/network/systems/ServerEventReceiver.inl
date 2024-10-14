@@ -56,11 +56,12 @@ void gengine::interface::network::system::ServerEventReceiver<Events...>::onMain
 template <class... Events>
 template <typename T>
 void gengine::interface::network::system::ServerEventReceiver<Events...>::dynamicPublish(void) {
-    m_eventsCallbacks.insert(std::make_pair(m_id, std::make_pair<std::function<void(void *, gengine::interface::component::RemoteDriver &)>, size_t>(
-                                                      [this](void *data, component::RemoteDriver &remote) -> void {
-                                                          event::RemoteEvent<T> event(*reinterpret_cast<T *>(data), remote);
-                                                          this->template publishEvent<event::RemoteEvent<T>>(event);
-                                                      },
-                                                      sizeof(T))));
+    m_eventsCallbacks.insert(std::make_pair(
+        m_id, std::make_pair<std::function<void(void *, gengine::interface::component::RemoteDriver &)>, size_t>(
+                  [this](void *data, component::RemoteDriver &remote) -> void {
+                      event::RemoteEvent<T> event(*reinterpret_cast<T *>(data), remote);
+                      this->template publishEvent<event::RemoteEvent<T>>(event);
+                  },
+                  sizeof(T))));
     m_id++;
 }

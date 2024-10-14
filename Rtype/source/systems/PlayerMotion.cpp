@@ -14,7 +14,6 @@
 
 #include <random>
 
-
 namespace rtype::system {
 void PlayerMotion::init(void) {
     subscribeToEvent<ClientEvent<gengine::system::event::driver::input::Key_Left>>(&PlayerMotion::movePlayerLeft);
@@ -31,7 +30,8 @@ void PlayerMotion::movePlayerLeft(ClientEvent<gengine::system::event::driver::in
     auto &playerControls = getComponents<component::PlayerControl>();
     auto &remotes = getComponents<gengine::interface::component::RemoteDriver>();
 
-    for (auto [entity, player, velocity, playerControl, remote] : gengine::Zip(players, velocities, playerControls, remotes)) {
+    for (auto [entity, player, velocity, playerControl, remote] :
+         gengine::Zip(players, velocities, playerControls, remotes)) {
         if (remote != e.remote)
             continue;
         if (e->state == gengine::system::event::driver::input::RELEASE)
@@ -47,7 +47,8 @@ void PlayerMotion::movePlayerRight(ClientEvent<gengine::system::event::driver::i
     auto &playerControls = getComponents<component::PlayerControl>();
     auto &remotes = getComponents<gengine::interface::component::RemoteDriver>();
 
-    for (auto [entity, player, velocity, playerControl, remote] : gengine::Zip(players, velocities, playerControls, remotes)) {
+    for (auto [entity, player, velocity, playerControl, remote] :
+         gengine::Zip(players, velocities, playerControls, remotes)) {
         if (remote != e.remote)
             continue;
         if (e->state == gengine::system::event::driver::input::RELEASE)
@@ -63,7 +64,8 @@ void PlayerMotion::movePlayerUp(ClientEvent<gengine::system::event::driver::inpu
     auto &playerControls = getComponents<component::PlayerControl>();
     auto &remotes = getComponents<gengine::interface::component::RemoteDriver>();
 
-    for (auto [entity, player, velocity, playerControls, remote] : gengine::Zip(players, velocities, playerControls, remotes)) {
+    for (auto [entity, player, velocity, playerControls, remote] :
+         gengine::Zip(players, velocities, playerControls, remotes)) {
         if (remote != e.remote)
             continue;
         if (e->state == gengine::system::event::driver::input::RELEASE)
@@ -79,7 +81,8 @@ void PlayerMotion::movePlayerDown(ClientEvent<gengine::system::event::driver::in
     auto &playerControls = getComponents<component::PlayerControl>();
     auto &remotes = getComponents<gengine::interface::component::RemoteDriver>();
 
-    for (auto [entity, player, velocity, playerControl, remote] : gengine::Zip(players, velocities, playerControls, remotes)) {
+    for (auto [entity, player, velocity, playerControl, remote] :
+         gengine::Zip(players, velocities, playerControls, remotes)) {
         if (remote != e.remote)
             continue;
         if (e->state == gengine::system::event::driver::input::RELEASE)
@@ -108,7 +111,8 @@ void PlayerMotion::decreaseSpeed(ClientEvent<gengine::system::event::driver::inp
 
     for (auto [entity, player, playerControl, remote] : gengine::Zip(players, playerControls, remotes)) {
         if (remote != e.remote)
-            continue;;
+            continue;
+        ;
         player.speed = std::max(player.speed - 10, 20.f);
     }
 }

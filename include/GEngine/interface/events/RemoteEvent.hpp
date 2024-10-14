@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "GEngine/libdev/System.hpp"
 #include "GEngine/interface/components/RemoteDriver.hpp"
+#include "GEngine/libdev/System.hpp"
 
 namespace gengine::interface::network::event {
 
@@ -37,6 +37,7 @@ public:
     }
 
     component::RemoteDriver remote;
+
 private:
     T m_event;
 };
