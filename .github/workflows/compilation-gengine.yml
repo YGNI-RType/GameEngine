@@ -50,6 +50,13 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config
 
+      - name: Install vcpkg and dependencies for Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git
+          .\vcpkg\bootstrap-vcpkg.bat
+          .\vcpkg\vcpkg install glfw3:x64-windows
+
       - name: Set reusable strings
         id: strings
         shell: bash
