@@ -14,6 +14,8 @@
 #include "GEngine/libdev/systems/events/Native.hpp"
 #include "GEngine/net/net.hpp"
 
+#include "GEngine/interface/components/RemoteDriver.hpp"
+
 #include <algorithm>
 #include <functional>
 #include <iostream>
@@ -40,7 +42,7 @@ private:
 
     std::uint64_t m_id = 0;
     const Network::NetServer &m_server;
-    std::unordered_map<std::uint64_t, std::pair<std::function<void(void *)>, size_t>> m_eventsCallbacks;
+    std::unordered_map<std::uint64_t, std::pair<std::function<void(void *, component::RemoteDriver &)>, size_t>> m_eventsCallbacks;
     mutable std::mutex m_netMutex;
 };
 

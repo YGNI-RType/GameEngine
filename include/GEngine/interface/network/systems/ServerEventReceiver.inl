@@ -23,7 +23,7 @@ void gengine::interface::network::system::ServerEventReceiver<Events...>::onMain
     Network::UDPMessage msg(true, Network::CL_EVENT);
     size_t readCount = 0;
 
-    for (auto &[id, client] : clients.getClients()) {
+    for (auto &[remote, client] : clients.getClients()) {
         if (client.shouldDelete())
             continue;
         if (!client.getNet()->popIncommingData(msg, readCount))
@@ -44,7 +44,8 @@ void gengine::interface::network::system::ServerEventReceiver<Events...>::onMain
 
             msg.readData(data.data(), readCount, size);
             readCount += size;
-            callback(data.data());
+            gengine::interface::component::RemoteDriver id = remote;
+            callback(data.data(), id);
         }
         // TODO client.setLastAck(client.getLastAck() + 1);
     }
@@ -53,9 +54,9 @@ void gengine::interface::network::system::ServerEventReceiver<Events...>::onMain
 template <class... Events>
 template <typename T>
 void gengine::interface::network::system::ServerEventReceiver<Events...>::dynamicPublish(void) {
-    m_eventsCallbacks.insert(std::make_pair(m_id, std::make_pair<std::function<void(void *)>, size_t>(
-                                                      [this](void *data) -> void {
-                                                          event::RemoteEvent<T> event(*reinterpret_cast<T *>(data));
+    m_eventsCallbacks.insert(std::make_pair(m_id, std::make_pair<std::function<void(void *, gengine::interface::component::RemoteDriver &)>, size_t>(
+                                                      [this](void *data, component::RemoteDriver &remote) -> void {
+                                                          event::RemoteEvent<T> event(*reinterpret_cast<T *>(data), remote);
                                                           this->template publishEvent<event::RemoteEvent<T>>(event);
                                                       },
                                                       sizeof(T))));
