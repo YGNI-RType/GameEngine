@@ -7,6 +7,7 @@
 
 #include "GEngine/libdev/systems/driver/output/Draw.hpp"
 #include <iostream>
+#include <rlgl.h>
 
 namespace gengine::system::driver::output {
 struct zIndexComparator {
@@ -35,12 +36,12 @@ void Draw2D::onRenderLoop(gengine::system::event::RenderLoop &e) {
 }
 
 void Draw2D::onBeginDraw(gengine::system::event::BeginDraw &e) {
-    BeginDrawing();
+    // BeginDrawing();
     ClearBackground(e.clear);
 }
 void Draw2D::onEndDraw(gengine::system::event::EndDraw &e) {
-    DrawFPS(1000, 0);
-    EndDrawing();
+    rlDrawRenderBatchActive();
+    SwapScreenBuffer();
 }
 
 void DrawSprite::init(void) {

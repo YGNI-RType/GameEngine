@@ -25,14 +25,11 @@ void RenderWindow::onStartEngine(gengine::system::event::StartEngine &e) {
     SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT); // TODO FLAG_WINDOW_RESIZABLE
     InitWindow(m_width, m_height, m_title.c_str());
     SetWindowMonitor(0);
-    SetTargetFPS(GetMonitorRefreshRate(0));
 }
 
 void RenderWindow::onMainLoop(gengine::system::event::MainLoop &e) {
     if (WindowShouldClose())
         publishEvent(gengine::system::event::StopMainLoop());
-    else
-        publishEvent(gengine::system::event::RenderLoop(e.deltaTime));
 
     if (IsWindowResized()) {
         m_width = GetRenderWidth();
