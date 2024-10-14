@@ -13,7 +13,6 @@
 #include "GEngine/BaseEngine.hpp"
 
 #include "GEngine/libdev/System.hpp"
-#include "GEngine/libdev/systems/events/GameLoop.hpp"
 #include "GEngine/libdev/systems/events/MainLoop.hpp"
 #include "GEngine/libdev/systems/events/Native.hpp"
 
@@ -27,7 +26,7 @@ public:
     Updater(void) = default;
     void init(void) override;
     // void onStartEngine(gengine::system::event::StartEngine &);
-    void onGameLoop(gengine::system::event::GameLoop &);
+    void onMainLoop(gengine::system::event::MainLoop &);
 
 private:
     // std::vector<std::type_index> m_typeTable; // TODO opti

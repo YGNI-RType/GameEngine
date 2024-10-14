@@ -95,12 +95,13 @@ bool PacketPoolUdp::recvMessage(const UDPMessage &msg, size_t &readOffset, uint3
     auto it = m_poolSequences.find(fragSequence);
     if (it == m_poolSequences.end()) {
         /* todo : add something that cleans (thread that cleans or something) */
-        auto t = std::make_tuple<>(msg.getType(), msg.getFlags(), header.fragIdMax, isLast ? chunkSize : 0, 1 << header.fragId, m_pool.size());
+        auto t = std::make_tuple<>(msg.getType(), msg.getFlags(), header.fragIdMax, isLast ? chunkSize : 0,
+                                   1 << header.fragId, m_pool.size());
         auto [type, flag, size, last_recv, cur_mask, _offset] = t;
         m_poolSequences[fragSequence] = t;
         isNewSequence = true;
         offset = _offset;
-        m_pool.resize(offset + size + 1); //resise(size, chunk_t());
+        m_pool.resize(offset + size + 1); // resise(size, chunk_t());
     } else {
         auto &[type, flag, size, last_size, cur_mask, _offset] = it->second;
         if (header.fragId > size)
@@ -151,12 +152,10 @@ bool PacketPoolUdp::receivedFullSequence(uint32_t sequence) {
     if (it == m_poolSequences.end())
         return false; // or handle the error as needed
 
-
     auto idmax = (std::get<2>(it->second));
     uint8_t wanted = (1 << idmax);
-    for (int i = 0; i < idmax; i++) {
+    for (int i = 0; i < idmax; i++)
         wanted |= (1 << i);
-    }
     auto curMask = getMask(sequence);
     return curMask == wanted;
 }
