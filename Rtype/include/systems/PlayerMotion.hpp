@@ -16,8 +16,8 @@
 #include "GEngine/libdev/systems/events/MainLoop.hpp"
 #include "GEngine/libdev/systems/events/driver/input/Keyboard.hpp"
 
-#include "GEngine/interface/events/RemoteEvent.hpp" // ClientEvent
 #include "GEngine/interface/components/RemoteDriver.hpp" // ClientEvent
+#include "GEngine/interface/events/RemoteEvent.hpp"      // ClientEvent
 
 namespace rtype::system {
 

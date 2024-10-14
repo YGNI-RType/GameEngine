@@ -14,14 +14,14 @@
 namespace gengine::interface::network::system {
 
 void Updater::init(void) {
-    subscribeToEvent<gengine::system::event::MainLoop>(&Updater::onMainLoop);
+    subscribeToEvent<gengine::system::event::GameLoop>(&Updater::onGameLoop);
 }
 
 // void Updater::onStartEngine(gengine::system::event::StartEngine &e) {
 // TODO get base world ?
 // }
 
-void Updater::onMainLoop(gengine::system::event::MainLoop &e) {
+void Updater::onGameLoop(gengine::system::event::GameLoop &e) {
     Network::CLNetClient &cl = Network::NET::getClient();
 
     size_t size = cl.getSizeIncommingData(Network::SV_SNAPSHOT, true);

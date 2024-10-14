@@ -11,7 +11,8 @@
 
 namespace rtype::component {
 struct PlayerControl : public gengine::Component<PlayerControl> {
-    PlayerControl() {}
+    PlayerControl() {
+    }
 };
 
-} // namespace gengine::component
+} // namespace rtype::component

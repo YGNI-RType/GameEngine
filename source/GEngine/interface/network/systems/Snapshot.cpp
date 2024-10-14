@@ -27,10 +27,11 @@ Snapshot::Snapshot(const snapshot_t &currentWorld)
 }
 
 void Snapshot::init(void) {
-    subscribeToEvent<gengine::system::event::MainLoop>(&Snapshot::onMainLoop);
+    subscribeToEvent<gengine::system::event::GameLoop>(&Snapshot::onGameLoop);
+    subscribeToEvent<gengine::interface::event::NewRemoteDriver>(&Snapshot::registerSnapshot);
 }
 
-void Snapshot::onMainLoop(gengine::system::event::MainLoop &e) {
+void Snapshot::onGameLoop(gengine::system::event::GameLoop &e) {
     {
         std::lock_guard<std::mutex> lock(m_netMutex);
 
@@ -56,7 +57,10 @@ void Snapshot::createSnapshots(void) {
     for (auto &[remote, client] : clientsSys.getClients()) {
         if (client.shouldDelete())
             continue;
-        m_clientSnapshots[remote].second[m_currentSnapshotId % MAX_SNAPSHOT] = m_currentWorld;
+        auto it = m_clientSnapshots.find(remote);
+        if (it == m_clientSnapshots.end())
+            continue;
+        it->second.second[m_currentSnapshotId % MAX_SNAPSHOT] = m_currentWorld;
     }
 }
 
@@ -67,7 +71,11 @@ void Snapshot::getAndSendDeltaDiff(void) {
     for (auto &[remote, client] : clientsSys.getClients()) {
         if (client.shouldDelete())
             continue;
-        auto &[firstSnapshotId, snapshots] = m_clientSnapshots[remote];
+        auto it = m_clientSnapshots.find(remote);
+        if (it == m_clientSnapshots.end())
+            continue;
+
+        auto &[firstSnapshotId, snapshots] = it->second;
         auto lastReceived = client.getLastAck();
         auto lastId = firstSnapshotId + lastReceived;
         auto diff = m_currentSnapshotId - lastId;

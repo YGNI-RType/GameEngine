@@ -8,8 +8,8 @@
 #pragma once
 
 #include "GEngine/libdev/Component.hpp"
-#include <string>
 #include <cstring>
+#include <string>
 
 #define DEFAULT_SPEED 6
 #define DEFAULT_ATTACK_SPEED 3 // Shoot per second

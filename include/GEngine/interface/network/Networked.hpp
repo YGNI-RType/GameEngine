@@ -49,7 +49,6 @@ public:
         Network::NET::start();
         m_driverEngine.registerSystem<gengine::system::AutoMainLoop>();
         m_gameEngine.registerSystem<gengine::system::AutoMainLoop>();
-
     }
 
     ~Networked() {
