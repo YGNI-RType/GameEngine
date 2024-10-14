@@ -52,4 +52,4 @@ const Sound &SoundManager::get(const std::string &path) {
 void SoundManager::onSound(gengine::system::event::driver::output::Sound &e) {
     PlaySound(get(e.getPath()));
 }
-} // namespace gengine::system::driver::outputm
+} // namespace gengine::system::driver::output

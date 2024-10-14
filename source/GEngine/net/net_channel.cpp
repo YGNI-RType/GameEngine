@@ -78,19 +78,21 @@ bool NetChannel::sendDatagram(SocketUDP &socket, UDPMessage &msg) {
         auto fragments = m_udpPoolSend.getMissingFragments(m_udpMyFragSequence, 0);
         bool res = sendDatagrams(socket, m_udpMyFragSequence, fragments);
         m_udpMyFragSequence++;
+        udpOutSequence++;
         return res;
     }
 
     UDPG_NetChannelHeader header = {.sequence = udpOutSequence, .ackFragmentSequence = m_udpFromFragSequence};
     if (msg.shouldAck())
-        header.ack = udpInSequence;
+        header.ack = m_udpACKFullInSequence;
     msg.writeHeader(header);
 
     size_t sent = socket.send(msg, *m_toUDPAddress);
     if (sent < 0) // guess it's send, but not quite, TODO : check any weird case (place breakpoint)
         return true;
 
-    udpOutSequence++;
+    if (!msg.isFragmented())
+        udpOutSequence++;
 
     /* for client/server rates calculation */
     m_udplastsent = Time::Clock::milliseconds();
@@ -137,21 +139,29 @@ bool NetChannel::readDatagram(SocketUDP &socket, UDPMessage &msg, size_t &readOf
     if (msg.isFragmented()) {
         /* if true, that's a new sequence */
         uint32_t fragSequence;
-        if (m_udpPoolRecv.recvMessage(msg, readOffset, fragSequence))
-            m_udpFromFragSequence = m_udpFromFragSequence > fragSequence ? m_udpFromFragSequence : fragSequence;
+        if (m_udpPoolRecv.recvMessage(msg, readOffset, fragSequence)) {
+            m_udpFromFragSequence = CF_NET_MAX(m_udpFromFragSequence, fragSequence);
+            m_udpFragmentsOgSequences[fragSequence] = header.sequence;
+        }
 
         if (m_udpPoolRecv.receivedFullSequence(fragSequence)) {
             msg = UDPMessage(true, msg.getType()); /* recreate */
 
+            auto sequence = m_udpFragmentsOgSequences[fragSequence];
+            m_udpFragmentsOgSequences.erase(fragSequence);
             m_udpPoolRecv.reconstructMessage(fragSequence, msg);
             msg.writeHeader(header);
+            msg.setWasFragmented(true);
 
             readOffset = 0;
             bool res = readDatagram(socket, msg, readOffset);
             m_udpPoolRecv.deleteSequence(fragSequence);
+            m_udpACKFullInSequence = CF_NET_MAX(sequence, m_udpACKFullInSequence);
             return res;
         }
         return false;
+    } else if (msg.shouldAck() && !msg.wasFragmented()) {
+        m_udpACKFullInSequence = header.sequence;
     }
 
     if (m_udpPoolRecv.getPoolSize() > 0) {

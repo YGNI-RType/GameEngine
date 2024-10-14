@@ -192,6 +192,6 @@ int main(void) {
     rtype::registerSystems(gameEngine, driverEngine);
 
     // gameEngine.registerSystem<rtype::Test>();
-    gengine::interface::network::Networked interface(driverEngine, gameEngine, "10.109.252.3", 4243, true);
+    gengine::interface::network::Networked interface(driverEngine, gameEngine, "127.0.0.1", 4243, true);
     interface.run();
 }

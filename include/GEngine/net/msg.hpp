@@ -145,6 +145,7 @@ public:
         FRAGMENTED = 4,
         ENCRYPTED = 8,
         ACK = 16,
+        WAS_FRAGMENTED = 32,
     };
 
 public:
@@ -167,6 +168,9 @@ public:
     bool isFragmented() const {
         return m_flags & FRAGMENTED;
     }
+    bool wasFragmented() const {
+        return m_flags & WAS_FRAGMENTED;
+    }
     bool isEncrypted() const {
         return m_flags & ENCRYPTED;
     }
@@ -187,6 +191,7 @@ public:
     void setCompressed(bool compressed);
     void setHeader(bool header);
     void setFragmented(bool fragmented);
+    void setWasFragmented(bool fragmented);
     void setEncrypted(bool encrypted);
     void setAck(bool ack);
 

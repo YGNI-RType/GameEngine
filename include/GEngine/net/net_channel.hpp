@@ -179,6 +179,7 @@ private:
     /* most likely fragments, since the packets may be too big (mostly (always) for client from server) */
     PacketPoolUdp m_udpPoolSend;
     PacketPoolUdp m_udpPoolRecv;
+    std::unordered_map<uint32_t, uint64_t> m_udpFragmentsOgSequences;
 
     uint32_t m_droppedPackets = 0;
 
@@ -188,6 +189,7 @@ private:
 
     /* snapshot, needs client acknowledge to do some things */
     uint64_t m_udpACKInSequence = 0;
+    uint64_t m_udpACKFullInSequence = 0;
     uint64_t m_udpACKOutSequence = 1;
     uint64_t m_udpACKClientLastACK = 0;
 
