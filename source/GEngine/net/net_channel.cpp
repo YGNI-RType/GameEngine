@@ -145,6 +145,8 @@ bool NetChannel::readDatagram(SocketUDP &socket, UDPMessage &msg, size_t &readOf
 
             m_udpPoolRecv.reconstructMessage(fragSequence, msg);
             msg.writeHeader(header);
+
+            readOffset = 0;
             bool res = readDatagram(socket, msg, readOffset);
             m_udpPoolRecv.deleteSequence(fragSequence);
             return res;

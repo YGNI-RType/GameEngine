@@ -32,21 +32,21 @@ struct UDPG_NetChannelHeader {
 
 /*********** Fragments ***********/
 
-struct AUDPG_FragmentHeader {
+PACK(struct AUDPG_FragmentHeader {
     uint32_t
         idSequence; /* there might be multiple fragmentation at once (4 max), this number is incremented all time */
-};
+});
 
 struct UDPG_MasterFragmentHeaderFrom {
     uint8_t nbHeaders; /* tells how many sequence header are there */
 };
 
 /* the one from is the one receiving the fragment, he hasn't asked for it ! */
-struct UDPG_FragmentHeaderFrom : AUDPG_FragmentHeader {
+PACK(struct UDPG_FragmentHeaderFrom : AUDPG_FragmentHeader {
     uint16_t receivedFragmentsMask; /* 0110 1100 */
                                     /* 0  : Want this Fragment */
                                     /* 1  : Ack this fragment */
-};
+});
 
 struct UDPG_FragmentHeaderTo : AUDPG_FragmentHeader {
     uint8_t fragId;    /* one fragment at a time */
