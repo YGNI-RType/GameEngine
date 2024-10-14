@@ -101,7 +101,7 @@ bool PacketPoolUdp::recvMessage(const UDPMessage &msg, size_t &readOffset, uint3
         m_poolSequences[fragSequence] = t;
         isNewSequence = true;
         offset = _offset;
-        m_pool.resize(offset + size + 1); // resise(size, chunk_t());
+        m_pool.resize(offset + size + 1);
     } else {
         auto &[type, flag, size, last_size, cur_mask, _offset] = it->second;
         if (header.fragId > size)

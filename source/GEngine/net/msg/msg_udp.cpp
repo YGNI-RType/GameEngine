@@ -68,6 +68,13 @@ void UDPMessage::setFragmented(bool fragmented) {
         m_flags &= ~FRAGMENTED;
 }
 
+void UDPMessage::setWasFragmented(bool fragmented) {
+    if (fragmented)
+        m_flags |= WAS_FRAGMENTED;
+    else
+        m_flags &= ~WAS_FRAGMENTED;
+}
+
 void UDPMessage::setEncrypted(bool encrypted) {
     if (encrypted)
         m_flags |= ENCRYPTED;

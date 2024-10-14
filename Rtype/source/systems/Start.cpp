@@ -39,7 +39,7 @@ void Start::onStartEngine(gengine::system::event::StartEngine &e) {
     std::uniform_int_distribution<> transformXFork(0 + 80, 1280 - 160);
     std::uniform_int_distribution<> transformYFork(0 + 80, 720 - 160);
 
-    // for (std::size_t i = 0; i < 1; i++) {
+    for (std::size_t i = 0; i < 11; i++) {
     float x = transformXFork(gen);
     float y = transformYFork(gen);
 
@@ -48,7 +48,7 @@ void Start::onStartEngine(gengine::system::event::StartEngine &e) {
                 gengine::component::driver::output::Animation(12, rand() % 12, 0.1f),
                 gengine::component::driver::output::Drawable(1), component::Monster("poulet"),
                 gengine::component::HitBoxSquare2D(17, 18));
-    // }
+    }
     // gengine::component::driver::output::Animation(5, 0, 0.2f, true));
 
     spawnEntity(component::Background(), gengine::component::Transform2D({0, 0}, {3.48, 3.48}),
