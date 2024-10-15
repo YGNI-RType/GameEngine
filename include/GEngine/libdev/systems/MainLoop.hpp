@@ -1,8 +1,17 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** MainLoop.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) System
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : MainLoop.hpp
+**  Create at   : 2024-10-15 05:07
+**  Author      : AUTHOR
+**  Description : This system dedicated to the GameEngine and the DriverEngine
+                    allows to pace the whole of the two engines by publishing
+                    he events:
+                        -MainLoop.
+                        -RenderLoop.
+                        -GameLoop.
+** ═══════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once

@@ -1,8 +1,13 @@
 /*
-** EPITECH PROJECT, 2024
-** GameEngine
-** File description:
-** RemoteEvent.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) System
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : ServerEventReceiver.hpp
+**  Create at   : 2024-10-15 04:51
+**  Author      : AUTHOR
+**  Description : This system catch all RemoteEvent send by ClientEventPublisher
+                    and publis them to GameEngine event Bus.
+** ═══════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once

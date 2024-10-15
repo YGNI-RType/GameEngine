@@ -1,8 +1,14 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** KeyboardCatcher.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) System
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : KeyboardCatcher.hpp
+**  Create at   : 2024-10-15 04:58
+**  Author      : AUTHOR
+**  Description : This system is dedicated to the DriverEngine, it must with
+                    the raylib publish all the events linked to the keys of
+                    the keyboard.
+** ═══════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once

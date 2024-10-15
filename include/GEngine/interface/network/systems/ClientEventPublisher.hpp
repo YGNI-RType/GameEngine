@@ -1,8 +1,12 @@
 /*
-** EPITECH PROJECT, 2024
-** GameEngine
-** File description:
-** ClientEventPublisher.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) System
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : ClientEventPublisher.hpp
+**  Create at   : 2024-10-15 04:49
+**  Author      : AUTHOR
+**  Description : DESCRIPTION
+** ═══════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once

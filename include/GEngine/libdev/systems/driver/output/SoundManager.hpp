@@ -1,8 +1,13 @@
 /*
-** EPITECH PROJECT, 2024
-** GameEngine
-** File description:
-** SoundManager.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) System
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : SoundManager.hpp
+**  Create at   : 2024-10-15 05:02
+**  Author      : AUTHOR
+**  Description : This system dedicated to ther DriverEngine, it must with
+                    the raylib play and manage sounds.
+** ═══════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once

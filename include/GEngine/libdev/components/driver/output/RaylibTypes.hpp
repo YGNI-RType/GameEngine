@@ -1,8 +1,12 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** Color.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) Component
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : RaylibTypes.hpp
+**  Create at   : 2024-10-15 05:25
+**  Auteur      : AUTHOR
+**  Description : Usual file
+** ════════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once

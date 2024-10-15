@@ -1,8 +1,14 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** Keyboard.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) Event
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : Keyboard.hpp
+**  Create at   : 2024-10-15 05:11
+**  Author      : AUTHOR
+**  Description : These events transmit information related to the keyboard,
+                    they are emitted by the KeyboardCatcher system dedicated to
+                    the DriverEngine.
+** ════════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once

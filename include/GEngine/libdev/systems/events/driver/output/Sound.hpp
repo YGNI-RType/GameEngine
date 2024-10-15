@@ -1,8 +1,14 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** Sound.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) Event
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : Sound.hpp
+**  Create at   : 2024-10-15 05:14
+**  Author      : AUTHOR
+**  Description : This event is listened to natively by the SoundManager system
+                    which will launch the sound linked to the path passed as an
+                    argument when it is triggered by this event.
+** ════════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once

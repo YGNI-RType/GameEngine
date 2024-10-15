@@ -1,8 +1,14 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** Logger.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) System
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : Logger.hpp
+**  Create at   : 2024-10-15 05:06
+**  Author      : AUTHOR
+**  Description : This system dedicated to the GameEngine and the DriverEngine
+                    allows to produce a log file filled in reaction to the Log
+                    event.
+** ═══════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once
