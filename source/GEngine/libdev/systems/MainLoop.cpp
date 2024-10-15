@@ -35,6 +35,7 @@ void AutoMainLoop::init(void) {
 
 void AutoMainLoop::onStartEngine(gengine::system::event::StartEngine &e) {
     publishEvent(gengine::system::event::MainLoop(0));
+    m_lastTime = std::chrono::high_resolution_clock::now();
 }
 
 void AutoMainLoop::onMainLoop(gengine::system::event::MainLoop &e) {
@@ -42,18 +43,17 @@ void AutoMainLoop::onMainLoop(gengine::system::event::MainLoop &e) {
         return;
 
     auto delta = getElapsedTime();
-
     m_driverTime -= delta;
     m_gameTime -= delta;
     if (m_driverTime.count() <= 0) {
         m_driverTime += std::chrono::microseconds(1000000 / m_fps);
-        publishEvent<gengine::system::event::RenderLoop>(m_driverTime.count() / 1000); // TODO add time if < 0
+        publishEvent<gengine::system::event::RenderLoop>(m_driverTime.count() / 1000.f); // TODO add time if < 0
     }
     if (m_gameTime.count() <= 0) {
         m_gameTime += std::chrono::microseconds(1000000 / m_tps);
-        publishEvent<gengine::system::event::GameLoop>(m_gameTime.count() / 1000); // TODO add time if < 0
+        publishEvent<gengine::system::event::GameLoop>(m_gameTime.count() / 1000.f); // TODO add time if < 0
     }
-    publishEvent(gengine::system::event::MainLoop(delta.count() / 1000));
+    publishEvent(gengine::system::event::MainLoop(delta.count() / 1000.f));
     m_lastTime = std::chrono::high_resolution_clock::now();
 
     std::this_thread::sleep_for(std::chrono::microseconds(10));
