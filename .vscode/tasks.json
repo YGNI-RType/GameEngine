@@ -10,18 +10,16 @@
                 "${workspaceFolder}/build",
                 "--target",
                 "GEngine_static",
-                "-j",
                 "&&",
                 "cmake",
                 "--build",
-                "${workspaceFolder}/Rtype/build",
-                "-j"
+                "${workspaceFolder}/Rtype/build"
             ],
             "windows": {
                 "command": "cmd",
                 "args": [
                     "/c",
-                    "cmake --build ${workspaceFolder}\build --target GEngine_static && cmake --build ${workspaceFolder}\r-type\build"
+                    "cmake --build ${workspaceFolder}\\build --target GEngine_static && cmake --build ${workspaceFolder}\\r-type\\build"
                 ]
             },
             "group": {
@@ -47,7 +45,7 @@
                 "command": "cmd",
                 "args": [
                     "/c",
-                    "cmake -S ${workspaceFolder}\r-type -B ${workspaceFolder}\r-type\build -DCMAKE_BUILD_TYPE=Debug"
+                    "cmake -S ${workspaceFolder}\\r-type -B ${workspaceFolder}\\r-type\\build -DCMAKE_BUILD_TYPE=Debug"
                 ]
             },
             "group": {
