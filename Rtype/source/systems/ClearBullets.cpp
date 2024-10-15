@@ -10,10 +10,10 @@
 
 namespace rtype::system {
 void ClearBullets::init(void) {
-    subscribeToEvent<gengine::system::event::MainLoop>(&ClearBullets::onMainLoop);
+    subscribeToEvent<gengine::system::event::GameLoop>(&ClearBullets::onGameLoop);
 }
 
-void ClearBullets::onMainLoop(gengine::system::event::MainLoop &e) {
+void ClearBullets::onGameLoop(gengine::system::event::GameLoop &e) {
     // clearFires();
     clearBullets();
 }

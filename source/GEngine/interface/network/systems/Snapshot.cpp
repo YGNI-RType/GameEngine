@@ -12,14 +12,6 @@
 #include "GEngine/net/net_client.hpp"
 
 namespace gengine::interface::network::system {
-// SnapshotClient::SnapshotClient(std::shared_ptr<Network::NetClient> client, uint64_t firsSnapshotId)
-//     : m_client(client)
-//     , m_firsSnapshotId(firsSnapshotId) {
-// }
-
-// std::shared_ptr<Network::NetClient> SnapshotClient::getNet(void) const {
-//     return m_client;
-// }
 
 Snapshot::Snapshot(const snapshot_t &currentWorld)
     : m_currentWorld(currentWorld)

@@ -10,7 +10,7 @@
 #include "GEngine/libdev/System.hpp"
 #include "GEngine/libdev/components/Transforms.hpp"
 #include "GEngine/libdev/components/Velocities.hpp"
-#include "GEngine/libdev/systems/events/MainLoop.hpp"
+#include "GEngine/libdev/systems/events/GameLoop.hpp"
 
 #include "components/Background.hpp"
 
@@ -19,7 +19,7 @@ class BackgroundMotion : public gengine::System<BackgroundMotion, gengine::compo
                                                 gengine::component::Transform2D, component::Background> {
 public:
     void init(void) override;
-    void onMainLoop(gengine::system::event::MainLoop &);
+    void onGameLoop(gengine::system::event::GameLoop &);
     void updateBackgroundSpeed(void);
 };
 } // namespace rtype::system

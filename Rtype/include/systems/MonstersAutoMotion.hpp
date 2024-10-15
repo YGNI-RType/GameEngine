@@ -10,7 +10,7 @@
 #include "GEngine/libdev/System.hpp"
 #include "GEngine/libdev/components/Velocities.hpp"
 #include "GEngine/libdev/components/driver/output/Animation.hpp"
-#include "GEngine/libdev/systems/events/MainLoop.hpp"
+#include "GEngine/libdev/systems/events/GameLoop.hpp"
 
 #include "components/Monster.hpp"
 
@@ -19,6 +19,6 @@ class MonstersAutoMotion : public gengine::System<MonstersAutoMotion, gengine::c
                                                   component::Monster, gengine::component::driver::output::Animation> {
 public:
     void init(void) override;
-    void onMainLoop(gengine::system::event::MainLoop &);
+    void onGameLoop(gengine::system::event::GameLoop &);
 };
 } // namespace rtype::system
