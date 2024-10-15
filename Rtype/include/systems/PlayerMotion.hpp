@@ -7,32 +7,21 @@
 
 #pragma once
 
-#include "components/Player.hpp"
-#include "components/PlayerControl.hpp"
-
-#include "GEngine/libdev/System.hpp"
+#include "GEngine/interface/components/RemoteDriver.hpp"
 #include "GEngine/libdev/components/Velocities.hpp"
 #include "GEngine/libdev/components/driver/output/Animation.hpp"
-#include "GEngine/libdev/systems/events/MainLoop.hpp"
-#include "GEngine/libdev/systems/events/driver/input/Keyboard.hpp"
+#include "components/Player.hpp"
 
-#include "GEngine/interface/components/RemoteDriver.hpp" // ClientEvent
-#include "GEngine/interface/events/RemoteEvent.hpp"      // ClientEvent
+#include "GEngine/libdev/System.hpp"
+
+#include "GEngine/interface/events/RemoteEvent.hpp"
+#include "events/Movement.hpp"
 
 namespace rtype::system {
-
-template <typename T>
-using ClientEvent = gengine::interface::network::event::RemoteEvent<T>;
-
-class PlayerMotion : public gengine::System<PlayerMotion, gengine::component::Velocity2D, component::PlayerControl,
-                                            component::Player, gengine::interface::component::RemoteDriver> {
+class PlayerMotion : public gengine::System<PlayerMotion, gengine::interface::component::RemoteDriver,
+                                            gengine::component::Velocity2D, component::Player> {
 public:
     void init(void) override;
-    void movePlayerLeft(ClientEvent<gengine::system::event::driver::input::Key_Left> &);
-    void movePlayerRight(ClientEvent<gengine::system::event::driver::input::Key_Right> &);
-    void movePlayerUp(ClientEvent<gengine::system::event::driver::input::Key_Up> &);
-    void movePlayerDown(ClientEvent<gengine::system::event::driver::input::Key_Down> &);
-    void increaseSpeed(ClientEvent<gengine::system::event::driver::input::Key_P> &);
-    void decreaseSpeed(ClientEvent<gengine::system::event::driver::input::Key_O> &);
+    void movePlayer(gengine::interface::network::event::RemoteEvent<event::Movement> &e);
 };
 } // namespace rtype::system

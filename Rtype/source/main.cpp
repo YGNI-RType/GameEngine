@@ -33,7 +33,6 @@
 
 #include "components/Background.hpp"
 #include "components/Bullet.hpp"
-// #include "components/Fire.hpp"
 #include "components/Monster.hpp"
 #include "components/Player.hpp"
 #include "components/PlayerControl.hpp"
@@ -42,10 +41,16 @@
 #include "systems/BackgroundMotion.hpp"
 #include "systems/ClearBullets.hpp"
 #include "systems/DestroyOnCollision.hpp"
+#include "systems/InputsToGameEvents.hpp"
 #include "systems/MonstersAutoMotion.hpp"
 #include "systems/PlayerMotion.hpp"
+#include "systems/PlayerAnimation.hpp"
 #include "systems/PlayerShoot.hpp"
 #include "systems/Start.hpp"
+
+//? ### R-Type Events ###
+#include "events/Movement.hpp"
+#include "events/Shoot.hpp"
 
 namespace rtype {
 void registerComponents(gengine::game::Engine &gameEngine, gengine::driver::Engine &driverEngine) {
@@ -78,120 +83,66 @@ void registerComponents(gengine::game::Engine &gameEngine, gengine::driver::Engi
     driverEngine.registerComponent<component::Monster>();
     driverEngine.registerComponent<component::Background>();
     driverEngine.registerComponent<component::Bullet>();
-    // gameEngine.registerComponent<component::Fire>();
 }
 
-struct Test : public gengine::System<Test> {
-    void init(void) override {
-        subscribeToEvent<
-            gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_Left>>(
-            &Test::onKey_Left);
-        subscribeToEvent<
-            gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_Right>>(
-            &Test::onKey_Right);
-        subscribeToEvent<
-            gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_Up>>(
-            &Test::onKey_Up);
-        subscribeToEvent<
-            gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_Down>>(
-            &Test::onKey_Down);
-        subscribeToEvent<gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_P>>(
-            &Test::onKey_P);
-        subscribeToEvent<gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_O>>(
-            &Test::onKey_O);
-    }
-
-    void
-    onKey_Left(gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_Left> &e) {
-        std::cout << "Left" << std::endl;
-    }
-
-    void
-    onKey_Right(gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_Right> &e) {
-        std::cout << "Right" << std::endl;
-    }
-
-    void onKey_Up(gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_Up> &e) {
-        std::cout << "Up" << std::endl;
-    }
-
-    void
-    onKey_Down(gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_Down> &e) {
-        std::cout << "Down" << std::endl;
-    }
-
-    void onKey_P(gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_P> &e) {
-        std::cout << "P" << std::endl;
-    }
-
-    void onKey_O(gengine::interface::network::event::RemoteEvent<gengine::system::event::driver::input::Key_O> &e) {
-        std::cout << "O" << std::endl;
-    }
-};
-
 void registerSystems(gengine::game::Engine &gameEngine, gengine::driver::Engine &driverEngine) {
-
-    // gameEngine.registerSystem<gengine::system::driver::output::RenderWindow>(1280, 720, "R-Type");
-    // gameEngine.registerSystem<gengine::system::driver::output::Draw2D>();
-    // gameEngine.registerSystem<gengine::system::driver::output::DrawSprite>();
-    // gameEngine.registerSystem<gengine::system::driver::output::Animate>();
-    // gameEngine.registerSystem<gengine::system::driver::output::TextureManager>("../assets/sprites");
-    // gameEngine.registerSystem<gengine::system::driver::input::KeyboardCatcher>();
+    driverEngine.registerSystem<gengine::system::driver::output::RenderWindow>(1280, 720, "R-Type");
+    driverEngine.registerSystem<gengine::system::driver::output::Draw2D>();
+    driverEngine.registerSystem<gengine::system::driver::output::DrawSprite>();
+    driverEngine.registerSystem<gengine::system::driver::output::TextureManager>("../assets/sprites");
+    gameEngine.registerSystem<gengine::system::driver::output::AnimationManager>("../assets/animations");
+    gameEngine.registerSystem<gengine::system::driver::output::Animate>();
+    driverEngine.registerSystem<gengine::system::driver::input::KeyboardCatcher>();
+    driverEngine.registerSystem<system::InputsToGameEvents>();
 
     gameEngine.registerSystem<gengine::system::Motion2D>();
     gameEngine.registerSystem<gengine::system::Collision2D>();
     gameEngine.registerSystem<system::Start>();
     gameEngine.registerSystem<system::MonstersAutoMotion>();
     gameEngine.registerSystem<system::PlayerMotion>();
+    gameEngine.registerSystem<system::PlayerAnimation>();
     gameEngine.registerSystem<system::PlayerShoot>();
     gameEngine.registerSystem<system::BackgroundMotion>();
     gameEngine.registerSystem<system::ClearBullets>();
     gameEngine.registerSystem<system::DestroyOnCollision>();
-    gameEngine.registerSystem<gengine::system::driver::output::Animate>();
-
-    driverEngine.registerSystem<gengine::system::driver::output::RenderWindow>(1280, 720, "R-Type");
-    driverEngine.registerSystem<gengine::system::driver::output::Draw2D>();
-    driverEngine.registerSystem<gengine::system::driver::output::DrawSprite>();
-    driverEngine.registerSystem<gengine::system::driver::output::TextureManager>("../assets/sprites");
-    driverEngine.registerSystem<gengine::system::driver::input::KeyboardCatcher>();
-
-    // driverEngine.registerSystem<gengine::system::Motion2D>();
-    // driverEngine.registerSystem<gengine::system::Collision2D>();
-    // driverEngine.registerSystem<system::Start>();
-    // driverEngine.registerSystem<system::MonstersAutoMotion>();
-    // driverEngine.registerSystem<system::PlayerMotion>();
-    // driverEngine.registerSystem<system::PlayerShoot>();
-    // driverEngine.registerSystem<system::BackgroundMotion>();
-    // driverEngine.registerSystem<system::ClearBullets>();
-    // driverEngine.registerSystem<system::DestroyOnCollision>();
 }
 } // namespace rtype
 
+#include "GEngine/interface/events/RemoteEvent.hpp"
 #include "GEngine/interface/network/Networked.hpp"
 #include "GEngine/interface/network/systems/ClientEventPublisher.hpp"
 #include "GEngine/interface/network/systems/ServerEventReceiver.hpp"
-#include "GEngine/interface/network/systems/Updater.hpp"
-// #include "GEngine/interface/network/events/ClientEvent.hpp"
+
+struct Test
+    : public gengine::OnEventSystem<Test, gengine::interface::network::event::RemoteEvent<rtype::event::Movement>> {
+    void onEvent(gengine::interface::network::event::RemoteEvent<rtype::event::Movement> &e) {
+        // std::cout << "go: " << e->state << std::endl;
+    }
+};
+
+struct TestDriver : public gengine::OnEventSystem<TestDriver, rtype::event::Movement> {
+    void onEvent(rtype::event::Movement &e) {
+        // std::cout << "send " << e.state << std::endl;
+    }
+};
 
 int main(void) {
-    gengine::game::Engine gameEngine;
     gengine::driver::Engine driverEngine;
-    // gengine::interface::network::Networked interface(gameEngine, driverEngine);
+    gengine::game::Engine gameEngine;
 
-    driverEngine.registerSystem<gengine::interface::network::system::ClientEventPublisher<
-        gengine::system::event::driver::input::Key_Left, gengine::system::event::driver::input::Key_Right,
-        gengine::system::event::driver::input::Key_Up, gengine::system::event::driver::input::Key_Down,
-        gengine::system::event::driver::input::Key_P, gengine::system::event::driver::input::Key_O>>();
+    driverEngine.registerSystem<
+        gengine::interface::network::system::ClientEventPublisher<rtype::event::Movement, rtype::event::Shoot>>();
 
-    gameEngine.registerSystem<gengine::interface::network::system::ServerEventReceiver<
-        gengine::system::event::driver::input::Key_Left, gengine::system::event::driver::input::Key_Right,
-        gengine::system::event::driver::input::Key_Up, gengine::system::event::driver::input::Key_Down,
-        gengine::system::event::driver::input::Key_P, gengine::system::event::driver::input::Key_O>>();
+    gameEngine.registerSystem<
+        gengine::interface::network::system::ServerEventReceiver<rtype::event::Movement, rtype::event::Shoot>>();
 
     rtype::registerComponents(gameEngine, driverEngine);
     rtype::registerSystems(gameEngine, driverEngine);
 
-    // gameEngine.registerSystem<rtype::Test>();
+    gameEngine.registerSystem<Test>();
+    driverEngine.registerSystem<TestDriver>();
+
     gengine::interface::network::Networked interface(driverEngine, gameEngine, "127.0.0.1", 4243, true);
+
     interface.run();
 }
