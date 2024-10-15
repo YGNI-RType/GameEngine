@@ -16,8 +16,9 @@ void Collision2D::init(void) {
 
 bool checkSquareCollision(const component::HitBoxSquare2D &square1, const component::Transform2D &tr1,
                           const component::HitBoxSquare2D &square2, const component::Transform2D &tr2) {
-    return !(tr1.pos.x > tr2.pos.x + square2.width * tr2.scale.x || tr1.pos.x + square1.width * tr1.scale.x < tr2.pos.x ||
-             tr1.pos.y > tr2.pos.y + square2.height * tr2.scale.y || tr1.pos.y + square1.height * tr1.scale.y < tr2.pos.y);
+    return !(
+        tr1.pos.x > tr2.pos.x + square2.width * tr2.scale.x || tr1.pos.x + square1.width * tr1.scale.x < tr2.pos.x ||
+        tr1.pos.y > tr2.pos.y + square2.height * tr2.scale.y || tr1.pos.y + square1.height * tr1.scale.y < tr2.pos.y);
 }
 
 bool checkCircleCollision(const component::HitBoxCircle2D &circle1, const component::Transform2D &tr1,
