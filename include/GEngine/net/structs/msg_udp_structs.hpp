@@ -49,10 +49,11 @@ PACK(struct UDPG_FragmentHeaderFrom
                                          /* 1  : Ack this fragment */
      });
 
-struct UDPG_FragmentHeaderTo : AUDPG_FragmentHeader {
+PACK(struct UDPG_FragmentHeaderTo {
+    uint32_t idSequence;
     uint8_t fragId;    /* one fragment at a time */
     uint8_t fragIdMax; /* the number of fragments */
-};
+});
 
 /*********************************/
 

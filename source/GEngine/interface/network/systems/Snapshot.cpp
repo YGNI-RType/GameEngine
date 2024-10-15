@@ -99,6 +99,7 @@ void Snapshot::getAndSendDeltaDiff(void) {
                 msg.appendData(toVoid(type, any), c.size);
         }
 
+        // std::cout << "SEND: "<< msg.getSize() << " snap " << nb_component << std::endl;
         if (!server.isRunning())
             continue;
         client.getNet()->pushData(msg, true);
