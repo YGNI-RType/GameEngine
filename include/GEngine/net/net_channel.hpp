@@ -121,6 +121,12 @@ public:
     bool isEnabled(void) const {
         return m_enabled;
     }
+    bool isUDPEnabled(void) const {
+        return m_toUDPAddress != nullptr;
+    }
+    bool isTCPEnabled(void) const {
+        return m_toTCPAddress != nullptr;
+    }
     bool isDisconnected(void) const {
         return m_disconnect;
     }
