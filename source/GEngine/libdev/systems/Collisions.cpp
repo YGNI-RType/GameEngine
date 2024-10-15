@@ -4,6 +4,7 @@
 ** File description:
 ** Collision.cpp
 */
+
 #include "GEngine/libdev/systems/Collisions.hpp"
 #include <algorithm>
 #include <cmath>
@@ -11,7 +12,7 @@
 namespace gengine::system {
 
 void Collision2D::init(void) {
-    subscribeToEvent<event::MainLoop>(&Collision2D::onMainLoop);
+    subscribeToEvent<event::GameLoop>(&Collision2D::onGameLoop);
 }
 
 bool checkSquareCollision(const component::HitBoxSquare2D &square1, const component::Transform2D &tr1,
@@ -40,7 +41,7 @@ bool checkSquareCircleCollision(const component::HitBoxSquare2D &square, const c
     return (dx * dx + dy * dy) < (circle.radius * trCircle.scale.x + circle.radius * trCircle.scale.x);
 }
 
-void Collision2D::onMainLoop(event::MainLoop &e [[maybe_unused]]) {
+void Collision2D::onGameLoop(event::GameLoop &e [[maybe_unused]]) {
     auto &transforms = getComponents<component::Transform2D>();
     // auto &origins = getComponents<component::Origin2D>();
     auto &hitboxSquares = getComponents<component::HitBoxSquare2D>();
@@ -92,7 +93,7 @@ void Collision2D::onMainLoop(event::MainLoop &e [[maybe_unused]]) {
 }
 
 void Collision3D::init(void) {
-    subscribeToEvent<event::MainLoop>(&Collision3D::onMainLoop);
+    subscribeToEvent<event::GameLoop>(&Collision3D::onGameLoop);
 }
 
 bool checkCubeCollision(const component::HitBoxSquare3D &cube1, const component::Transform3D &tr1,
@@ -122,7 +123,7 @@ bool checkCubeSphereCollision(const component::HitBoxSquare3D &cube, const compo
     return (dx * dx + dy * dy + dz * dz) < (sphere.radius * sphere.radius);
 }
 
-void Collision3D::onMainLoop(event::MainLoop &e [[maybe_unused]]) {
+void Collision3D::onGameLoop(event::GameLoop &e [[maybe_unused]]) {
     auto &transforms = getComponents<component::Transform3D>();
     // auto &origins = getComponents<component::Origin3D>();
     auto &hitboxCubes = getComponents<component::HitBoxSquare3D>();
