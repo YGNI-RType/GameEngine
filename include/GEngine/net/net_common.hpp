@@ -11,6 +11,10 @@
 #include <string>
 
 #ifdef _WIN32
+
+#define NOGDI             // All GDI defines and routines
+#define NOUSER            // All USER defines and routines
+
 #include <WS2tcpip.h>
 #include <winsock2.h>
 
@@ -31,7 +35,6 @@ namespace Network {
 #define sa_family_t ADDRESS_FAMILY
 #else
 typedef unsigned short sa_family_t;
-#undef interface
 #endif
 #define socketError WSAGetLastError()
 #else /* unix */

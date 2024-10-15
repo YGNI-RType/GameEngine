@@ -32,16 +32,23 @@ bool RemoteDriver::operator==(const RemoteDriver &other) const {
 
 // Getter for the UUID as a string (hexadecimal format)
 std::string RemoteDriver::getUUIDString() const {
-    return boost::uuids::to_string(m_uuid);
+    return uuids::to_string(m_uuid);
 }
 
 // Getter for the raw UUID bytes (for network transmission)
-const boost::uuids::uuid &RemoteDriver::getUUIDBytes() const {
+const uuids::uuid &RemoteDriver::getUUIDBytes() const {
     return m_uuid;
 }
 
 void RemoteDriver::generateUUID() {
-    boost::uuids::random_generator generator;
-    m_uuid = generator();
+    std::random_device rd;
+    auto seed_data = std::array<int, std::mt19937::state_size> {};
+    std::generate(std::begin(seed_data), std::end(seed_data), std::ref(rd));
+    std::seed_seq seq(std::begin(seed_data), std::end(seed_data));
+    std::mt19937 generator(seq);
+    uuids::uuid_random_generator gen{generator};
+
+    uuids::uuid_random_generator uuidG(gen);
+    m_uuid = uuidG();
 }
 } // namespace gengine::interface::component

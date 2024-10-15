@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <raylib.h>
+#include "module/raylib_safe.h"
 #include <set>
 
 #include "GEngine/libdev/components/Transforms.hpp"

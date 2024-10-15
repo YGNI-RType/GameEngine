@@ -13,7 +13,7 @@
 
 #include <cstring>
 #include <limits>
-#include <raylib.h>
+#include "module/raylib_safe.h"
 #include <string>
 
 #include "GEngine/libdev/Component.hpp"

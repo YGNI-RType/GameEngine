@@ -12,7 +12,7 @@
 #pragma once
 
 #include <filesystem>
-#include <raylib.h>
+#include "module/raylib_safe.h"
 #include <unordered_map>
 
 #include "GEngine/libdev/System.hpp"

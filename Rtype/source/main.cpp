@@ -1,17 +1,16 @@
-/*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** main.cpp
-*/
+// /*
+// ** EPITECH PROJECT, 2024
+// ** B-CPP-500-LYN-5-1-rtype-basile.fouquet
+// ** File description:
+// ** main.cpp
+// */
 
-// TODO reorder include
+// // TODO reorder include
 
 //? ## Engine ##
 #include "GEngine/driver/Engine.hpp"
 #include "GEngine/game/Engine.hpp"
 #include "GEngine/interface/Internal.hpp"
-// #include "GEngine/interface/network/Networked.hpp"
 
 //? ## GEngine Components ##
 #include "GEngine/libdev/components/HitBoxs.hpp"

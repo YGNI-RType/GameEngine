@@ -104,7 +104,7 @@
             "name": "(WINDOWS) Server RType",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/Rtype/build/Debug/r-type_serverd.exe",
+            "program": "${workspaceFolder}/Rtype/build/r-type_serverd.exe",
             "args": [
             ],
             "stopAtEntry": false,
