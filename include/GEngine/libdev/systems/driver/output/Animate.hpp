@@ -75,6 +75,7 @@ public:
     void init(void) override;
 
     void onGameLoop(gengine::system::event::GameLoop &e);
+
 private:
 };
 } // namespace gengine::system::driver::output

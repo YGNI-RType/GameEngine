@@ -38,7 +38,7 @@ void PlayerAnimation::animatePlayer(gengine::interface::network::event::RemoteEv
             e->state == event::Movement::DOWN_RIGHT) {
             anim.setPlaybackMode(gengine::component::driver::output::AnimationTrack::Reverse);
         } else if (e->state == event::Movement::UP || e->state == event::Movement::UP_LEFT ||
-            e->state == event::Movement::UP_RIGHT){
+                   e->state == event::Movement::UP_RIGHT) {
             anim.setPlaybackMode(gengine::component::driver::output::AnimationTrack::Forward);
         } else {
             anim.setPlaybackMode(gengine::component::driver::output::AnimationTrack::Idling);

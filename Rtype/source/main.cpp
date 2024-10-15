@@ -43,8 +43,8 @@
 #include "systems/DestroyOnCollision.hpp"
 #include "systems/InputsToGameEvents.hpp"
 #include "systems/MonstersAutoMotion.hpp"
-#include "systems/PlayerMotion.hpp"
 #include "systems/PlayerAnimation.hpp"
+#include "systems/PlayerMotion.hpp"
 #include "systems/PlayerShoot.hpp"
 #include "systems/Start.hpp"
 

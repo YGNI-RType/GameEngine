@@ -26,31 +26,28 @@ void Animate::onGameLoop(gengine::system::event::GameLoop &e) {
         int currentframe = track.frames[anim.currentFrameIndex];
         switch (anim.getPlaybackMode()) {
         case ATrack::PlaybackMode::Forward:
-            if (anim.currentFrameIndex == track.frames.size() - 1) {
-                if (track.looping) {
+            if (anim.currentFrameIndex == track.frames.size() - 1)
+                if (track.looping)
                     anim.currentFrameIndex = 0;
-                } else {
+                else
                     anim.currentFrameIndex = track.frames.size() - 1;
-                }
-            } else
+            else
                 anim.currentFrameIndex++;
             break;
         case ATrack::PlaybackMode::Reverse:
-            if (anim.currentFrameIndex == 0) {
-                if (track.looping) {
+            if (anim.currentFrameIndex == 0)
+                if (track.looping)
                     anim.currentFrameIndex = track.frames.size() - 1;
-                } else {
+                else
                     anim.currentFrameIndex = 0;
-                }
-            } else
+            else
                 anim.currentFrameIndex--;
             break;
         case ATrack::PlaybackMode::Idling:
-            if (anim.currentFrameIndex < track.idleFrameIdx) {
+            if (anim.currentFrameIndex < track.idleFrameIdx)
                 anim.currentFrameIndex++;
-            } else if (anim.currentFrameIndex > track.idleFrameIdx) {
+            else if (anim.currentFrameIndex > track.idleFrameIdx)
                 anim.currentFrameIndex--;
-            }
             break;
         default:
             break;
