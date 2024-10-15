@@ -11,15 +11,15 @@
 
 namespace rtype::system {
 void MonstersAutoMotion::init(void) {
-    subscribeToEvent<gengine::system::event::MainLoop>(&MonstersAutoMotion::onMainLoop);
+    subscribeToEvent<gengine::system::event::GameLoop>(&MonstersAutoMotion::onGameLoop);
 }
 
-void MonstersAutoMotion::onMainLoop(gengine::system::event::MainLoop &e) {
+void MonstersAutoMotion::onGameLoop(gengine::system::event::GameLoop &e) {
     std::random_device rd;
     std::mt19937 gen(rd());
 
     std::uniform_int_distribution<> change_chance_fork(0, 20);
-    std::uniform_int_distribution<> motion_fork(-5, 5);
+    std::uniform_int_distribution<> motion_fork(-1, 1);
 
     auto &motions = getComponents<gengine::component::Velocity2D>();
     auto &monsters = getComponents<component::Monster>();

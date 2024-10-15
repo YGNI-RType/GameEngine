@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile->fouquet
+** B-CPP-500-LYN-5-1-rtype-basile.fouquet
 ** File description:
 ** PlayerMotion.cpp
 */
@@ -16,104 +16,45 @@
 
 namespace rtype::system {
 void PlayerMotion::init(void) {
-    subscribeToEvent<ClientEvent<gengine::system::event::driver::input::Key_Left>>(&PlayerMotion::movePlayerLeft);
-    subscribeToEvent<ClientEvent<gengine::system::event::driver::input::Key_Right>>(&PlayerMotion::movePlayerRight);
-    subscribeToEvent<ClientEvent<gengine::system::event::driver::input::Key_Up>>(&PlayerMotion::movePlayerUp);
-    subscribeToEvent<ClientEvent<gengine::system::event::driver::input::Key_Down>>(&PlayerMotion::movePlayerDown);
-    subscribeToEvent<ClientEvent<gengine::system::event::driver::input::Key_P>>(&PlayerMotion::increaseSpeed);
-    subscribeToEvent<ClientEvent<gengine::system::event::driver::input::Key_O>>(&PlayerMotion::decreaseSpeed);
+    subscribeToEvent<gengine::interface::network::event::RemoteEvent<event::Movement>>(&PlayerMotion::movePlayer);
 }
-
-void PlayerMotion::movePlayerLeft(ClientEvent<gengine::system::event::driver::input::Key_Left> &e) {
+void PlayerMotion::movePlayer(gengine::interface::network::event::RemoteEvent<event::Movement> &e) {
     auto &velocities = getComponents<gengine::component::Velocity2D>();
     auto &players = getComponents<component::Player>();
-    auto &playerControls = getComponents<component::PlayerControl>();
     auto &remotes = getComponents<gengine::interface::component::RemoteDriver>();
 
-    for (auto [entity, player, velocity, playerControl, remote] :
-         gengine::Zip(players, velocities, playerControls, remotes)) {
-        if (remote != e.remote)
+    for (auto [entity, remote, player, velocity] : gengine::Zip(remotes, players, velocities)) {
+        if (remote != e.remote) // check if its the same remote (zip)
             continue;
-        if (e->state == gengine::system::event::driver::input::RELEASE)
-            velocity.x += player.speed;
-        else if (e->state == gengine::system::event::driver::input::PRESSED)
-            velocity.x -= player.speed;
-    }
-}
-
-void PlayerMotion::movePlayerRight(ClientEvent<gengine::system::event::driver::input::Key_Right> &e) {
-    auto &velocities = getComponents<gengine::component::Velocity2D>();
-    auto &players = getComponents<component::Player>();
-    auto &playerControls = getComponents<component::PlayerControl>();
-    auto &remotes = getComponents<gengine::interface::component::RemoteDriver>();
-
-    for (auto [entity, player, velocity, playerControl, remote] :
-         gengine::Zip(players, velocities, playerControls, remotes)) {
-        if (remote != e.remote)
-            continue;
-        if (e->state == gengine::system::event::driver::input::RELEASE)
-            velocity.x -= player.speed;
-        else if (e->state == gengine::system::event::driver::input::PRESSED)
-            velocity.x += player.speed;
-    }
-}
-
-void PlayerMotion::movePlayerUp(ClientEvent<gengine::system::event::driver::input::Key_Up> &e) {
-    auto &velocities = getComponents<gengine::component::Velocity2D>();
-    auto &players = getComponents<component::Player>();
-    auto &playerControls = getComponents<component::PlayerControl>();
-    auto &remotes = getComponents<gengine::interface::component::RemoteDriver>();
-
-    for (auto [entity, player, velocity, playerControls, remote] :
-         gengine::Zip(players, velocities, playerControls, remotes)) {
-        if (remote != e.remote)
-            continue;
-        if (e->state == gengine::system::event::driver::input::RELEASE)
-            velocity.y += player.speed;
-        else if (e->state == gengine::system::event::driver::input::PRESSED)
-            velocity.y -= player.speed;
-    }
-}
-
-void PlayerMotion::movePlayerDown(ClientEvent<gengine::system::event::driver::input::Key_Down> &e) {
-    auto &velocities = getComponents<gengine::component::Velocity2D>();
-    auto &players = getComponents<component::Player>();
-    auto &playerControls = getComponents<component::PlayerControl>();
-    auto &remotes = getComponents<gengine::interface::component::RemoteDriver>();
-
-    for (auto [entity, player, velocity, playerControl, remote] :
-         gengine::Zip(players, velocities, playerControls, remotes)) {
-        if (remote != e.remote)
-            continue;
-        if (e->state == gengine::system::event::driver::input::RELEASE)
-            velocity.y -= player.speed;
-        else if (e->state == gengine::system::event::driver::input::PRESSED)
-            velocity.y += player.speed;
-    }
-}
-
-void PlayerMotion::increaseSpeed(ClientEvent<gengine::system::event::driver::input::Key_P> &e) {
-    auto &playerControls = getComponents<component::PlayerControl>();
-    auto &players = getComponents<component::Player>();
-    auto &remotes = getComponents<gengine::interface::component::RemoteDriver>();
-
-    for (auto [entity, player, playerControl, remote] : gengine::Zip(players, playerControls, remotes)) {
-        if (remote != e.remote)
-            continue;
-        player.speed += 10;
-    }
-}
-
-void PlayerMotion::decreaseSpeed(ClientEvent<gengine::system::event::driver::input::Key_O> &e) {
-    auto &players = getComponents<component::Player>();
-    auto &playerControls = getComponents<component::PlayerControl>();
-    auto &remotes = getComponents<gengine::interface::component::RemoteDriver>();
-
-    for (auto [entity, player, playerControl, remote] : gengine::Zip(players, playerControls, remotes)) {
-        if (remote != e.remote)
-            continue;
-        ;
-        player.speed = std::max(player.speed - 10, 20.f);
+        switch (e->state) {
+        case event::Movement::LEFT:
+            velocity = {-player.speed, 0};
+            break;
+        case event::Movement::RIGHT:
+            velocity = {player.speed, 0};
+            break;
+        case event::Movement::UP:
+            velocity = {0, -player.speed};
+            break;
+        case event::Movement::DOWN:
+            velocity = {0, player.speed};
+            break;
+        case event::Movement::UP_RIGHT:
+            velocity = {player.speed, -player.speed};
+            break;
+        case event::Movement::UP_LEFT:
+            velocity = {-player.speed, -player.speed};
+            break;
+        case event::Movement::DOWN_RIGHT:
+            velocity = {player.speed, player.speed};
+            break;
+        case event::Movement::DOWN_LEFT:
+            velocity = {-player.speed, player.speed};
+            break;
+        case event::Movement::STANDING:
+            velocity = {0, 0};
+            break;
+        }
     }
 }
 } // namespace rtype::system

@@ -11,15 +11,15 @@ namespace rtype::system {
 void BackgroundMotion::init(void) {
     // TODO replace by an other event
     // This is for update speed for simulate an hyper speed for example
-    // subscribeToEvent<gengine::system::event::MainLoop>(&BackgroundAutoMotion::updateBackgroundSpeed);
+    // subscribeToEvent<gengine::system::event::GameLoop>(&BackgroundAutoMotion::updateBackgroundSpeed);
 
     // TODO doesn't work because background is create after
     // subscribeToEvent<gengine::system::event::StartEngine>(&BackgroundMotion::updateBackgroundSpeed);
 
-    subscribeToEvent<gengine::system::event::MainLoop>(&BackgroundMotion::onMainLoop);
+    subscribeToEvent<gengine::system::event::GameLoop>(&BackgroundMotion::onGameLoop);
 }
 
-void BackgroundMotion::onMainLoop(gengine::system::event::MainLoop &e) {
+void BackgroundMotion::onGameLoop(gengine::system::event::GameLoop &e) {
     auto &transforms = getComponents<gengine::component::Transform2D>();
     auto &backgrounds = getComponents<component::Background>();
 

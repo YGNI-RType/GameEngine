@@ -10,7 +10,7 @@
 #include "GEngine/libdev/System.hpp"
 #include "GEngine/libdev/components/Transforms.hpp"
 #include "GEngine/libdev/components/driver/output/Animation.hpp"
-#include "GEngine/libdev/systems/events/MainLoop.hpp"
+#include "GEngine/libdev/systems/events/GameLoop.hpp"
 #include "components/Bullet.hpp"
 
 namespace rtype::system {
@@ -18,8 +18,8 @@ class ClearBullets : public gengine::System<ClearBullets, gengine::component::Tr
                                             gengine::component::driver::output::Animation, component::Bullet> {
 public:
     void init(void) override;
-    void onMainLoop(gengine::system::event::MainLoop &);
-    void clearFires(void);
+    void onGameLoop(gengine::system::event::GameLoop &);
+    // void clearFires(void);
     void clearBullets(void);
 };
 } // namespace rtype::system
