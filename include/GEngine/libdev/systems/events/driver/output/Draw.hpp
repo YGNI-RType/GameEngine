@@ -21,6 +21,9 @@ public:
     BeginDraw(Color &&clear)
         : clear(clear) {
     }
+    BeginDraw(Color &clear)
+        : clear(clear) {
+    }
 };
 class Draw : public Event {
 public:
