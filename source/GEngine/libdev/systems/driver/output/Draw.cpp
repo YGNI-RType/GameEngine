@@ -16,7 +16,8 @@ struct zIndexComparator {
     }
 };
 
-Draw2D::Draw2D(const Color &clear) : m_clear(clear) {
+Draw2D::Draw2D(const Color &clear)
+    : m_clear(clear) {
 }
 
 void Draw2D::init(void) {
