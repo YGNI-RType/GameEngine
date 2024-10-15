@@ -1,8 +1,12 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** FontManager.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) System
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : FontManager.hpp
+**  Create at   : 2024-10-15 05:01
+**  Author      : AUTHOR
+**  Description : DESCRIPTION // TODO popoche
+** ═══════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once

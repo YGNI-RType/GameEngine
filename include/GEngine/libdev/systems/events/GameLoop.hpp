@@ -1,8 +1,15 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** GameLoop.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) Event
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : GameLoop.hpp
+**  Create at   : 2024-10-15 05:17
+**  Author      : AUTHOR
+**  Description : This event dedicated to the GameEngine is natively published
+                    by the AutoMainLoop system and allows you to pace the
+                    game logic.
+                    !! ATTENTION do not publish it !!
+** ════════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once

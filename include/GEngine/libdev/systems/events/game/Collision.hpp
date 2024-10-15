@@ -1,8 +1,13 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** MainLoop.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) Event
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : Collision.hpp
+**  Create at   : 2024-10-15 05:16
+**  Author      : AUTHOR
+**  Description : This event is natively published by the basic collision system
+                    of libdev to indicate a collision between two entities.
+** ════════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once

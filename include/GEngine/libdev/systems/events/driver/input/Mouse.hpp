@@ -1,15 +1,14 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** Mouse.hpp
-*/
-
-/*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** Keyboard.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) Event
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : Mouse.hpp
+**  Create at   : 2024-10-15 05:13
+**  Author      : AUTHOR
+**  Description : These events transmit information related to the mouse,
+                    they are emitted by the MouseCatcher system dedicated to
+                    the DriverEngine.
+** ════════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once

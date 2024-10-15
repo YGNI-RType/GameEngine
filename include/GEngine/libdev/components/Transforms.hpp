@@ -1,8 +1,13 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** Transform.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) Component
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : Transforms.hpp
+**  Create at   : 2024-10-15 05:28
+**  Auteur      : AUTHOR
+**  Description : These components allow you to manage positions/size/rotation
+                    linked to an entity in a basic way.
+** ════════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once

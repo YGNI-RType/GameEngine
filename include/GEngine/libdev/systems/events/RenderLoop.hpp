@@ -1,8 +1,15 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** RenderLoop.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) Event
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : RenderLoop.hpp
+**  Create at   : 2024-10-15 05:17
+**  Author      : AUTHOR
+**  Description : This event dedicated to the DriverEngine is natively published
+                    by the AutoMainLoop system and allows you to pace the
+                    driver logic.
+                    !! ATTENTION do not publish it !!
+** ════════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once

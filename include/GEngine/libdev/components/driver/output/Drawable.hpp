@@ -1,8 +1,12 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** Drawable.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) Component
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : Drawable.hpp
+**  Create at   : 2024-10-15 05:25
+**  Auteur      : AUTHOR
+**  Description : DESCRIPTION // TODO popoche
+** ════════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once

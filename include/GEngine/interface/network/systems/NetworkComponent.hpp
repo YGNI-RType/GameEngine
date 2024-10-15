@@ -1,8 +1,12 @@
 /*
-** EPITECH PROJECT, 2024
-** GameEngine
-** File description:
-** Snapshot.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) System
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : NetworkComponent.hpp
+**  Create at   : 2024-10-15 04:50
+**  Author      : AUTHOR
+**  Description : DESCRIPTION
+** ═══════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once

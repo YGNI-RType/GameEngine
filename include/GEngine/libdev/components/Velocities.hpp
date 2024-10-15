@@ -1,8 +1,14 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** Velocities.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) Component
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : Velocities.hpp
+**  Create at   : 2024-10-15 05:29
+**  Auteur      : AUTHOR
+**  Description : These components allow you to manage movements linked to an
+                    entity in a basic way, they are used by the Motion system
+                    of libdev.
+** ════════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once

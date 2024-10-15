@@ -1,8 +1,14 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** Collision.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) System
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : Collisions.hpp
+**  Create at   : 2024-10-15 05:04
+**  Author      : AUTHOR
+**  Description : This system dedicated to the GameEngine, allows to basically
+                    calculate collisions between all game entities and publish
+                    an event in reaction.
+** ═══════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once

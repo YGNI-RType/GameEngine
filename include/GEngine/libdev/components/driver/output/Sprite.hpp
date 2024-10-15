@@ -1,8 +1,12 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** Sprite.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) Component
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : Sprite.hpp
+**  Create at   : 2024-10-15 05:26
+**  Auteur      : AUTHOR
+**  Description : DESCRIPTION // TODO popoche
+** ════════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once

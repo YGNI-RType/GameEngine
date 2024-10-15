@@ -1,8 +1,14 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** HitBox.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) Component
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : HitBoxs.hpp
+**  Create at   : 2024-10-15 05:27
+**  Auteur      : AUTHOR
+**  Description : These components allow you to manage hitboxes linked to an
+                    entity in a basic way, they are used by the libdev collision
+                    system.
+** ════════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once

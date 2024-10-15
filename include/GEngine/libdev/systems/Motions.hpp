@@ -1,8 +1,14 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** Motions.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) System
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : Motions.hpp
+**  Create at   : 2024-10-15 05:09
+**  Author      : AUTHOR
+**  Description : This system dedicated to the GameEngine, allows to calculate
+                    basic displacements using position and velocity
+                    components.
+** ═══════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once
