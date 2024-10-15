@@ -54,7 +54,8 @@ bool NetChannel::sendDatagrams(SocketUDP &socket, uint32_t sequence,
         m_udpPoolSend.constructMessage(newMsg, chunk, fragments.back() == chunk ? lastChunkSz : chunk->size(),
                                        fragHeader);
 
-        // std::cout << "(" << sequence << ") Sending fragment: " << (int)i << " | " << newMsg.getSize() << " H: " << newMsg.getHash() << std::endl;
+        // std::cout << "(" << sequence << ") Sending fragment: " << (int)i << " | " << newMsg.getSize() << " H: " <<
+        // newMsg.getHash() << std::endl;
         sendDatagram(socket, newMsg);
         i++;
     }
