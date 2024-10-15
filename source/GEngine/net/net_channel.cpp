@@ -53,6 +53,8 @@ bool NetChannel::sendDatagrams(SocketUDP &socket, uint32_t sequence,
 
         m_udpPoolSend.constructMessage(newMsg, chunk, fragments.back() == chunk ? lastChunkSz : chunk->size(),
                                        fragHeader);
+
+        // std::cout << "(" << sequence << ") Sending fragment: " << (int)i << " | " << newMsg.getSize() << " H: " << newMsg.getHash() << std::endl;
         sendDatagram(socket, newMsg);
         i++;
     }
@@ -72,11 +74,16 @@ bool NetChannel::sendDatagram(SocketUDP &socket, UDPMessage &msg) {
 
     // rah shit, fragment too big. put the rest in the pool in case of network rating issue
     if (msgLen > MAX_UDP_PACKET_LENGTH) {
+        // std::cout << "Msg Hash (" << udpOutSequence << " | " << msg.getSize() << "): " << msg.getHash() << std::endl;
         if (!m_udpPoolSend.addMessage(m_udpMyFragSequence, msg))
             return false;
 
         auto fragments = m_udpPoolSend.getMissingFragments(m_udpMyFragSequence, 0);
         bool res = sendDatagrams(socket, m_udpMyFragSequence, fragments);
+
+        // temp : normally we should get the missing sequences, but for now we don't need them
+        m_udpPoolSend.deleteSequence(m_udpMyFragSequence);
+
         m_udpMyFragSequence++;
         udpOutSequence++;
         return res;
@@ -137,19 +144,25 @@ bool NetChannel::readDatagram(SocketUDP &socket, UDPMessage &msg, size_t &readOf
     }
 
     if (msg.isFragmented()) {
-        /* if true, that's a new sequence */
         uint32_t fragSequence;
-        if (m_udpPoolRecv.recvMessage(msg, readOffset, fragSequence)) {
+        /* if true, that's a new sequence */
+        if (m_udpPoolRecv.recvMessage(msg, readOffset, fragSequence, m_udpFromFragSequence)) {
             m_udpFromFragSequence = CF_NET_MAX(m_udpFromFragSequence, fragSequence);
-            m_udpFragmentsOgSequences[fragSequence] = header.sequence;
+            m_udpFragmentsOgSequences[fragSequence] = std::make_pair<>(header.sequence, 0);
         }
 
         if (m_udpPoolRecv.receivedFullSequence(fragSequence)) {
             msg = UDPMessage(true, msg.getType()); /* recreate */
 
-            auto sequence = m_udpFragmentsOgSequences[fragSequence];
+            auto [sequence, _] = m_udpFragmentsOgSequences[fragSequence];
             m_udpFragmentsOgSequences.erase(fragSequence);
+            if (sequence < m_udpACKFullInSequence) {
+                std::cout << "RECV DELETED: " << sequence << " Msgsize: " << msg.getSize() << std::endl;
+                return false; /* on se fait chier pour ça les gars !! */
+            }
+
             m_udpPoolRecv.reconstructMessage(fragSequence, msg);
+            // std::cout << "Msg Hash (" << sequence << "| "<< msg.getSize() <<"): " << msg.getHash() << std::endl;
             msg.writeHeader(header);
             msg.setWasFragmented(true);
 
@@ -162,23 +175,6 @@ bool NetChannel::readDatagram(SocketUDP &socket, UDPMessage &msg, size_t &readOf
         return false;
     } else if (msg.shouldAck() && !msg.wasFragmented()) {
         m_udpACKFullInSequence = header.sequence;
-    }
-
-    if (m_udpPoolRecv.getPoolSize() > 0) {
-        auto [seq, mask] = m_udpPoolRecv.getCurrentSequence();
-        UDPG_FragmentHeaderFrom fragHeader = {seq, mask};
-        UDPG_NetChannelHeader header = {.sequence = udpOutSequence, .ackFragmentSequence = m_udpFromFragSequence};
-
-        UDPMessage msgFrag(true, CL_SV_FRAGMENT);
-        msgFrag.writeHeader(header);
-        msgFrag.appendData<UDPG_FragmentHeaderFrom>(fragHeader);
-        size_t sent = socket.send(msgFrag, *m_toUDPAddress);
-        if (sent < 0)
-            return true;
-
-        udpOutSequence++;
-        m_udplastsent = Time::Clock::milliseconds();
-        m_udplastsentsize = sent;
     }
 
     m_udplastrecv = Time::Clock::milliseconds();

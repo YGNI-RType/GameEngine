@@ -104,4 +104,21 @@ void UDPMessage::clear(bool hasHeader) {
     memset(m_data + offset, 0, m_curSize - offset);
     m_curSize = offset;
 }
+
+/*************************************/
+
+constexpr uint64_t FNV_OFFSET_BASIS = 14695981039346656037ULL;
+constexpr uint64_t FNV_PRIME = 1099511628211ULL;
+
+uint64_t UDPMessage::getHash(void) const {
+    uint64_t hash = FNV_OFFSET_BASIS;
+    const byte_t *bytes = reinterpret_cast<const byte_t *>(m_data) + sizeof(UDPG_NetChannelHeader);
+
+    for (size_t i = 0; i < m_curSize - sizeof(UDPG_NetChannelHeader); ++i) {
+        hash ^= bytes[i];
+        hash *= FNV_PRIME;
+    }
+
+    return hash;
+}
 } // namespace Network

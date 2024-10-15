@@ -77,7 +77,7 @@ public:
 
     /* recv */
 
-    bool recvMessage(const UDPMessage &msg, size_t &readOffset, uint32_t &fragSequence);
+    bool recvMessage(const UDPMessage &msg, size_t &readOffset, uint32_t &fragSequence, const uint32_t &maxFragSeq);
     std::pair<uint32_t, uint16_t> getCurrentSequence(void);
     uint16_t getMask(uint32_t sequence);
     void reconstructMessage(uint32_t sequence, UDPMessage &msg);
@@ -120,6 +120,12 @@ public:
 
     bool isEnabled(void) const {
         return m_enabled;
+    }
+    bool isUDPEnabled(void) const {
+        return m_toUDPAddress != nullptr;
+    }
+    bool isTCPEnabled(void) const {
+        return m_toTCPAddress != nullptr;
     }
     bool isDisconnected(void) const {
         return m_disconnect;
@@ -179,7 +185,7 @@ private:
     /* most likely fragments, since the packets may be too big (mostly (always) for client from server) */
     PacketPoolUdp m_udpPoolSend;
     PacketPoolUdp m_udpPoolRecv;
-    std::unordered_map<uint32_t, uint64_t> m_udpFragmentsOgSequences;
+    std::unordered_map<uint32_t, std::pair<uint64_t, uint8_t>> m_udpFragmentsOgSequences;
 
     uint32_t m_droppedPackets = 0;
 
@@ -197,7 +203,7 @@ private:
     uint64_t m_udplastrecv = 0;
     size_t m_udplastsentsize = 0;
 
-    uint32_t m_udpMyFragSequence = 0;
+    uint32_t m_udpMyFragSequence = 1;
     uint32_t m_udpFromFragSequence = 0;
     uint8_t m_udpNbFragSequence = 0; /* number of existing frag sequences */
 

@@ -9,6 +9,8 @@
 
 #include <algorithm>
 
+#include <iostream>
+
 namespace Network {
 bool PacketPoolUdp::addMessage(uint32_t sequence, const UDPMessage &msg) {
     size_t msgSize = msg.getSize() - (msg.hasHeader() ? sizeof(UDPG_NetChannelHeader) : 0);
@@ -66,13 +68,13 @@ bool PacketPoolUdp::deleteSequence(uint32_t sequence) {
     auto [type, flag, size, last_recv, _recvmask, offset] = it->second;
 
     m_poolSequences.erase(sequence);
-    m_pool.erase(m_pool.begin() + offset, m_pool.begin() + offset + size);
+    m_pool.erase(m_pool.begin() + offset + 1, m_pool.begin() + offset + size + 1);
 
     /* update all the existing offsets of m_pool since we updated the indexes */
     for (auto &[_11, seq] : m_poolSequences) {
         auto &[_1, _2, _3, _4, _5, curOffset] = seq;
         if (curOffset > offset)
-            curOffset -= size + 1;
+            curOffset -= size;
     }
 
     return true;
@@ -81,7 +83,8 @@ bool PacketPoolUdp::deleteSequence(uint32_t sequence) {
 /*****************************************************************/
 
 /* tells if it's first time or not */
-bool PacketPoolUdp::recvMessage(const UDPMessage &msg, size_t &readOffset, uint32_t &fragSequence) {
+bool PacketPoolUdp::recvMessage(const UDPMessage &msg, size_t &readOffset, uint32_t &fragSequence,
+                                const uint32_t &maxFragSeq) {
     UDPG_FragmentHeaderTo header;
     msg.readContinuousData<UDPG_FragmentHeaderTo>(header, readOffset);
 
@@ -91,9 +94,15 @@ bool PacketPoolUdp::recvMessage(const UDPMessage &msg, size_t &readOffset, uint3
     size_t offset;
     bool isNewSequence = false;
 
+    // std::cout << "(" << header.idSequence << ") RECV fragment: " << (int)header.fragId << " | " << msg.getSize() << "
+    // H: " << msg.getHash() << std::endl;
+
     /* todo : add checks (mask <= 16, sizes 0 or extreme )*/
     auto it = m_poolSequences.find(fragSequence);
     if (it == m_poolSequences.end()) {
+        if (header.idSequence < maxFragSeq)
+            return false;
+
         /* todo : add something that cleans (thread that cleans or something) */
         auto t = std::make_tuple<>(msg.getType(), msg.getFlags(), header.fragIdMax, isLast ? chunkSize : 0,
                                    1 << header.fragId, m_pool.size());
@@ -106,13 +115,16 @@ bool PacketPoolUdp::recvMessage(const UDPMessage &msg, size_t &readOffset, uint3
         auto &[type, flag, size, last_size, cur_mask, _offset] = it->second;
         if (header.fragId > size)
             return isNewSequence; // impossible, break point here
+
+        if (cur_mask & 1 << header.fragId)
+            return isNewSequence; // already received
         cur_mask |= 1 << header.fragId;
         offset = _offset;
         if (isLast)
             last_size = chunkSize;
     }
 
-    m_pool.emplace(m_pool.begin() + offset + header.fragId, chunk_t());
+    // m_pool.emplace(m_pool.begin() + offset + header.fragId, chunk_t());
     std::memcpy(m_pool[offset + header.fragId].data(), msg.getData() + readOffset, chunkSize);
     return isNewSequence;
 }

@@ -186,6 +186,8 @@ public:
         m_flags = flag;
     }
 
+    uint64_t getHash(void) const;
+
     void clear(bool hasHeader);
 
     void setCompressed(bool compressed);
