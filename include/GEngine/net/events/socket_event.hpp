@@ -18,7 +18,6 @@
 #endif
 
 #if defined(_WIN32) || defined(__APPLE__)
-#include <atomic>
 #define HAS_NOT_EVENTFD = 1
 #endif
 
@@ -39,7 +38,6 @@ public:
 #ifdef HAS_NOT_EVENTFD
 private:
     SOCKET m_sockConnect = -1;
-    std::atomic_bool m_hasRead = true;
 #endif
 };
 } // namespace Network::Event

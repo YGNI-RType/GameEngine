@@ -8,76 +8,24 @@
 #include "GEngine/net/events/socket_event.hpp"
 
 #ifdef HAS_NOT_EVENTFD
-#include <cstring>
 #include <stdexcept>
-#ifdef __APPLE__
-#define closesocket close
-#define INVALID_SOCKET -1
-#endif
+#include <unistd.h>
 #endif
 
 namespace Network::Event {
 
 SocketEvent::SocketEvent() {
 #ifdef HAS_NOT_EVENTFD
-#ifdef _WIN32
-    ASocket::initLibs();
-#endif
-    m_sockConnect = socket(AF_INET, SOCK_STREAM, 0);
-    if (m_sockConnect == INVALID_SOCKET)
-        throw std::runtime_error("Failed to create socket");
+    int pipefd[2];
+    if (pipe(pipefd) == -1)
+        throw std::runtime_error("Failed to create pipe");
 
-    auto listenSock = socket(AF_INET, SOCK_STREAM, 0);
-    if (listenSock == INVALID_SOCKET)
-        throw std::runtime_error("Failed to create socket");
+    int flags = fcntl(pipefd[1], F_GETFL, 0);
+    fcntl(pipefd[1], F_SETFL, flags | O_NONBLOCK);
+    int pipe_sz = fcntl(pipefd[1], F_SETPIPE_SZ, 1);
 
-#ifdef _WIN32
-    unsigned int opt = 1;
-    setsockopt(listenSock, SOL_SOCKET, SO_EXCLUSIVEADDRUSE, (char *)&opt, (socklen_t)sizeof(opt));
-#endif
-
-    struct sockaddr_in addr;
-    std::memset(&addr, 0, sizeof(addr));
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-    addr.sin_port = 0;
-
-    if (bind(listenSock, (struct sockaddr *)&addr, sizeof(addr)) == -1) {
-        closesocket(listenSock);
-        throw std::runtime_error("Failed to bind socket");
-    }
-
-#ifdef _WIN32
-    int len = sizeof(addr);
-#elif __APPLE__
-    socklen_t len = sizeof(addr);
-#endif
-    if (getsockname(listenSock, (struct sockaddr *)&addr, &len) == -1) {
-        closesocket(listenSock);
-        throw std::runtime_error("Failed to bind socket");
-    }
-
-    if (listen(listenSock, 1) == -1) {
-        closesocket(listenSock);
-        throw std::runtime_error("Failed to bind socket");
-    }
-
-    if (connect(m_sockConnect, (struct sockaddr *)&addr, sizeof(addr)) == -1) {
-        closesocket(m_sockConnect);
-        throw std::runtime_error("Failed to connect to socket");
-    }
-
-    /** warning : todo https://github.com/python/cpython/pull/122134/files
-     * avec cette méthode, on peut se faire hijack cette connexion. même si osef ça peut faire chier
-     */
-
-    m_sock = accept(listenSock, nullptr, nullptr);
-    if (m_sock == -1) {
-        closesocket(m_sock);
-        throw std::runtime_error("Failed to connect to socket");
-    }
-
-    closesocket(listenSock);
+    m_sock = pipefd[0];
+    m_sockConnect = pipefd[1];
 #else
     m_sock = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
     if (m_sock == -1)
@@ -89,7 +37,7 @@ SocketEvent::SocketEvent() {
 SocketEvent::~SocketEvent() {
 #ifdef HAS_NOT_EVENTFD
     if (m_sockConnect != -1)
-        closesocket(m_sockConnect);
+        close(m_sockConnect);
 #endif
 }
 
@@ -114,12 +62,8 @@ SocketEvent &SocketEvent::operator=(SocketEvent &&other) {
 
 void SocketEvent::signal() {
 #ifdef HAS_NOT_EVENTFD
-    if (!m_hasRead)
-        return;
-
     char buf[1] = {0};
-    send(m_sockConnect, buf, sizeof(buf), 0);
-    m_hasRead = false;
+    size_t sze = write(m_sockConnect, buf, sizeof(buf));
 #else
     eventfd_write(m_sock, 1);
 #endif
@@ -127,13 +71,8 @@ void SocketEvent::signal() {
 
 void SocketEvent::wait() {
 #ifdef HAS_NOT_EVENTFD
-    if (m_hasRead)
-        return;
-
     char buf[1];
-    recv(m_sock, buf, sizeof(buf), 0);
-    m_hasRead = true;
-
+    read(m_sock, buf, sizeof(buf));
 #else
     eventfd_t c;
     eventfd_read(m_sock, &c);
