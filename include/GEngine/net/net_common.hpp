@@ -12,8 +12,8 @@
 
 #ifdef _WIN32
 
-#define NOGDI             // All GDI defines and routines
-#define NOUSER            // All USER defines and routines
+#define NOGDI  // All GDI defines and routines
+#define NOUSER // All USER defines and routines
 
 #include <WS2tcpip.h>
 #include <winsock2.h>

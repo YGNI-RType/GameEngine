@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <stduuid/uuid.h>
 #include "GEngine/libdev/Component.hpp"
 #include <sstream>
+#include <stduuid/uuid.h>
 #include <string>
 
 namespace gengine::interface::component {
@@ -51,7 +51,7 @@ struct hash<gengine::interface::component::RemoteDriver> {
     std::size_t operator()(const gengine::interface::component::RemoteDriver &driver) const {
         const uuids::uuid &uuid = driver.getUUIDBytes();
         std::size_t hash_value = 0;
-        auto bytes =  uuid.as_bytes();
+        auto bytes = uuid.as_bytes();
         for (const auto byte : bytes)
             hash_value ^= std::hash<uint8_t>{}((uint8_t)byte) + 0x9e3779b9 + (hash_value << 6) + (hash_value >> 2);
         return hash_value;

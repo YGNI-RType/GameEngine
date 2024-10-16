@@ -8,9 +8,9 @@
 
 #include "GEngine/interface/network/systems/Updater.hpp"
 
-#include "GEngine/net/events/connection.hpp"
-#include "GEngine/interface/network/systems/Snapshot.hpp"
 #include "GEngine/interface/components/RemoteDriver.hpp"
+#include "GEngine/interface/network/systems/Snapshot.hpp"
+#include "GEngine/net/events/connection.hpp"
 
 #include "GEngine/net/msg.hpp"
 #include "GEngine/net/net.hpp"

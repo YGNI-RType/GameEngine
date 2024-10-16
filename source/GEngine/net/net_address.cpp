@@ -5,8 +5,8 @@
 ** net_address
 */
 
-#include "GEngine/net/net_common.hpp"
 #include "GEngine/net/net_address.hpp"
+#include "GEngine/net/net_common.hpp"
 
 #include <cstring>
 #include <stdexcept>
