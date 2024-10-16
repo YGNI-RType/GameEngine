@@ -39,6 +39,12 @@ struct Text : public Component<Text> {
         this->str[sz] = '\0';
     }
 
-    bool operator==(const Text &) const = default;
+    bool operator==(const Text &other) const {
+        return std::strcmp(this->fontPath.data(), other.fontPath.data()) == 0 &&
+            std::strcmp(this->str.data(), other.str.data()) == 0 &&
+            this->fontSize == other.fontSize &&
+            this->spacing == other.spacing &&
+            this->tint == other.tint;
+    }
 };
 } // namespace gengine::component::driver::output
