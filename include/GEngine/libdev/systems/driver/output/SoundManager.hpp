@@ -16,7 +16,7 @@
 #include "GEngine/libdev/systems/events/Native.hpp"
 #include "GEngine/libdev/systems/events/driver/output/Sound.hpp"
 
-#include <raylib.h>
+#include "module/raylib_safe.h"
 
 #include <filesystem>
 

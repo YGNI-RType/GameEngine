@@ -10,20 +10,14 @@
 #include "../net_socket.hpp"
 
 #ifdef _WIN32
-#include <winsock2.h>
-#include <ws2tcpip.h>
-
-#undef interface
-
-#else
-#ifndef __APPLE__
+#include <atomic>
+#elif defined(__linux__)
 #include <sys/eventfd.h>
-#endif
+#else
 #include <unistd.h>
 #endif
 
 #if defined(_WIN32) || defined(__APPLE__)
-#include <atomic>
 #define HAS_NOT_EVENTFD = 1
 #endif
 
@@ -44,7 +38,9 @@ public:
 #ifdef HAS_NOT_EVENTFD
 private:
     SOCKET m_sockConnect = -1;
+#ifdef _WIN32
     std::atomic_bool m_hasRead = true;
+#endif
 #endif
 };
 } // namespace Network::Event

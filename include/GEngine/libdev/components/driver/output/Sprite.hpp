@@ -11,9 +11,9 @@
 
 #pragma once
 
+#include "module/raylib_safe.h"
 #include <cstring>
 #include <limits>
-#include <raylib.h>
 #include <string>
 
 #include "GEngine/libdev/Component.hpp"

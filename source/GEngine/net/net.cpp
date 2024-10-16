@@ -31,16 +31,9 @@
 #ifdef _WIN32
 // TODO : remove unused
 
-#include <winsock2.h>
-#include <ws2spi.h>
-#include <ws2tcpip.h>
-
 typedef int socklen_t;
 typedef u_long ioctlarg_t;
 
-#undef interface
-
-#undef interface
 #else
 #include <arpa/inet.h>
 #include <errno.h>

@@ -8,10 +8,8 @@
 #pragma once
 
 #include "GEngine/libdev/Component.hpp"
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
 #include <sstream>
+#include <stduuid/uuid.h>
 #include <string>
 
 namespace gengine::interface::component {
@@ -34,16 +32,15 @@ public:
     std::string getUUIDString() const;
 
     // Getter for the raw UUID bytes (for network transmission)
-    const boost::uuids::uuid &getUUIDBytes() const;
+    const uuids::uuid &getUUIDBytes() const;
 
     bool operator<(const RemoteDriver &other) const {
         return false;
     }
 
 private:
-    boost::uuids::uuid m_uuid;
+    uuids::uuid m_uuid;
 
-    // Method to generate a random UUID using Boost
     void generateUUID();
 };
 } // namespace gengine::interface::component
@@ -52,10 +49,11 @@ namespace std {
 template <>
 struct hash<gengine::interface::component::RemoteDriver> {
     std::size_t operator()(const gengine::interface::component::RemoteDriver &driver) const {
-        const boost::uuids::uuid &uuid = driver.getUUIDBytes();
+        const uuids::uuid &uuid = driver.getUUIDBytes();
         std::size_t hash_value = 0;
-        for (auto byte : uuid)
-            hash_value ^= std::hash<uint8_t>{}(byte) + 0x9e3779b9 + (hash_value << 6) + (hash_value >> 2);
+        auto bytes = uuid.as_bytes();
+        for (const auto byte : bytes)
+            hash_value ^= std::hash<uint8_t>{}((uint8_t)byte) + 0x9e3779b9 + (hash_value << 6) + (hash_value >> 2);
         return hash_value;
     }
 };

@@ -11,8 +11,8 @@
 
 #pragma once
 
+#include "module/raylib_safe.h"
 #include <filesystem>
-#include <raylib.h>
 #include <unordered_map>
 
 #include "GEngine/libdev/System.hpp"

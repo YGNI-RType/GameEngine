@@ -7,12 +7,14 @@
 
 #include "GEngine/net/events/socket_event.hpp"
 
-#ifdef HAS_NOT_EVENTFD
-#include <cstring>
 #include <stdexcept>
-#ifdef __APPLE__
+
+#ifdef HAS_NOT_EVENTFD
+#if defined(__APPLE__) || defined(__unix__)
 #define closesocket close
-#define INVALID_SOCKET -1
+#include <unistd.h>
+#else
+#include <cstring>
 #endif
 #endif
 
@@ -20,9 +22,21 @@ namespace Network::Event {
 
 SocketEvent::SocketEvent() {
 #ifdef HAS_NOT_EVENTFD
-#ifdef _WIN32
-    ASocket::initLibs();
+#if defined(__APPLE__) || defined(__unix__)
+    int pipefd[2];
+    if (pipe(pipefd) == -1)
+        throw std::runtime_error("Failed to create pipe");
+
+    int flags = fcntl(pipefd[1], F_GETFL, 0);
+    fcntl(pipefd[1], F_SETFL, flags | O_NONBLOCK);
+#if __linux__
+    int pipe_sz = fcntl(pipefd[1], F_SETPIPE_SZ, 1);
 #endif
+
+    m_sock = pipefd[0];
+    m_sockConnect = pipefd[1];
+#else
+    ASocket::initLibs();
     m_sockConnect = socket(AF_INET, SOCK_STREAM, 0);
     if (m_sockConnect == INVALID_SOCKET)
         throw std::runtime_error("Failed to create socket");
@@ -31,10 +45,8 @@ SocketEvent::SocketEvent() {
     if (listenSock == INVALID_SOCKET)
         throw std::runtime_error("Failed to create socket");
 
-#ifdef _WIN32
     unsigned int opt = 1;
     setsockopt(listenSock, SOL_SOCKET, SO_EXCLUSIVEADDRUSE, (char *)&opt, (socklen_t)sizeof(opt));
-#endif
 
     struct sockaddr_in addr;
     std::memset(&addr, 0, sizeof(addr));
@@ -47,11 +59,7 @@ SocketEvent::SocketEvent() {
         throw std::runtime_error("Failed to bind socket");
     }
 
-#ifdef _WIN32
     int len = sizeof(addr);
-#elif __APPLE__
-    socklen_t len = sizeof(addr);
-#endif
     if (getsockname(listenSock, (struct sockaddr *)&addr, &len) == -1) {
         closesocket(listenSock);
         throw std::runtime_error("Failed to bind socket");
@@ -78,6 +86,7 @@ SocketEvent::SocketEvent() {
     }
 
     closesocket(listenSock);
+#endif
 #else
     m_sock = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
     if (m_sock == -1)
@@ -114,12 +123,15 @@ SocketEvent &SocketEvent::operator=(SocketEvent &&other) {
 
 void SocketEvent::signal() {
 #ifdef HAS_NOT_EVENTFD
+    char buf[1] = {0};
+#ifdef _WIN32
     if (!m_hasRead)
         return;
-
-    char buf[1] = {0};
     send(m_sockConnect, buf, sizeof(buf), 0);
     m_hasRead = false;
+#else
+    write(m_sockConnect, buf, sizeof(buf));
+#endif
 #else
     eventfd_write(m_sock, 1);
 #endif
@@ -127,13 +139,15 @@ void SocketEvent::signal() {
 
 void SocketEvent::wait() {
 #ifdef HAS_NOT_EVENTFD
-    if (m_hasRead)
-        return;
-
     char buf[1];
-    recv(m_sock, buf, sizeof(buf), 0);
+#ifdef _WIN32
+    if (!m_hasRead)
+        return;
+    recv(m_sockConnect, buf, sizeof(buf), 0);
     m_hasRead = true;
-
+#else
+    read(m_sock, buf, sizeof(buf));
+#endif
 #else
     eventfd_t c;
     eventfd_read(m_sock, &c);

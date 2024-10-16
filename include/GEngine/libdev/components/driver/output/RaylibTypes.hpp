@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <raylib.h>
+#include "module/raylib_safe.h"
 
 namespace gengine::component::driver::output {
 struct Clr {
