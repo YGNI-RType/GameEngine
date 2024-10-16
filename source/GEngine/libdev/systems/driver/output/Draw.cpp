@@ -77,7 +77,7 @@ void DrawText::onDraw(gengine::system::event::Draw &e) {
     if (texts.contains(e.entity) && transforms.contains(e.entity)) {
         auto &[path, str, fontSize, spacing, tint] = texts.get(e.entity);
         auto &[pos, scale, rotation] = transforms.get(e.entity);
-        std::string p(path.data(), path.size());
+        std::string p(path.data());
         DrawTextPro(fontMan.get(p), str.data(), Vector2{pos.x, pos.y}, {0, 0}, rotation, fontSize * scale.y,
                     spacing, tint); // TODO origin
     }
