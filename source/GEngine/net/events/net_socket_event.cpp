@@ -22,7 +22,9 @@ SocketEvent::SocketEvent() {
 
     int flags = fcntl(pipefd[1], F_GETFL, 0);
     fcntl(pipefd[1], F_SETFL, flags | O_NONBLOCK);
+#if 0
     int pipe_sz = fcntl(pipefd[1], F_SETPIPE_SZ, 1);
+#endif
 
     m_sock = pipefd[0];
     m_sockConnect = pipefd[1];
