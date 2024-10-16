@@ -16,6 +16,7 @@
 
 #include "ecs/system/IsSystem.hpp"
 #include "ecs/system/event/Bus.hpp"
+#include "exceptions/Base.hpp"
 
 #include "IsSystem.hpp"
 
@@ -25,24 +26,37 @@ class ECS;
 namespace ecs::system {
 class Manager {
 public:
-    Manager(ECS &ecs) : m_ecs(ecs), m_eventBus() {}
+    Manager(ECS &ecs)
+        : m_ecs(ecs)
+        , m_eventBus()
+        , m_systemTable() {
+    }
 
-    template <class T, class... Params> void registerSystem(Params &&...p);
+    template <class T, class... Params>
+    void registerSystem(Params &&...p);
 
-    template <class T> T &getSystem(void);
+    template <class T>
+    T &getSystem(void);
 
-    template <class T> void publishEvent(T &event);
+    template <class T>
+    void publishEvent(T &event);
 
-    template <class T> void publishEvent(T &&event);
+    template <class T>
+    void publishEvent(T &&event);
 
     void executeEvent(void);
 
     bool hasEvent(void);
 
+    template <typename Type>
+    void subscribeCallback(std::function<void(Type &)> callback) {
+        m_eventBus.subscribe<Type>(callback);
+    }
+
 private:
-    std::unordered_map<std::type_index, std::unique_ptr<IsSystem>> m_systemTable;
-    event::Bus m_eventBus;
     ECS &m_ecs;
+    event::Bus m_eventBus;
+    std::unordered_map<std::type_index, std::unique_ptr<IsSystem>> m_systemTable = {};
 };
 } // namespace ecs::system
 

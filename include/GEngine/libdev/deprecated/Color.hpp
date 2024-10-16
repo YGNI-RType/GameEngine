@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <raylib.h>
+#include "module/raylib_safe.h"
 
 #include "GEngine/libdev/Component.hpp"
 

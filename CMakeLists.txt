@@ -5,7 +5,7 @@ include(GNUInstallDirs)
 
 include(cmake/automate-vcpkg.cmake)
 vcpkg_bootstrap()
-vcpkg_install_packages(raylib)
+vcpkg_install_packages(raylib stduuid nlohmann-json)
 
 file(GLOB_RECURSE SOURCES source/*.cpp)
 list(FILTER SOURCES EXCLUDE REGEX ".*/deprecated/.*")
@@ -15,28 +15,40 @@ list(FILTER HEADERS EXCLUDE REGEX ".*/deprecated/.*")
 
 include_directories(include)
 
-add_library(GEngine SHARED ${SOURCES} ${HEADERS})
+# if(NOT WIN32)
+#     add_compile_options(-Wall -Wextra)
+# endif()
 
+add_library(GEngine SHARED ${SOURCES} ${HEADERS})
 add_library(GEngine_static STATIC ${SOURCES} ${HEADERS})
 
-set_target_properties(GEngine PROPERTIES
-CXX_STANDARD 20
-CXX_STANDARD_REQUIRED YES
-CXX_EXTENSIONS NO
-VERSION 0.0.1
-)
+if(WIN32)
+  target_link_libraries(GEngine wsock32 ws2_32)
+  target_link_libraries(GEngine_static wsock32 ws2_32)
+endif()
 
+set(CMAKE_DEBUG_POSTFIX d)
+set_target_properties(GEngine PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO
+    DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX}
+    VERSION 0.0.1
+)
 set_target_properties(GEngine_static PROPERTIES
-CXX_STANDARD 20
-CXX_STANDARD_REQUIRED YES
-CXX_EXTENSIONS NO
-VERSION 0.0.1
-OUTPUT_NAME "GEngine"
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO
+    DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX}
+    VERSION 0.0.1
+    OUTPUT_NAME "GEngine-s"
 )
 
 find_package(raylib CONFIG REQUIRED)
-target_link_libraries(GEngine raylib)
-target_link_libraries(GEngine_static raylib)
+find_package(glfw3 CONFIG REQUIRED) #TODO a suppr
+
+target_link_libraries(GEngine raylib glfw) #TODO suppr glfw
+target_link_libraries(GEngine_static raylib glfw) #TODO suppr glfw
 
 install(TARGETS GEngine GEngine_static
         EXPORT GEngine_targets
@@ -52,6 +64,7 @@ install(EXPORT GEngine_targets
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/GEngineConfig.cmake"
 "include(CMakeFindDependencyMacro)\n"
 "find_dependency(raylib CONFIG REQUIRED)\n"
+"find_dependency(glfw3 CONFIG REQUIRED)\n"
 "include(\"\${CMAKE_CURRENT_LIST_DIR}/GEngineTargets.cmake\")\n"
 )
 

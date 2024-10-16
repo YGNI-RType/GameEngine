@@ -1,14 +1,18 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** Draw.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) System
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : TextureManager.hpp
+**  Create at   : 2024-10-15 05:04
+**  Author      : AUTHOR
+**  Description : DESCRIPTION // TODO popoche
+** ═══════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once
 
+#include "module/raylib_safe.h"
 #include <filesystem>
-#include <raylib.h>
 #include <unordered_map>
 
 #include "GEngine/libdev/System.hpp"

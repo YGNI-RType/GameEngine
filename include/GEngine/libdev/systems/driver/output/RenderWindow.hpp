@@ -1,23 +1,26 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** RenderWindow.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) System
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : RenderWindow.hpp
+**  Create at   : 2024-10-15 05:01
+**  Author      : AUTHOR
+**  Description : DESCRIPTION // TODO popoche
+** ═══════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once
 
-#include <raylib.h>
-
-#include "GEngine/libdev/components/driver/output/Window.hpp"
+#include "module/raylib_safe.h"
 
 #include "GEngine/libdev/System.hpp"
 #include "GEngine/libdev/systems/events/MainLoop.hpp"
 #include "GEngine/libdev/systems/events/Native.hpp"
+#include "GEngine/libdev/systems/events/RenderLoop.hpp"
 #include "GEngine/libdev/systems/events/driver/output/Draw.hpp"
 
 namespace gengine::system::driver::output {
-class RenderWindow : public gengine::System<RenderWindow, gengine::component::driver::output::Window> {
+class RenderWindow : public gengine::System<RenderWindow> {
 public:
     RenderWindow(int width, int height, const std::string &title);
 

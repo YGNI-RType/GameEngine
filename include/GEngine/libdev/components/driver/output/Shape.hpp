@@ -1,31 +1,45 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** Shape.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) Component
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : Shape.hpp
+**  Create at   : 2024-10-15 05:26
+**  Auteur      : AUTHOR
+**  Description : DESCRIPTION // TODO popoche
+** ════════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once
 
-#include <raylib.h>
+#include "module/raylib_safe.h"
 
 #include "GEngine/libdev/Component.hpp"
+#include "GEngine/libdev/components/driver/output/RaylibTypes.hpp"
 
 namespace gengine::component::driver::output {
-struct Rectangle : public gengine::Component {
+struct Rectangle : public Component<Rectangle> {
     int width;
     int height;
-    Color color;
+    Clr color;
 
-    Rectangle(int width, int height, const Color &&color) : width(width), height(height), color(color) {};
-    // Rectangle(int x, int y, int width, int height) : x(x), y(y), width(width), height(height) {};
+    Rectangle(int width, int height, const Clr &&color)
+        : width(width)
+        , height(height)
+        , color(color) {
+    }
+
+    bool operator==(const Rectangle &) const = default;
 };
 
-struct Circle : public gengine::Component {
+struct Circle : public Component<Circle> {
     int r;
-    Color color;
+    Clr color;
 
-    Circle(int r, const Color &&color) : r(r), color(color) {};
-    // Circle(int x, int y, int width, int height) : x(x), y(y), width(width), height(height) {};
+    Circle(int r, const Clr &&color)
+        : r(r)
+        , color(color) {
+    }
+
+    bool operator==(const Circle &) const = default;
 };
 } // namespace gengine::component::driver::output

@@ -13,5 +13,7 @@ void Bus::execute(void) {
     m_toExecute.pop();
 }
 
-bool Bus::isEmpty(void) { return m_toExecute.empty(); }
+bool Bus::isEmpty(void) {
+    return m_toExecute.empty();
+}
 } // namespace ecs::system::event

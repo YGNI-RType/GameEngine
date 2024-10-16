@@ -50,6 +50,13 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config
 
+      - name: Install vcpkg and dependencies for Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git
+          .\vcpkg\bootstrap-vcpkg.bat
+          .\vcpkg\vcpkg install glfw3:x64-windows
+
       - name: Set reusable strings
         id: strings
         shell: bash
@@ -89,13 +96,16 @@ jobs:
 
   beautify:
     runs-on: ubuntu-latest
+    container:
+      image: fedora:40
     steps:
       - uses: actions/checkout@v4
 
       - name: Install clang-format
-        run: sudo apt-get install clang-format
+        run: sudo dnf install clang-tools-extra -y
 
       - name: Check clang-format compliance
         run: |
-          files=$(find ${{ github.workspace }} -name "*.hpp" -o -name "*.cpp" -o -name "*.inl")
+          clang-format --version
+          files=$(find . -name "*.hpp" -o -name "*.cpp" -o -name "*.inl")
           clang-format -Werror -dry-run $files

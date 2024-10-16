@@ -9,10 +9,12 @@
 #include <iostream>
 
 namespace gengine::system::driver::input {
-void KeyboardCatcher::init(void) { subscribeToEvent<gengine::system::event::MainLoop>(&KeyboardCatcher::onMainLoop); }
+void KeyboardCatcher::init(void) {
+    subscribeToEvent<gengine::system::event::RenderLoop>(&KeyboardCatcher::onMainLoop);
+}
 
-void KeyboardCatcher::onMainLoop(gengine::system::event::MainLoop &e) {
-    for (KeyboardKey key = KEY_APOSTROPHE; key != KEY_NULL; ++key) {
+void KeyboardCatcher::onMainLoop(gengine::system::event::RenderLoop &e) {
+    for (KeyboardKey key = KEY_SPACE; key != KEY_NULL; ++key) {
         if (IsKeyReleased(key))
             processKeyInput(key, InputState::RELEASE);
         if (IsKeyPressed(key))
@@ -20,6 +22,7 @@ void KeyboardCatcher::onMainLoop(gengine::system::event::MainLoop &e) {
         if (IsKeyDown(key))
             processKeyInput(key, InputState::DOWN);
     }
+    PollInputEvents();
 }
 
 void KeyboardCatcher::processKeyInput(int key, InputState state) {
@@ -342,5 +345,13 @@ void KeyboardCatcher::processKeyInput(int key, InputState state) {
     default:
         break;
     }
+}
+
+KeyboardKey &operator++(KeyboardKey &key) {
+    if (key <= 348)
+        key = static_cast<KeyboardKey>(static_cast<int>(key) + 1);
+    else
+        key = KEY_NULL;
+    return key;
 }
 } // namespace gengine::system::driver::input

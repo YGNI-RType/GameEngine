@@ -1,15 +1,18 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** MouseCatcher.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) System
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : MouseCatcher.hpp
+**  Create at   : 2024-10-15 04:59
+**  Author      : AUTHOR
+**  Description : This system is dedicated to the DriverEngine, it must with
+                    the raylib publish all the events linked mouse.
+** ═══════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once
 
-#include <raylib.h>
-
-#include "GEngine/libdev/components/driver/output/Window.hpp"
+#include "module/raylib_safe.h"
 
 #include "GEngine/libdev/System.hpp"
 #include "GEngine/libdev/systems/events/MainLoop.hpp"

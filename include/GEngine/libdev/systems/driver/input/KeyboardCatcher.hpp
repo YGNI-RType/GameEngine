@@ -1,19 +1,24 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** KeyboardCatcher.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) System
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : KeyboardCatcher.hpp
+**  Create at   : 2024-10-15 04:58
+**  Author      : AUTHOR
+**  Description : This system is dedicated to the DriverEngine, it must with
+                    the raylib publish all the events linked to the keys of
+                    the keyboard.
+** ═══════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once
 
-#include <raylib.h>
-
-#include "GEngine/libdev/components/driver/output/Window.hpp"
+#include "module/raylib_safe.h"
 
 #include "GEngine/libdev/System.hpp"
 #include "GEngine/libdev/systems/events/MainLoop.hpp"
 #include "GEngine/libdev/systems/events/Native.hpp"
+#include "GEngine/libdev/systems/events/RenderLoop.hpp"
 #include "GEngine/libdev/systems/events/driver/input/Keyboard.hpp"
 
 namespace gengine::system::driver::input {
@@ -22,19 +27,13 @@ class KeyboardCatcher : public gengine::System<KeyboardCatcher> {
 public:
     void init(void) override;
 
-    void onMainLoop(gengine::system::event::MainLoop &e);
+    void onMainLoop(gengine::system::event::RenderLoop &e);
 
 private:
     void processKeyInput(int key, InputState state);
 };
 
-KeyboardKey &operator++(KeyboardKey &key) {
-    if (key <= 348)
-        key = static_cast<KeyboardKey>(static_cast<int>(key) + 1);
-    else
-        key = KEY_NULL;
-    return key;
-}
+KeyboardKey &operator++(KeyboardKey &key);
 
 using KeyApostropheEvent = gengine::system::event::driver::input::Key_Apostrophe;
 using KeyCommaEvent = gengine::system::event::driver::input::Key_Comma;

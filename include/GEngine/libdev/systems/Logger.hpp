@@ -1,8 +1,14 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** Logger.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) System
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : Logger.hpp
+**  Create at   : 2024-10-15 05:06
+**  Author      : AUTHOR
+**  Description : This system dedicated to the GameEngine and the DriverEngine
+                    allows to produce a log file filled in reaction to the Log
+                    event.
+** ═══════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once
@@ -15,11 +21,11 @@
 namespace gengine::system {
 class Logger : public gengine::System<Logger> {
 public:
-    Logger(const std::string &filename) : m_logFile(filename, std::ios::app) {};
+    Logger(const std::string &filename);
 
-    void init(void) override { subscribeToEvent<event::Log>(&Logger::onLog); }
+    void init(void) override;
 
-    void onLog(event::Log &e) { m_logFile << e.message << std::endl; }
+    void onLog(event::Log &e);
 
 private:
     std::ofstream m_logFile;

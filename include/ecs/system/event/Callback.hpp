@@ -47,7 +47,8 @@ public:
  * @tparam T The type of the class that owns the member function.
  * @tparam Type The type of the event to process.
  */
-template <typename T, typename Type> class MethodCallback : public Callback {
+template <typename T, typename Type>
+class MethodCallback : public Callback {
 public:
     using CallbackMethod = void (T::*)(Type &);
 
@@ -84,7 +85,8 @@ private:
  *
  * @tparam Type The type of the event to process.
  */
-template <typename Type> class LambdaCallback : public Callback {
+template <typename Type>
+class LambdaCallback : public Callback {
 public:
     /**
      * @brief Constructs a LambdaCallback instance.

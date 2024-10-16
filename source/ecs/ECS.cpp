@@ -9,13 +9,21 @@
 
 using namespace ecs;
 
-ECS::ECS() : system::Manager(*this) {}
+ECS::ECS()
+    : system::Manager(*this) {
+}
 
 void ECS::killEntity(entity::Entity entity) {
-    destroyComponents(entity);
+    unsetComponents(entity);
     destroyEntity(entity);
 }
 
-template <typename T> void publishEvent(T &event) { publishEvent<T>(event); }
+template <typename T>
+void publishEvent(T &event) {
+    publishEvent<T>(event);
+}
 
-template <typename T> void publishEvent(T &&event) { publishEvent<T>(event); }
+template <typename T>
+void publishEvent(T &&event) {
+    publishEvent<T>(event);
+}

@@ -1,8 +1,12 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** Native.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) Event
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : Native.hpp
+**  Create at   : 2024-10-15 05:22
+**  Author      : AUTHOR
+**  Description : These events are published natively by the engine itself.
+** ════════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once

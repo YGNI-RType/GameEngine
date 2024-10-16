@@ -8,7 +8,9 @@
 #include "GEngine/libdev/systems/driver/output/TextureManager.hpp"
 
 namespace gengine::system::driver::output {
-TextureManager::TextureManager(const std::string &folder) : m_folder(folder) {}
+TextureManager::TextureManager(const std::string &folder)
+    : m_folder(folder) {
+}
 
 void TextureManager::init(void) {
     subscribeToEvent<gengine::system::event::StartEngine>(&TextureManager::onStartEngine);
@@ -25,7 +27,6 @@ void TextureManager::onStartEngine(gengine::system::event::StartEngine &e) {
             Texture texture = LoadTexture(filePath.c_str());
             std::string path = std::filesystem::relative(entry.path(), m_folder).string();
             m_textureTable.emplace(path, texture);
-
             // }
         }
     }
@@ -34,14 +35,14 @@ void TextureManager::onStartEngine(gengine::system::event::StartEngine &e) {
 void TextureManager::onStopEngine(gengine::system::event::StopEngine &e) {
     for (auto &[path, texture] : m_textureTable) {
         UnloadTexture(texture);
-        // std::cout << "Unloaded texture: " << path << std::endl; // TODO log
+        // // std::cout << "Unloaded texture: " << path << std::endl; // TODO log
     }
 }
 
 const Texture &TextureManager::get(const std::string &path) {
     const auto &texture = m_textureTable.find(path);
     if (texture == m_textureTable.cend())
-        throw std::out_of_range("This texture does not exist");
+        THROW_ERROR("Out of range: This texture does not exist.");
 
     return texture->second;
 }

@@ -1,8 +1,17 @@
 /*
-** EPITECH PROJECT, 2024
-** B-CPP-500-LYN-5-1-rtype-basile.fouquet
-** File description:
-** MainLoop.hpp
+** ════════════════════════════════════════════════════════════════════════════
+**                           GEngine (libdev) Event
+** ════════════════════════════════════════════════════════════════════════════
+**  File        : MainLoop.hpp
+**  Create at   : 2024-10-15 05:20
+**  Author      : AUTHOR
+**  Description : This event is natively published by the AutoMainLoop system
+                    and allows the proper functioning of the entire engine.
+                    !! ATTENTION do not publish it !!
+
+                    The StopMainLoop event is used to stop the auto-publishing
+                    of MainLoop.
+** ════════════════════════════════════════════════════════════════════════════
 */
 
 #pragma once
@@ -12,8 +21,12 @@
 namespace gengine::system::event {
 struct MainLoop : public Event {
     float deltaTime;
-    MainLoop(float &deltaTime) : deltaTime(deltaTime) {}
-    MainLoop(float &&deltaTime) : deltaTime(deltaTime) {}
+    MainLoop(float &deltaTime)
+        : deltaTime(deltaTime) {
+    }
+    MainLoop(float &&deltaTime)
+        : deltaTime(deltaTime) {
+    }
 };
 
 struct StopMainLoop : public Event {};

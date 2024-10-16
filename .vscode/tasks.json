@@ -1,0 +1,59 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build RType",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/build",
+                "--target",
+                "GEngine_static",
+                "&&",
+                "cmake",
+                "--build",
+                "${workspaceFolder}/Rtype/build"
+            ],
+            "windows": {
+                "command": "cmd",
+                "args": [
+                    "/c",
+                    "cmake --build ${workspaceFolder}\\build --target GEngine_static && cmake --build ${workspaceFolder}\\r-type\\build"
+                ]
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "Build the r-type project using CMake",
+            "presentation": { "reveal": "silent"}
+        },
+        {
+            "label": "Configure CMake RType",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-S",
+                "${workspaceFolder}/Rtype",
+                "-B",
+                "${workspaceFolder}/Rtype/build",
+                "-DCMAKE_BUILD_TYPE=Debug"
+            ],
+            "windows": {
+                "command": "cmd",
+                "args": [
+                    "/c",
+                    "cmake -S ${workspaceFolder}\\r-type -B ${workspaceFolder}\\r-type\\build -DCMAKE_BUILD_TYPE=Debug"
+                ]
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [],
+            "detail": "Configure the r-type project using CMake"
+        }
+    ]
+}
