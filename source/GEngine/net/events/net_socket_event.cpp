@@ -10,7 +10,7 @@
 #include <stdexcept>
 
 #ifdef HAS_NOT_EVENTFD
-#ifdef __unix__
+#if defined(__APPLE__) || defined(__unix__)
 #define closesocket close
 #include <unistd.h>
 #else
