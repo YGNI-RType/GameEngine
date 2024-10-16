@@ -14,7 +14,7 @@
       "host": true
     },
     "raylib",
-    "boost-uuid",
+    "stduuid",
     "nlohmann-json"
   ]
 }
