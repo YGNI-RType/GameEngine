@@ -55,5 +55,5 @@ install(TARGETS r-type_client r-type_server
     RUNTIME DESTINATION bin
 )
 
-target_compile_definitions(r-type_server PRIVATE RType_Server)
-target_compile_definitions(r-type_client PRIVATE RType_Client)
+target_compile_definitions(r-type_server PRIVATE Server)
+target_compile_definitions(r-type_client PRIVATE Client)
