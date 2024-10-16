@@ -127,9 +127,9 @@ struct TestDriver : public gengine::OnEventSystem<TestDriver, rtype::event::Move
 
 int main(int argc, char **argv) {
     std::string ip;
-    if (argc > 1) {
+    if (argc > 1)
         ip = std::string(argv[1]);
-    } else
+    else
         ip = "127.0.0.1";
 
     gengine::driver::Engine driverEngine;
@@ -149,7 +149,6 @@ int main(int argc, char **argv) {
     gameEngine.registerSystem<Test>();
     driverEngine.registerSystem<TestDriver>();
     gengine::interface::network::Networked interface(driverEngine, gameEngine, ip, 4243, true);
-
 
     interface.run();
 }

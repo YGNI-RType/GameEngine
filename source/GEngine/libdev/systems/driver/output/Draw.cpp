@@ -16,6 +16,10 @@ struct zIndexComparator {
     }
 };
 
+Draw2D::Draw2D(const Color &clear)
+    : m_clear(clear) {
+}
+
 void Draw2D::init(void) {
     subscribeToEvent<gengine::system::event::RenderLoop>(&Draw2D::onRenderLoop);
     subscribeToEvent<gengine::system::event::BeginDraw>(&Draw2D::onBeginDraw);
@@ -23,7 +27,7 @@ void Draw2D::init(void) {
 }
 
 void Draw2D::onRenderLoop(gengine::system::event::RenderLoop &e) {
-    publishEvent(gengine::system::event::BeginDraw(WHITE));
+    publishEvent(gengine::system::event::BeginDraw(m_clear));
     auto &drawables = getComponents<component::driver::output::Drawable>();
 
     std::multiset<std::pair<Entity, int>, zIndexComparator> toDraw;

@@ -4,6 +4,7 @@
 ** File description:
 ** Collision.cpp
 */
+
 #include "GEngine/libdev/systems/Collisions.hpp"
 #include <algorithm>
 #include <cmath>
@@ -11,33 +12,36 @@
 namespace gengine::system {
 
 void Collision2D::init(void) {
-    subscribeToEvent<event::MainLoop>(&Collision2D::onMainLoop);
+    subscribeToEvent<event::GameLoop>(&Collision2D::onGameLoop);
 }
 
 bool checkSquareCollision(const component::HitBoxSquare2D &square1, const component::Transform2D &tr1,
                           const component::HitBoxSquare2D &square2, const component::Transform2D &tr2) {
-    return !(tr1.pos.x > tr2.pos.x + square2.width || tr1.pos.x + square1.width < tr2.pos.x ||
-             tr1.pos.y > tr2.pos.y + square2.height || tr1.pos.y + square1.height < tr2.pos.y);
+    return !(
+        tr1.pos.x > tr2.pos.x + square2.width * tr2.scale.x || tr1.pos.x + square1.width * tr1.scale.x < tr2.pos.x ||
+        tr1.pos.y > tr2.pos.y + square2.height * tr2.scale.y || tr1.pos.y + square1.height * tr1.scale.y < tr2.pos.y);
 }
 
 bool checkCircleCollision(const component::HitBoxCircle2D &circle1, const component::Transform2D &tr1,
                           const component::HitBoxCircle2D &circle2, const component::Transform2D &tr2) {
-    float dx = (tr1.pos.x + circle1.radius) - (tr2.pos.x + circle2.radius);
-    float dy = (tr1.pos.y + circle1.radius) - (tr2.pos.y + circle2.radius);
+    float dx = (tr1.pos.x + circle1.radius * tr1.scale.x) - (tr2.pos.x + circle2.radius * tr2.scale.x);
+    float dy = (tr1.pos.y + circle1.radius * tr1.scale.x) - (tr2.pos.y + circle2.radius * tr2.scale.x);
     float distance = std::sqrt(dx * dx + dy * dy);
-    return distance < (circle1.radius + circle2.radius);
+    return distance < (circle1.radius * tr1.scale.x + circle2.radius * tr2.scale.x);
 }
 
 bool checkSquareCircleCollision(const component::HitBoxSquare2D &square, const component::Transform2D &trSquare,
                                 const component::HitBoxCircle2D &circle, const component::Transform2D &trCircle) {
-    float closestX = std::clamp(trCircle.pos.x + circle.radius, trSquare.pos.x, trSquare.pos.x + square.width);
-    float closestY = std::clamp(trCircle.pos.y + circle.radius, trSquare.pos.y, trSquare.pos.y + square.height);
-    float dx = (trCircle.pos.x + circle.radius) - closestX;
-    float dy = (trCircle.pos.y + circle.radius) - closestY;
-    return (dx * dx + dy * dy) < (circle.radius * circle.radius);
+    float closestX = std::clamp(trCircle.pos.x + circle.radius * trCircle.scale.x, trSquare.pos.x,
+                                trSquare.pos.x + square.width * trSquare.scale.x);
+    float closestY = std::clamp(trCircle.pos.y + circle.radius * trCircle.scale.x, trSquare.pos.y,
+                                trSquare.pos.y + square.height * trSquare.scale.y);
+    float dx = (trCircle.pos.x + circle.radius * trCircle.scale.x) - closestX;
+    float dy = (trCircle.pos.y + circle.radius * trCircle.scale.x) - closestY;
+    return (dx * dx + dy * dy) < (circle.radius * trCircle.scale.x + circle.radius * trCircle.scale.x);
 }
 
-void Collision2D::onMainLoop(event::MainLoop &e [[maybe_unused]]) {
+void Collision2D::onGameLoop(event::GameLoop &e [[maybe_unused]]) {
     auto &transforms = getComponents<component::Transform2D>();
     // auto &origins = getComponents<component::Origin2D>();
     auto &hitboxSquares = getComponents<component::HitBoxSquare2D>();
@@ -89,7 +93,7 @@ void Collision2D::onMainLoop(event::MainLoop &e [[maybe_unused]]) {
 }
 
 void Collision3D::init(void) {
-    subscribeToEvent<event::MainLoop>(&Collision3D::onMainLoop);
+    subscribeToEvent<event::GameLoop>(&Collision3D::onGameLoop);
 }
 
 bool checkCubeCollision(const component::HitBoxSquare3D &cube1, const component::Transform3D &tr1,
@@ -119,7 +123,7 @@ bool checkCubeSphereCollision(const component::HitBoxSquare3D &cube, const compo
     return (dx * dx + dy * dy + dz * dz) < (sphere.radius * sphere.radius);
 }
 
-void Collision3D::onMainLoop(event::MainLoop &e [[maybe_unused]]) {
+void Collision3D::onGameLoop(event::GameLoop &e [[maybe_unused]]) {
     auto &transforms = getComponents<component::Transform3D>();
     // auto &origins = getComponents<component::Origin3D>();
     auto &hitboxCubes = getComponents<component::HitBoxSquare3D>();

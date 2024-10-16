@@ -31,12 +31,17 @@
 namespace gengine::system::driver::output {
 class Draw2D : public gengine::System<Draw2D, component::driver::output::Drawable> {
 public:
+    Draw2D(const Color &clear = WHITE);
+
     void init(void) override;
 
     void onRenderLoop(gengine::system::event::RenderLoop &e);
 
     void onBeginDraw(gengine::system::event::BeginDraw &e);
     void onEndDraw(gengine::system::event::EndDraw &e);
+
+private:
+    Color m_clear;
 };
 
 class DrawSprite : public gengine::System<DrawSprite, component::driver::output::Sprite, component::Transform2D,
