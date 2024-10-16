@@ -31,8 +31,12 @@ struct Text : public Component<Text> {
         : fontSize(10)
         , spacing(spacing)
         , tint(tint) {
-        std::strncpy(this->fontPath.data(), fontPath.c_str(), std::min(this->fontPath.size(), fontPath.size()));
-        std::strncpy(this->str.data(), str.c_str(),  std::min(this->str.size(), str.size()));
+
+        size_t sz = std::min(this->fontPath.size() - 1, fontPath.size());
+        std::strncpy(this->fontPath.data(), fontPath.c_str(), sz);
+        this->fontPath[sz] = '\0';
+        std::strncpy(this->str.data(), str.c_str(), std::min(this->str.size() - 1, str.size()));
+        this->str[sz] = '\0';
     }
 
     bool operator==(const Text &) const = default;
