@@ -2,13 +2,12 @@
 ** EPITECH PROJECT, 2024
 ** B-CPP-500-LYN-5-1-rtype-basile.fouquet
 ** File description:
-** PlayerMotion.hpp
+** PlayerAnimation.hpp
 */
 
 #pragma once
 
 #include "components/Player.hpp"
-#include "components/PlayerControl.hpp"
 
 #include "GEngine/libdev/System.hpp"
 #include "GEngine/libdev/components/driver/output/Animation.hpp"

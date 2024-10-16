@@ -2,20 +2,20 @@
 ** EPITECH PROJECT, 2024
 ** B-CPP-500-LYN-5-1-rtype-basile.fouquet
 ** File description:
-** Background.hpp
+** Plane.hpp
 */
 
 #pragma once
 
 #include "GEngine/libdev/Component.hpp"
 
-#define DEFAULT_BACKGROUND_SPEED 3
+#define PLANE_DEFAULT_SPEED 5
 
 namespace rtype::component {
-struct Background : public gengine::Component<Background> {
+struct Plane : public gengine::Component<Plane> {
     float speed;
 
-    Background(float newSpeed = DEFAULT_BACKGROUND_SPEED)
+    Plane(float newSpeed = PLANE_DEFAULT_SPEED)
         : speed(newSpeed) {
     }
 };

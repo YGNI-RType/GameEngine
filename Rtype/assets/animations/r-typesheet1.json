@@ -1,0 +1,6 @@
+{
+    "playerdeath": { "frames": [0, 1, 2, 3, 4, 5], "looping": false },
+    "shoot": { "frames": [0, 1], "looping": false },
+    "charging": { "frames": [0, 1, 2, 3, 4, 5, 6, 7], "looping": true },
+    "beam": { "frames": [0, 1], "looping": true }
+}

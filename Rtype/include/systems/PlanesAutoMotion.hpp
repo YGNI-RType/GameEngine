@@ -2,21 +2,19 @@
 ** EPITECH PROJECT, 2024
 ** B-CPP-500-LYN-5-1-rtype-basile.fouquet
 ** File description:
-** MonstersAutoMotion.hpp
+** PlanesAutoMotion.hpp
 */
 
 #pragma once
 
 #include "GEngine/libdev/System.hpp"
 #include "GEngine/libdev/components/Velocities.hpp"
-#include "GEngine/libdev/components/driver/output/Animation.hpp"
 #include "GEngine/libdev/systems/events/GameLoop.hpp"
 
-#include "components/Monster.hpp"
+#include "components/Plane.hpp"
 
 namespace rtype::system {
-class MonstersAutoMotion : public gengine::System<MonstersAutoMotion, gengine::component::Velocity2D,
-                                                  component::Monster, gengine::component::driver::output::Animation> {
+class PlanesAutoMotion : public gengine::System<PlanesAutoMotion, gengine::component::Velocity2D, component::Plane> {
 public:
     void init(void) override;
     void onGameLoop(gengine::system::event::GameLoop &);

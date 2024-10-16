@@ -1,9 +1,4 @@
-/*
-** EPITECH PROJECT, 2024
-** GameEngine
-** File description:
-** PlayerAnimation.cpp
-*/
+
 /*
 ** EPITECH PROJECT, 2024
 ** B-CPP-500-LYN-5-1-rtype-basile.fouquet
@@ -12,7 +7,6 @@
 */
 
 #include "systems/PlayerAnimation.hpp"
-#include "components/Bullet.hpp"
 
 // Spawn entity
 #include "GEngine/libdev/Component.hpp" // gengine::Zip

@@ -2,21 +2,19 @@
 ** EPITECH PROJECT, 2024
 ** B-CPP-500-LYN-5-1-rtype-basile.fouquet
 ** File description:
-** Background.hpp
+** Score.hpp
 */
 
 #pragma once
 
 #include "GEngine/libdev/Component.hpp"
 
-#define DEFAULT_BACKGROUND_SPEED 3
-
 namespace rtype::component {
-struct Background : public gengine::Component<Background> {
-    float speed;
+struct Score : public gengine::Component<Score> {
+    int score = 0;
 
-    Background(float newSpeed = DEFAULT_BACKGROUND_SPEED)
-        : speed(newSpeed) {
+    Score(int score)
+        : score(score) {
     }
 };
 } // namespace rtype::component

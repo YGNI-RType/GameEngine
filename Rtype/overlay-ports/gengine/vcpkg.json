@@ -1,0 +1,20 @@
+{
+  "name": "gengine",
+  "version": "0.0.1",
+  "homepage": "https://github.com/YGNI-RType/GEngine",
+  "description": "An amazing Game Engine.",
+  "license": "MIT",
+  "dependencies": [
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    },
+    "raylib",
+    "stduuid",
+    "nlohmann-json"
+  ]
+}

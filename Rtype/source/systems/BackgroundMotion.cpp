@@ -24,8 +24,8 @@ void BackgroundMotion::onGameLoop(gengine::system::event::GameLoop &e) {
     auto &backgrounds = getComponents<component::Background>();
 
     for (auto [entity, transform, background] : gengine::Zip(transforms, backgrounds))
-        if (transform.pos.x < -1226 * 3.48 + 1280)
-            transform.pos.x = 0;
+        if (transform.pos.x < -1119 * 3.48 - 1)
+            transform.pos.x = 1119 * 3.48;
 }
 
 void BackgroundMotion::updateBackgroundSpeed(void) {

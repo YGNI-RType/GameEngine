@@ -21,5 +21,8 @@ public:
     void onStartEngine(gengine::system::event::StartEngine &);
     void onNewRemoteDriver(gengine::interface::event::NewRemoteDriver &);
     void onDeleteRemoteDriver(gengine::interface::event::DeleteRemoteDriver &e);
+
+private:
+    size_t m_nbPlayer = 0;
 };
 } // namespace rtype::system

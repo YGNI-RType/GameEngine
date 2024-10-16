@@ -2,20 +2,20 @@
 ** EPITECH PROJECT, 2024
 ** B-CPP-500-LYN-5-1-rtype-basile.fouquet
 ** File description:
-** Background.hpp
+** Caterpillar.hpp
 */
 
 #pragma once
 
 #include "GEngine/libdev/Component.hpp"
 
-#define DEFAULT_BACKGROUND_SPEED 3
+#define CATERPILLAR_DEFAULT_SPEED 4
 
 namespace rtype::component {
-struct Background : public gengine::Component<Background> {
+struct Caterpillar : public gengine::Component<Caterpillar> {
     float speed;
 
-    Background(float newSpeed = DEFAULT_BACKGROUND_SPEED)
+    Caterpillar(float newSpeed = CATERPILLAR_DEFAULT_SPEED)
         : speed(newSpeed) {
     }
 };
