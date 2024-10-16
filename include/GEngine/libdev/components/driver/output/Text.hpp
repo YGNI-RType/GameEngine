@@ -31,8 +31,8 @@ struct Text : public Component<Text> {
         : fontSize(10)
         , spacing(spacing)
         , tint(tint) {
-        std::strncpy(this->fontPath.data(), fontPath.c_str(), this->fontPath.size() - 1);
-        std::strncpy(this->str.data(), str.c_str(), this->str.size() - 1);
+        std::strncpy(this->fontPath.data(), fontPath.c_str(), std::min(this->fontPath.size(), fontPath.size()));
+        std::strncpy(this->str.data(), str.c_str(),  std::min(this->str.size(), str.size()));
     }
 
     bool operator==(const Text &) const = default;
