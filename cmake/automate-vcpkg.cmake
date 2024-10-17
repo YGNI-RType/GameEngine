@@ -36,11 +36,6 @@ macro(vcpkg_bootstrap)
         _install_or_update_vcpkg()
     endif()
 
-    # TODO : this is temp
-    if (APPLE)
-        set(CMAKE_OSX_ARCHITECTURES arm64)
-    endif()
-
     # We know this wasn't set before so we need point the toolchain file to the newly found VCPKG_ROOT
     set(CMAKE_TOOLCHAIN_FILE ${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake CACHE STRING "")
 
