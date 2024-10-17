@@ -58,11 +58,15 @@ public:
         m_type = type;
     }
 
-    virtual const byte_t *getData() const = 0;
+    virtual const byte_t *getData(void) const = 0;
+    virtual uint64_t getMaxMsgSize(void) const = 0;
 
     template <typename T>
     void appendData(const T &data, size_t offset = 0) {
         byte_t *myData = getDataMember();
+        uint64_t maxSz = getMaxMsgSize();
+        if (m_curSize + offset + sizeof(T) > maxSz)
+            return;
 
         std::memcpy(myData + m_curSize + offset, &data, sizeof(T));
         m_curSize += sizeof(T);
@@ -71,6 +75,9 @@ public:
     template <typename T>
     void writeData(const T &data, size_t msgDataOffset = 0, size_t dataOffset = 0, bool updateSize = true) {
         byte_t *myData = getDataMember();
+        uint64_t maxSz = getMaxMsgSize();
+        if (msgDataOffset + sizeof(T) >= maxSz)
+            return;
 
         std::memcpy(myData + msgDataOffset, &data + dataOffset, sizeof(T));
         if (updateSize)
@@ -122,6 +129,9 @@ public:
     const byte_t *getData() const override final {
         return m_data;
     }
+    uint64_t getMaxMsgSize(void) const override final {
+        return MAX_TCP_MSGLEN;
+    }
 
     void getSerialize(TCPSerializedMessage &msg) const;
     void setSerialize(TCPSerializedMessage &msg);
@@ -157,6 +167,9 @@ public:
 
     const byte_t *getData() const override final {
         return m_data;
+    }
+    uint64_t getMaxMsgSize(void) const override final {
+        return MAX_UDP_MSGLEN;
     }
 
     bool isCompressed() const {

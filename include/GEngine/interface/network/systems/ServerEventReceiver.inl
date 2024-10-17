@@ -34,6 +34,7 @@ void gengine::interface::network::system::ServerEventReceiver<Events...>::onMain
         msg.readContinuousData(nb, readCount);
 
         client.setLastAck(msg.getAckNumber());
+        // std::cout << "Last ACK: " << client.getLastAck() << std::endl;
         for (size_t i = 0; i < nb; i++) {
             std::uint64_t type;
             msg.readContinuousData(type, readCount);

@@ -41,34 +41,16 @@ public:
     bool push(const UDPMessage &msg, size_t readcount) {
         std::lock_guard<std::mutex> lock(m_mutex);
 
-        if (msg.getSize() > MAX_PACKET_SIZE)
-            return false;
-
-        auto it = m_msgs.find(msg.getType());
-        if (it == m_msgs.end())
-            m_msgs[msg.getType()] = std::queue<Segment>();
-
-        auto &q = m_msgs[msg.getType()];
-        auto idSegment = getFreeSegment();
-        if (idSegment == -1)
-            return false;
-
-        Segment segment = {idSegment, msg.getFlags(), msg.getSize(), readcount};
-        deconstructMessage(msg, segment);
-        q.push(segment);
-        m_nbUsed++;
-
-        m_socketEvent.signal();
-        return true;
+        return pushUnsafe(msg, readcount);
     }
 
     /* This is called when we know it's full, removes the front, same segment */
-    bool fullpush(UDPMessage &msg, size_t readcount) {
+    bool fullpush(const UDPMessage &msg, size_t readcount) {
         std::lock_guard<std::mutex> lock(m_mutex);
 
         auto it = m_msgs.find(msg.getType());
-        if (it == m_msgs.end())
-            return false;
+        if (it == m_msgs.end() || !full())
+            return pushUnsafe(msg, readcount);
 
         auto &[_, queueSegment] = *it;
 
@@ -78,7 +60,7 @@ public:
         segment.msgSize = msg.getSize();
 
         queueSegment.pop();
-        constructMessage(segment.id);
+        deconstructMessage(msg, segment);
         queueSegment.push(segment);
 
         m_socketEvent.signal();
@@ -145,6 +127,29 @@ public:
     }
 
 private:
+    bool pushUnsafe(const UDPMessage &msg, size_t readcount) {
+        if (msg.getSize() > MAX_PACKET_SIZE)
+            return false;
+
+        auto it = m_msgs.find(msg.getType());
+        if (it == m_msgs.end())
+            m_msgs[msg.getType()] = std::queue<Segment>();
+
+        auto &q = m_msgs[msg.getType()];
+        auto idSegment = getFreeSegment();
+        if (idSegment == -1)
+            return false;
+
+        Segment segment = {idSegment, msg.getFlags(), msg.getSize(), readcount};
+        deconstructMessage(msg, segment);
+        q.push(segment);
+        m_nbUsed++;
+
+        m_socketEvent.signal();
+        return true;
+    }
+
+
     void constructMessage(UDPMessage &msg, const Segment &segment, size_t &readCount) const {
         auto data = static_cast<const void *>(m_data.data() + segment.id * MAX_PACKET_SIZE);
 

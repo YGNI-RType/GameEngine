@@ -40,6 +40,13 @@ public:
         m_shouldDelete = shouldDelete;
     }
 
+    bool isReady(void) const {
+        return m_ready;
+    }
+    void setReady(bool ready) {
+        m_ready = ready;
+    }
+
     std::shared_ptr<Network::NetClient> getClient(void) {
         return m_client;
     }
@@ -48,6 +55,7 @@ private:
     std::shared_ptr<Network::NetClient> m_client;
 
     uint64_t m_lastAck = 0;
+    bool m_ready = false;
     bool m_shouldDelete = false;
 };
 

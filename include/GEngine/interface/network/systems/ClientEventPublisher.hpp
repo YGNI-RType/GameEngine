@@ -38,6 +38,8 @@ private:
     template <typename T>
     void dynamicSubscribe(void);
 
+    static constexpr auto m_maxEventToSend = 20;
+
     std::uint64_t m_id = 0;
     Network::UDPMessage m_msg;
     std::uint64_t m_eventCount = 0;

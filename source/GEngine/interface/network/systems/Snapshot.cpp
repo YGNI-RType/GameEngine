@@ -61,7 +61,7 @@ void Snapshot::getAndSendDeltaDiff(void) {
     auto &clientsSys = getSystem<gengine::interface::network::system::ServerClientsHandler>();
 
     for (auto &[remote, client] : clientsSys.getClients()) {
-        if (client.shouldDelete())
+        if (client.shouldDelete() || !client.isReady())
             continue;
         auto it = m_clientSnapshots.find(remote);
         if (it == m_clientSnapshots.end())
@@ -71,8 +71,8 @@ void Snapshot::getAndSendDeltaDiff(void) {
         auto lastReceived = client.getLastAck();
         auto lastId = firstSnapshotId + lastReceived;
         auto diff = m_currentSnapshotId - lastId;
-        // std::cout << "diff: " << diff << " | m_currentSnapshotId: " << m_currentSnapshotId << " last id: " << lastId
-        // << " UDP Last ACK: " << lastReceived << std::endl;
+        std::cout << "diff: " << diff << " | m_currentSnapshotId: " << m_currentSnapshotId << " last id: " << lastId
+        << " UDP Last ACK: " << lastReceived << std::endl;
 
         auto &current = snapshots[m_currentSnapshotId % MAX_SNAPSHOT];
         auto &last = diff > MAX_SNAPSHOT ? m_dummySnapshot : snapshots[lastId % MAX_SNAPSHOT];

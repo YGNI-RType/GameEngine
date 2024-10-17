@@ -52,6 +52,9 @@ template <typename T>
 void gengine::interface::network::system::ClientEventPublisher<Events...>::dynamicSubscribe(void) {
     m_events.insert(std::make_pair(std::type_index(typeid(T)), m_id));
     this->template subscribeToEvent<T>([this](T &event) -> void {
+        if (m_eventCount > m_maxEventToSend)
+            return;
+
         m_msg.appendData<std::uint64_t>(m_events.find(std::type_index(typeid(T)))->second);
         m_msg.appendData<T>(event);
         m_eventCount++;

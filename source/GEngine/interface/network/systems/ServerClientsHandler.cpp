@@ -53,6 +53,17 @@ void ServerClientsHandler::onStartEngine(gengine::system::event::StartEngine &e)
         });
 
     eventManager.registerCallback<Network::NetClient *>(
+        Network::Event::CT_OnClientReady, [this](Network::NetClient *client) {
+            std::lock_guard<std::mutex> lock(m_netMutex);
+            auto it = std::find_if(m_clients.begin(), m_clients.end(),
+                                   [client](const auto &pair) { return pair.second.getNet().get() == client; });
+            if (it == m_clients.end())
+                return; // for some reason, client doesn't exist ???
+
+            it->second.setReady(true);
+        });
+
+    eventManager.registerCallback<Network::NetClient *>(
         Network::Event::CT_OnClientDisconnect, [this](Network::NetClient *client) {
             std::lock_guard<std::mutex> lock(m_netMutex);
 
