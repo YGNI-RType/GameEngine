@@ -12,14 +12,14 @@
       "generator": "",
       "binaryDir": "${sourceDir}/build",
       "cacheVariables": {
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "YES",
-        "VCPKG_MANIFEST_INSTALL": "OFF"
-      }
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "YES"
+      },
+      "toolchainFile": "${sourceDir}/cmake/define-compilers.cmake"
     },
     {
       "name": "release",
       "inherits": "default",
-      "description": "Release build",
+      "description": "Release build (your own system)",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
@@ -27,7 +27,7 @@
     {
       "name": "debug",
       "inherits": "default",
-      "description": "Debug build",
+      "description": "Debug build (your own system)",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
@@ -38,6 +38,9 @@
       "architecture": {
         "value": "armv8",
         "strategy": "external"
+      },
+      "cacheVariables": {
+        "ARCHITECTURE": "arm64"
       }
     },
     {
@@ -46,6 +49,9 @@
       "architecture": {
         "value": "armv8",
         "strategy": "external"
+      },
+      "cacheVariables": {
+        "ARCHITECTURE": "arm64"
       }
     },
     {
@@ -54,6 +60,9 @@
       "architecture": {
         "value": "x86",
         "strategy": "external"
+      },
+      "cacheVariables": {
+        "ARCHITECTURE": "x86"
       }
     }
   ],

@@ -8,12 +8,16 @@
             "args": [
                 "--build",
                 "${workspaceFolder}/build",
+                "--parallel",
+                "4",
                 "--target",
                 "GEngine_static",
                 "&&",
                 "cmake",
                 "--build",
-                "${workspaceFolder}/Rtype/build"
+                "${workspaceFolder}/Rtype/build",
+                "--parallel",
+                "4",
             ],
             "windows": {
                 "command": "cmd",

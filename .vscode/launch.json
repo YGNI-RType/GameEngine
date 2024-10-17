@@ -67,7 +67,7 @@
             "args": [
             ],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/r-type",
+            "cwd": "${workspaceFolder}/Rtype/build",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
