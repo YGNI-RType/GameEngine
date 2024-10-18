@@ -9,14 +9,17 @@ set(CMAKE_DEBUG_POSTFIX d)
 
 include(../cmake/automate-vcpkg.cmake)
 vcpkg_bootstrap()
-vcpkg_install_packages(raylib stduuid)
+vcpkg_install_packages(raylib stduuid nlohmann-json)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-# The static permits to enter the functions, avoid settings the path to a .dll etc...
-find_library(GEngine_LIB NAMES GEngine-sd PATHS ../build/Debug ../build)
-# find_library(GEngine_LIB NAMES GEngined PATHS ../build/Debug ../build)
+    if (MSVC)
+        add_compile_options(/D_ITERATOR_DEBUG_LEVEL=0)
+    endif()
+    # The static permits to enter the functions, avoid settings the path to a .dll etc...
+    find_library(GEngine_LIB NAMES GEngine-sd PATHS ../build/Debug ../build)
+    # find_library(GEngine_LIB NAMES GEngined PATHS ../build/Debug ../build)
 else()
-find_library(GEngine_LIB NAMES GEngine PATHS ../build/Release ../build)
+    find_library(GEngine_LIB NAMES GEngine PATHS ../build/Release ../build)
 endif()
 
 file(GLOB_RECURSE SOURCES source/*.cpp)
@@ -55,5 +58,5 @@ install(TARGETS r-type_client r-type_server
     RUNTIME DESTINATION bin
 )
 
-target_compile_definitions(r-type_server PRIVATE Server)
-target_compile_definitions(r-type_client PRIVATE Client)
+target_compile_definitions(r-type_server PRIVATE GEngine_Server)
+target_compile_definitions(r-type_client PRIVATE GEngine_Client)

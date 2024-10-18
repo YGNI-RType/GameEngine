@@ -96,7 +96,7 @@
             "args": [
             ],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/Rtype/build",
             "environment": [],
             "symbolSearchPath": "${workspaceFolder}/Rtype/build/Debug"
         },
@@ -104,11 +104,11 @@
             "name": "(WINDOWS) Server RType",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/Rtype/build/r-type_serverd.exe",
+            "program": "${workspaceFolder}/Rtype/build/Debug/r-type_serverd.exe",
             "args": [
             ],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/Rtype/build",
             "environment": [],
             "symbolSearchPath": "${workspaceFolder}/Rtype/build/Debug"
 

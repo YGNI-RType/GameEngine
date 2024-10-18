@@ -139,7 +139,6 @@ void registerSystems(gengine::game::Engine &gameEngine, gengine::driver::Engine 
     gameEngine.registerSystem<system::PlayerMotion>();
     gameEngine.registerSystem<system::PlayerAnimation>();
     gameEngine.registerSystem<system::PlayerShoot>();
-    gameEngine.registerSystem<system::PlayerAnimation>();
     gameEngine.registerSystem<system::BackgroundMotion>();
     gameEngine.registerSystem<system::ClearEntities>();
     gameEngine.registerSystem<system::DestroyOnCollision>();

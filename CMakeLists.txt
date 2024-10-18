@@ -19,6 +19,12 @@ include_directories(include)
 #     add_compile_options(-Wall -Wextra)
 # endif()
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    if (MSVC)
+        add_compile_options(/D_ITERATOR_DEBUG_LEVEL=0)
+    endif()
+endif()
+
 add_library(GEngine SHARED ${SOURCES} ${HEADERS})
 add_library(GEngine_static STATIC ${SOURCES} ${HEADERS})
 

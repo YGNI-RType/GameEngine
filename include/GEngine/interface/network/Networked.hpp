@@ -38,11 +38,11 @@ public:
         Network::NET::init();
         Network::Event::Manager &em = Network::NET::getEventManager();
         registerComponent<gengine::interface::component::RemoteDriver>();
-#ifdef Server
+#ifdef GEngine_Server
         Network::NET::initServer();
         m_gameEngine.registerSystem<system::Snapshot>(gameEngine.getWorld());
         m_gameEngine.registerSystem<gengine::interface::network::system::ServerClientsHandler>();
-#elif Client
+#elif GEngine_Client
         Network::NET::initClient();
         em.addEvent<Network::Event::ConnectInfo>(Network::Event::CONNECT, Network::Event::ConnectInfo(ip, port));
         m_driverEngine.registerSystem<gengine::interface::network::system::Updater>();
@@ -57,7 +57,7 @@ public:
         Network::NET::getClient().disconnectFromServer();
     }
 
-#ifdef Server
+#ifdef GEngine_Server
     void run() override {
         m_gameEngine.start();
         m_gameEngine.compute();

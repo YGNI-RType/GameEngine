@@ -23,7 +23,7 @@
                 "command": "cmd",
                 "args": [
                     "/c",
-                    "cmake --build ${workspaceFolder}\\build --target GEngine_static && cmake --build ${workspaceFolder}\\r-type\\build"
+                    "cmake --build ${workspaceFolder}\\build --target GEngine_static --parallel 4 && cmake --build ${workspaceFolder}\\Rtype\\build --parallel 4"
                 ]
             },
             "group": {
